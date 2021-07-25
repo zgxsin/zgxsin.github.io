@@ -4,10 +4,16 @@
   {% assign metadata_styles = 'd-flex flex-items-center mb-3' %}
 {% endif %}
 
-<img src="{{ user.avatar_url }}" class="circle mb-3" style="max-width: 150px;">
-<h1 class="{% if site.style == 'dark' %}text-white{% endif %} mb-2 lh-condensed">{% if user.name %}{{ user.name }}{% else %}{{ user.login }}{% endif %}</h1>
+<img src="https://github.com/zgxsin/zgxsin.github.io/blob/3a1b6c3cb5ba7094a01b109aeda383ea4fe8dc7d/_data/id_photo.jpeg" class="circle mb-3" style="max-width: 150px;">
+<h1 class="{% if site.style == 'dark' %}text-white{% endif %} mb-2 lh-condensed">{% if user.name %}Guoxiang Zhou{% else %}{{ user.login }}{% endif %}</h1>
 <p class="mb-3 f4 {% if site.style == 'dark' %}text-white{% else %}text-gray{% endif %}">
-  {{ user.bio }}
+  I am a Perception Software Engineer since April 2020 at <a href="https://www.anybotics.com/">ANYbotics AG</a> which is based in Zurich, Switzerland.
+  Previously I did my master in Robotics, System and Control in ETH Zurich from 2017-2020.
+  During my master study, I was supervised by <a href="https://mavt.ethz.ch/the-department/people/person-detail.Mjk5ODE=.TGlzdC81NTksLTY5MzYxOTMw.html">Roland Siegwart</a> at <a href="https://asl.ethz.ch/">ASL</a> for my semester project and <a href="https://inf.ethz.ch/personal/marc.pollefeys/">Marc Pollefeys</a> at <a href="https://cvg.ethz.ch/">CVG</a> for my master thesis.
+  Before that, I did my bachelor in Electrical Engineering and Automation in <a href="http://en.xjtu.edu.cn/">Xi'an Jiaotong University</a> from 2013-2017 under the supervision of <a href="https://scholar.google.com/citations?user=XGceDDcAAAAJ&amp;hl=en">Prof. Bie Zhaohong</a>.
+  <br>
+  <br>
+  My main interest lies in the area of SLAM, VIO/VO, state estimation, sensor fusion, deep learning and autonomous driving. Please contact me if you want to discuss and work with me.
 </p>
 
 {% if include.metadata %}
@@ -31,7 +37,7 @@
     {% if user.location %}
       <div class="{{ metadata_styles }} {% if site.style == 'dark' %}text-white{% endif %}">
         {% octicon location height:20 class:"mr-2 v-align-middle" fill:{{ icon_color }} aria-label:Location %}
-        {{ user.location }}
+        Zurich, Switzerland
       </div>
     {% endif %}
     {% if site.social_media %}
@@ -48,7 +54,7 @@
       </div>
     {% endif %}
     {% if user.hireable %}
-      <span title="Hire me" class="d-inline-block f5 rounded-2 text-white bg-green py-1 px-2">Available for hire</span>
+<!--      <span title="Hire me" class="d-inline-block f5 rounded-2 text-white bg-green py-1 px-2">Available for hire</span>-->
     {% endif %}
   </div>
 {% endif %}

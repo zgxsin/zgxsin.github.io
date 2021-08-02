@@ -1,7 +1,7 @@
 ---
-title: Check name servers
+title: Set Custom Domain for Github Pages
 published: true
-date: 2020-08-02
+date: 2021-08-02
 author: zgxsin
 ---
 

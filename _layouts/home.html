@@ -1,8 +1,21 @@
 {% include header.html %}
 
 {% if site.layout == 'stacked' %}
-  <div class="container-lg py-6 p-responsive text-center">
-    {% include masthead.html metadata=true %}
+  <div id="nav-container">
+    <header id="nav-header">
+       <h1><a href="{{site.baseurl}}/" id="nav-logo">Guoxiang Zhou</a></h1>
+    </header>
+    <div class="topnav">
+      <a class="active" href="{{site.baseurl}}/">HOME</a>
+      <a href="{{site.baseurl}}/education">EDUCATION</a>
+      <a href="{{site.baseurl}}/projects_and_publications">PROJECTS & PUBLICATIONS</a>
+      <a href="{{site.baseurl}}/media">MEDIA</a>
+      <a href="{{site.baseurl}}/blogs">BLOGS</a>
+    </div>
+  </div>
+
+  <div class="container-lg py-6 p-responsive text-left">
+    {% include masthead.html metadata=false %}
 
     <div {% if site.style == 'dark' %}class="text-white"{% endif %}>
       {{ content }}
@@ -25,11 +38,19 @@
     {% endunless %}
   </div>
 {% else %}
-  <div class="topnav">
-    <a class="active" href="{{site.baseurl}}/">HOME</a>
-    <a href="{{site.baseurl}}/education">EDUCATION</a>
-    <a href="{{site.baseurl}}/projects_and_publications">PROJECTS & PUBLICATIONS</a>
-    <a href="{{site.baseurl}}/media">MEDIA</a>
+  <!--https://github.com/awulkan/FlexNav/blob/master/index.html-->
+  <!--https://www.w3schools.com/howto/howto_js_topnav.asp-->
+  <div id="nav-container">
+    <header id="nav-header">
+       <h1><a href="{{site.baseurl}}/" id="nav-logo">Guoxiang Zhou</a></h1>
+    </header>
+    <div class="topnav">
+      <a class="active" href="{{site.baseurl}}/">HOME</a>
+      <a href="{{site.baseurl}}/education">EDUCATION</a>
+      <a href="{{site.baseurl}}/projects_and_publications">PROJECTS & PUBLICATIONS</a>
+      <a href="{{site.baseurl}}/media">MEDIA</a>
+      <a href="{{site.baseurl}}/blogs">BLOGS</a>
+    </div>
   </div>
 
   <div class="d-md-flex min-height-full {% unless site.style == 'dark' %}border-md-bottom{% endunless %}">

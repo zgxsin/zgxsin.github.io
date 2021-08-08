@@ -1,4 +1,4 @@
-layout: sidebar
+layout: stacked
 style: light
 
 # Jekyll 3 now only supports Kramdown for Markdown
@@ -32,7 +32,7 @@ projects:
   # sort_by options:
   #   - pushed
   #   - stars
-  limit: 9
+  limit: 3
   exclude:
     archived: false
     forks: true

@@ -190,7 +190,7 @@ Jekyll's conventions for authoring and managing blog posts is very flexible. You
 
 To give you a sound foundation to start your personal website, your repository includes a handful of "includes" -- dynamic `.html` files that are re-used throughout your website. They're all stored in the `/_includes/` directory.
 
-There are the usual suspects, like `header.html` and `footer.html`. But there are few more worth pointing out:
+There are the usual suspects, like `header.html` and `footer.html`. They are using [template engine](https://stackoverflow.com/questions/16867898/what-does-mean-in-html) from [Jinja](https://jinja.palletsprojects.com/en/3.0.x/). But there are few more worth pointing out:
 
 - `interests.html`: A heading and dynamic list of "My Interests," which is populated with the [topics](#topics) you list in your `_config.yml`.
 - `masthead.html`: A collection of your avatar, name, bio, and other metadata that's displayed prominently on all your webpages to help identify what the website is about.

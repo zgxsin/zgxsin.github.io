@@ -30,4 +30,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="{{ "/assets/styles.css" | relative_url }}" rel="stylesheet" type="text/css">
   </head>
-  <body class="bg-white min-height-full" {% if site.style == 'dark' %}style="background-color: #2f363d !important"{% endif %}>
+  <!-- <body class="bg-white min-height-full" {% if site.style == 'dark' %}style="background-color: #2f363d !important"{% endif %}> -->
+  <body>
+    <div id="nav-container">
+    <header id="nav-header">
+       <h1><a href="{{site.baseurl}}/" id="nav-logo">Guoxiang Zhou</a></h1>
+    </header>
+    <div class="topnav">
+      <a class="active" href="{{site.baseurl}}/">HOME</a>
+      <a href="{{site.baseurl}}/education">EDUCATION</a>
+      <a href="{{site.baseurl}}/projects_and_publications">PROJECTS & PUBLICATIONS</a>
+      <a href="{{site.baseurl}}/media">MEDIA</a>
+      <a href="{{site.baseurl}}/blogs">BLOGS</a>
+    </div>
+  </div>
+  </body>

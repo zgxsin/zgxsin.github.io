@@ -159,7 +159,7 @@
 }
 
 .webpage-col2 {
-  width: 70%;
+  width: auto;
   text-align: left;
   display: inline;
   vertical-align: top;
@@ -205,4 +205,13 @@
 .blogs{
   width: 80%;
   margin-left: 10%;
+}
+
+.trip_log{
+  width: 80%;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid black;
 }

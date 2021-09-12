@@ -1,83 +1,85 @@
-{% include header.html %}
+{% if site.style == 'dark' %} {% assign icon_color = "#ffffff" %} {% else %} {%
+assign icon_color = "#24292e" %} {% endif %} {% assign content = page.content %}
+{% assign posts_total = site.posts | size %} {% assign user = site.github.owner
+%} {% if page.path contains '_posts' %} {% assign page_title = page.title %} {%
+assign meta_description = page.content | strip_html | strip_newlines |
+xml_escape | truncate: 300 %} {% else %} {% assign page_title = user.name %} {%
+assign meta_description = user.bio | strip_html | strip_newlines | xml_escape |
+truncate: 300 %} {% endif %}
 
-{% if site.layout == 'stacked' %}
-  <div id="nav-container">
-    <header id="nav-header">
-       <h1><a href="{{site.baseurl}}/" id="nav-logo">Guoxiang Zhou</a></h1>
-    </header>
-    <div class="topnav">
-      <a class="active" href="{{site.baseurl}}/">HOME</a>
-      <a href="{{site.baseurl}}/education">EDUCATION</a>
-      <a href="{{site.baseurl}}/projects_and_publications">PROJECTS & PUBLICATIONS</a>
-      <a href="{{site.baseurl}}/media">MEDIA</a>
-      <a href="{{site.baseurl}}/blogs">BLOGS</a>
-    </div>
-  </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="{{ meta_description }}" />
+  <meta property="og:title" content="{{ user.name }}" />
+  <meta property="og:image" content="{{ user.avatar_url }}" />
+  <meta property="og:description" content="{{ meta_description }}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{{ "/assets/styles.css" | relative_url }}" rel="stylesheet"
+  type="text/css">
+  <title>{{ page_title }}</title>
+</head>
+<body>
 
-  <div class="container-lg py-6 p-responsive text-left">
-    {% include masthead.html metadata=false %}
+  {% include header.html %}
 
-    <div {% if site.style == 'dark' %}class="text-white"{% endif %}>
-      {{ content }}
-    </div>
+  {% if site.layout == 'stacked' %}
+    
+    <div class="home_page_content">
+      {% include masthead.html metadata=false %}
 
-    <div class="my-6">
-      {% include projects.html %}
-    </div>
-
-    {% if site.topics %}
-      <div class="my-6">
-        {% include interests.html %}
+      <div {% if site.style == 'dark' %}class="text-white"{% endif %}>
+        {{ content }}
       </div>
-    {% endif %}
 
-    {% unless posts_total == 0 %}
-      <div class="my-6">
-        {% include thoughts.html %}
-      </div>
-    {% endunless %}
-  </div>
-{% else %}
-  <!--https://github.com/awulkan/FlexNav/blob/master/index.html-->
-  <!--https://www.w3schools.com/howto/howto_js_topnav.asp-->
-  <div id="nav-container">
-    <header id="nav-header">
-       <h1><a href="{{site.baseurl}}/" id="nav-logo">Guoxiang Zhou</a></h1>
-    </header>
-    <div class="topnav">
-      <a class="active" href="{{site.baseurl}}/">HOME</a>
-      <a href="{{site.baseurl}}/education">EDUCATION</a>
-      <a href="{{site.baseurl}}/projects_and_publications">PROJECTS & PUBLICATIONS</a>
-      <a href="{{site.baseurl}}/media">MEDIA</a>
-      <a href="{{site.baseurl}}/blogs">BLOGS</a>
-    </div>
-  </div>
-
-  <div class="d-md-flex min-height-full {% unless site.style == 'dark' %}border-md-bottom{% endunless %}">
-    <div class="flex-self-stretch {% if site.style == 'dark' %}bg-gray-dark{% else %}border-md-right border-gray-light bg-white{% endif %} col-md-5 col-lg-4 col-xl-3 px-4 px-md-6 px-lg-7 py-6">
-      {% include masthead.html metadata=true %}
-    </div>
-
-    <div class="col-md-7 col-lg-8 col-xl-9 px-4 py-6 px-lg-7 border-top border-md-top-0 bg-gray-light" {% if site.style == 'dark' %}style="background-color: #2f363d !important"{% endif %}>
-      <div class="mx-auto" style="max-width: 900px;">
-        {% unless content == ""  %}
-          <div class="f4 {% if site.style == 'dark' %}text-white{% endif %} mb-6">
-            {{ content }}
-          </div>
-        {% endunless %}
-
+      <div class="github_project">
         {% include projects.html %}
+      </div>
 
-        {% if site.topics %}
+      {% if site.topics %}
+        <div class="my-6">
           {% include interests.html %}
-        {% endif %}
+        </div>
+      {% endif %}
 
-        {% unless posts_total == 0 %}
+      <!-- {% unless posts_total == 0 %}
+        <div class="my-6">
           {% include thoughts.html %}
-        {% endunless %}
+        </div>
+      {% endunless %} -->
+    </div>
+  {% else %}
+    <div class="d-md-flex min-height-full {% unless site.style == 'dark' %}border-md-bottom{% endunless %}">
+      <div class="flex-self-stretch {% if site.style == 'dark' %}bg-gray-dark{% else %}border-md-right border-gray-light bg-white{% endif %} col-md-5 col-lg-4 col-xl-3 px-4 px-md-6 px-lg-7 py-6">
+        {% include masthead.html metadata=true %}
+      </div>
+
+      <div class="col-md-7 col-lg-8 col-xl-9 px-4 py-6 px-lg-7 border-top border-md-top-0 bg-gray-light" {% if site.style == 'dark' %}style="background-color: #2f363d !important"{% endif %}>
+        <div class="mx-auto" style="max-width: 900px;">
+          {% unless content == ""  %}
+            <div class="f4 {% if site.style == 'dark' %}text-white{% endif %} mb-6">
+              {{ content }}
+            </div>
+          {% endunless %}
+
+          {% include projects.html %}
+
+          {% if site.topics %}
+            {% include interests.html %}
+          {% endif %}
+
+          {% unless posts_total == 0 %}
+            {% include thoughts.html %}
+          {% endunless %}
+        </div>
       </div>
     </div>
-  </div>
-{% endif %}
+  {% endif %}
 
-{% include footer.html %}
+  {% include footer.html %}
+
+  
+</body>
+</html>

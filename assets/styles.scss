@@ -102,7 +102,7 @@
 /* Style the links inside the navigation bar */
 .nav-bar a {
   float: left;
-  color: #f2f2f2;
+  color: white;
   text-align: center;
   padding: 1rem 1rem;
   text-decoration: none;
@@ -111,15 +111,10 @@
 
 /* Change the color of links on hover */
 .nav-bar a:hover {
-  background-color: #ddd;
-  color: black;
+  background-color: rgb(55, 197, 26);
+  color: rgb(0, 0, 0);
 }
 
-/* Add a color to the active/current link */
-.nav-bar a.active {
-  background-color: #04aa6d;
-  color: white;
-}
 
 #nav-logo {
   color: #444;

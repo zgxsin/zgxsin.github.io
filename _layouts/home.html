@@ -27,14 +27,14 @@ truncate: 300 %} {% endif %}
 
   {% if site.layout == 'stacked' %}
     
-    <div class="home_page_content">
+    <div class="home-page">
       {% include masthead.html metadata=false %}
 
       <div {% if site.style == 'dark' %}class="text-white"{% endif %}>
         {{ content }}
       </div>
 
-      <div class="github_project">
+      <div class="github-project">
         {% include projects.html %}
       </div>
 

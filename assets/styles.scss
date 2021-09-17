@@ -143,30 +143,31 @@
   text-align: left;
   margin: 2rem 10%;
   vertical-align: top;
+}
+
+/* Clear floats after the columns */
+.webpages:after {
+  content: "";
   display: table;
+  clear: both;
 }
 
 .webpage-col1 {
   width: 20%;
   margin-right: 10%;
-  display: inline;
+  float: left;
   vertical-align: top;
 }
 
 .webpage-col2 {
-  width: auto;
+  width: 70%;
   text-align: left;
-  display: inline;
+  float: left;
   vertical-align: top;
 }
 
-#introduction {
+.introduction {
   font-size: 1rem;
-  clear: left;
-}
-
-#portrait_photo {
-  float: left;
 }
 
 .span_item {
@@ -174,16 +175,8 @@
   font-size: 1.5rem;
 }
 
-#education_text {
-  display: block;
-  margin-left: 30%;
-}
-
-#project_text {
-  display: block;
-  margin-left: 40%;
-  margin-right: 10%;
-  width: auto;
+.project_text {
+  font-size: 1rem;
 }
 
 .line {

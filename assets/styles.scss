@@ -193,3 +193,21 @@
   height: 600px;
   border: 1px solid black;
 }
+
+@media screen and (max-width: 600px) {
+  .nav-logo {
+    width: 100%;
+  }
+
+  .nav-bar {
+    width: 100%;
+  }
+
+  .webpage-col1 {
+    width: 100%;
+  }
+
+  .webpage-col2 {
+    width: 100%;
+  }
+}

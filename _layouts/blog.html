@@ -24,11 +24,9 @@ truncate: 300 %} {% endif %}
   <body>
     {% include header.html %}
     <div class="blogs">
-        <h1>Blogs</h1>
-        {% unless posts_total == 0 %} {% include thoughts.html %} {% endunless %}
-
+      <h1>Blogs</h1>
+      {% unless posts_total == 0 %} {% include thoughts.html %} {% endunless %}
     </div>
-    
 
     {%include footer.html %}
   </body>

@@ -3,7 +3,7 @@ assign icon_color = "#24292e" %} {% endif %} {% assign content = page.content %}
 {% assign posts_total = site.posts | size %} {% assign user = site.github.owner
 %} {% if page.path contains '_posts' %} {% assign page_title = page.title %} {%
 assign meta_description = page.content | strip_html | strip_newlines |
-xml_escape | truncate: 300 %} {% else %} {% assign page_title = user.name %} {%
+xml_escape | truncate: 300 %} {% else %} {% assign page_title = page.title %} {%
 assign meta_description = user.bio | strip_html | strip_newlines | xml_escape |
 truncate: 300 %} {% endif %}
 
@@ -19,9 +19,9 @@ truncate: 300 %} {% endif %}
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="{{ "/assets/styles.css" | relative_url }}" rel="stylesheet"
   type="text/css">
+  <title>{{ page_title }}</title>
   {% feed_meta %}
   {% seo %}
-  <title>{{ page_title }}</title>
 </head>
 <body>
   {% include header.html %}

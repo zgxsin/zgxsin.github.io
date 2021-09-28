@@ -6,12 +6,13 @@ author: zgxsin
 comments: true
 categories: [C++, cakin, Robotics, ros]
 ---
+
 <!-- wp:heading -->
 <h2>Create a Catkin ROS Package</h2>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Follow this <a href="http://wiki.ros.org/ROS/Tutorials/CreatingPackage">tutorial</a> to create a sample catkin ROS package. The simple command syntax to create a catkin ROS package is</p>
+<p>Follow this <a href="https://wiki.ros.org/ROS/Tutorials/CreatingPackage">tutorial</a> to create a sample catkin ROS package. The simple command syntax to create a catkin ROS package is</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:syntaxhighlighter/code {"language":"bash"} -->
@@ -61,22 +62,30 @@ Successfully created files in /home/guzhou/catkin_ws/src/beginner_tutorials. Ple
 project(beginner_tutorials)
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  std_msgs
+roscpp
+rospy
+std_msgs
 )
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES beginner_tutorials
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
+
+# INCLUDE_DIRS include
+
+# LIBRARIES beginner_tutorials
+
+# CATKIN_DEPENDS roscpp rospy std_msgs
+
+# DEPENDS system_lib
+
 )
 
 include_directories(
+
 # include
-  ${catkin_INCLUDE_DIRS}
+
+${catkin_INCLUDE_DIRS}
 )</pre>
+
 <!-- /wp:syntaxhighlighter/code --></div>
 <!-- /wp:column -->
 
@@ -88,27 +97,28 @@ include_directories(
   &lt;version>0.0.0&lt;/version>
   &lt;description>The beginner_tutorials package&lt;/description>
 
-  &lt;maintainer email="guzhou@todo.todo">guzhou&lt;/maintainer>
+&lt;maintainer email="guzhou@todo.todo">guzhou&lt;/maintainer>
 
-  &lt;license>TODO&lt;/license>
+&lt;license>TODO&lt;/license>
 
-  &lt;buildtool_depend>catkin&lt;/buildtool_depend>
-  &lt;build_depend>roscpp&lt;/build_depend>
-  &lt;build_depend>rospy&lt;/build_depend>
-  &lt;build_depend>std_msgs&lt;/build_depend>
-  &lt;build_export_depend>roscpp&lt;/build_export_depend>
-  &lt;build_export_depend>rospy&lt;/build_export_depend>
-  &lt;build_export_depend>std_msgs&lt;/build_export_depend>
-  &lt;exec_depend>roscpp&lt;/exec_depend>
-  &lt;exec_depend>rospy&lt;/exec_depend>
-  &lt;exec_depend>std_msgs&lt;/exec_depend>
+&lt;buildtool_depend>catkin&lt;/buildtool_depend>
+&lt;build_depend>roscpp&lt;/build_depend>
+&lt;build_depend>rospy&lt;/build_depend>
+&lt;build_depend>std_msgs&lt;/build_depend>
+&lt;build_export_depend>roscpp&lt;/build_export_depend>
+&lt;build_export_depend>rospy&lt;/build_export_depend>
+&lt;build_export_depend>std_msgs&lt;/build_export_depend>
+&lt;exec_depend>roscpp&lt;/exec_depend>
+&lt;exec_depend>rospy&lt;/exec_depend>
+&lt;exec_depend>std_msgs&lt;/exec_depend>
 
-  &lt;!-- The export tag contains other, unspecified, tags -->
-  &lt;export>
-    &lt;!-- Other tools can request additional information be placed here -->
+&lt;!-- The export tag contains other, unspecified, tags -->
+&lt;export>
+&lt;!-- Other tools can request additional information be placed here -->
 
-  &lt;/export>
+&lt;/export>
 &lt;/package></pre>
+
 <!-- /wp:syntaxhighlighter/code --></div>
 <!-- /wp:column --></div>
 <!-- /wp:columns -->
@@ -118,7 +128,7 @@ include_directories(
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>The package dependencies are declared in&nbsp;<code>package.xml</code>. If they are missing or incorrect, <strong>you may be able to build from source and run tests in your own workspace, but your package will not work correctly when released to the ROS community.</strong> Others rely on this information to install the software they need for using your package. Your package must contain an XML file named<strong>&nbsp;package.xml</strong>, as specified by&nbsp;<a href="http://ros.org/reps/rep-0140.html">REP-0140</a>. These components are all required:</p>
+<p>The package dependencies are declared in&nbsp;<code>package.xml</code>. If they are missing or incorrect, <strong>you may be able to build from source and run tests in your own workspace, but your package will not work correctly when released to the ROS community.</strong> Others rely on this information to install the software they need for using your package. Your package must contain an XML file named<strong>&nbsp;package.xml</strong>, as specified by&nbsp;<a href="https://ros.org/reps/rep-0140.html">REP-0140</a>. These components are all required:</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:syntaxhighlighter/code {"language":"xml"} -->
@@ -340,7 +350,7 @@ catkin_package(CATKIN_DEPENDS angles roscpp std_msgs)
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>This tag declares packages needed for <strong>building</strong> your programs, including development files like headers, libraries and configuration files. For each build dependency, <strong>specify the corresponding&nbsp;<a href="http://wiki.ros.org/rosdep">rosdep</a>&nbsp;key</strong>. On many <strong>Linux</strong> distributions these are called “<strong>development</strong>” packages, and their names generally end in&nbsp;<code>-dev</code>&nbsp;or&nbsp;<code>-devel</code>, like this:</p>
+<p>This tag declares packages needed for <strong>building</strong> your programs, including development files like headers, libraries and configuration files. For each build dependency, <strong>specify the corresponding&nbsp;<a href="https://wiki.ros.org/rosdep">rosdep</a>&nbsp;key</strong>. On many <strong>Linux</strong> distributions these are called “<strong>development</strong>” packages, and their names generally end in&nbsp;<code>-dev</code>&nbsp;or&nbsp;<code>-devel</code>, like this:</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:syntaxhighlighter/code {"language":"xml"} -->
@@ -498,7 +508,7 @@ lrwxrwxrwx 1 root root 24 Apr 24  2019 /usr/lib/x86_64-linux-gnu/libavformat.so 
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Sometimes, no CMake module is available, but the library’s <strong>development package</strong> provides a&nbsp;<a href="http://www.freedesktop.org/wiki/Software/pkg-config/">pkg-config</a>&nbsp;file. To use that, first load the CMake&nbsp;<code>PkgConfig</code>&nbsp;module, then access the <strong>build flags </strong>provided by the library. You might check the usage of pkg_check_modules <a href="https://cmake.org/cmake/help/latest/module/FindPkgConfig.html">here</a>.</p>
+<p>Sometimes, no CMake module is available, but the library’s <strong>development package</strong> provides a&nbsp;<a href="https://www.freedesktop.org/wiki/Software/pkg-config/">pkg-config</a>&nbsp;file. To use that, first load the CMake&nbsp;<code>PkgConfig</code>&nbsp;module, then access the <strong>build flags </strong>provided by the library. You might check the usage of pkg_check_modules <a href="https://cmake.org/cmake/help/latest/module/FindPkgConfig.html">here</a>.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:syntaxhighlighter/code -->
@@ -565,7 +575,7 @@ pkg_check_modules (GLIB2 REQUIRED glib-2.0)</pre>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>When your C++ programs depend on ROS messages or services, they must be defined by catkin packages <strong>like</strong>&nbsp;<a href="http://wiki.ros.org/std_msgs">std_msgs</a>&nbsp;and&nbsp;<a href="http://wiki.ros.org/sensor_msgs">sensor_msgs</a>, which are used in the examples below.</p>
+<p>When your C++ programs depend on ROS messages or services, they must be defined by catkin packages <strong>like</strong>&nbsp;<a href="https://wiki.ros.org/std_msgs">std_msgs</a>&nbsp;and&nbsp;<a href="https://wiki.ros.org/sensor_msgs">sensor_msgs</a>, which are used in the examples below.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
@@ -625,7 +635,7 @@ add_dependencies(your_library ${catkin_EXPORTED_TARGETS})</pre>
 <!-- /wp:syntaxhighlighter/code -->
 
 <!-- wp:paragraph -->
-<p>These names are usually already defined in the&nbsp;<a href="https://github.com/ros/rosdistro/blob/master/rosdep/python.yaml">rosdistro repository</a>. If you need a module not yet defined there, please&nbsp;<a href="http://docs.ros.org/independent/api/rosdep/html/contributing_rules.html">fork that repository and add them</a>.</p>
+<p>These names are usually already defined in the&nbsp;<a href="https://github.com/ros/rosdistro/blob/master/rosdep/python.yaml">rosdistro repository</a>. If you need a module not yet defined there, please&nbsp;<a href="https://docs.ros.org/independent/api/rosdep/html/contributing_rules.html">fork that repository and add them</a>.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:list -->
@@ -648,7 +658,7 @@ add_dependencies(your_library ${catkin_EXPORTED_TARGETS})</pre>
 <!-- /wp:syntaxhighlighter/code -->
 
 <!-- wp:list -->
-<ul><li><strong>ROS message or service</strong>. ROS message or service are defined as modules by ROS packages like&nbsp;<a href="http://wiki.ros.org/std_msgs">std_msgs</a>&nbsp;and&nbsp;<a href="http://wiki.ros.org/sensor_msgs">sensor_msgs</a>, used as examples here. Although&nbsp;<code>&lt;exec_depend&gt;</code>&nbsp;is adequate when all references are in Python, the recommended method is using a&nbsp;<code>&lt;depend&gt;</code>&nbsp;tag with the message package name:</li></ul>
+<ul><li><strong>ROS message or service</strong>. ROS message or service are defined as modules by ROS packages like&nbsp;<a href="https://wiki.ros.org/std_msgs">std_msgs</a>&nbsp;and&nbsp;<a href="https://wiki.ros.org/sensor_msgs">sensor_msgs</a>, used as examples here. Although&nbsp;<code>&lt;exec_depend&gt;</code>&nbsp;is adequate when all references are in Python, the recommended method is using a&nbsp;<code>&lt;depend&gt;</code>&nbsp;tag with the message package name:</li></ul>
 <!-- /wp:list -->
 
 <!-- wp:syntaxhighlighter/code -->
@@ -665,5 +675,5 @@ add_dependencies(your_library ${catkin_EXPORTED_TARGETS})</pre>
 <!-- /wp:heading -->
 
 <!-- wp:list {"ordered":true} -->
-<ol><li><a href="https://stackoverflow.com/questions/2358801/what-are-devel-packages">https://stackoverflow.com/questions/2358801/what-are-devel-packages</a></li><li><a href="http://docs.ros.org/melodic/api/catkin/html/howto/format2/index.html">http://docs.ros.org/melodic/api/catkin/html/howto/format2/index.html</a></li></ol>
+<ol><li><a href="https://stackoverflow.com/questions/2358801/what-are-devel-packages">https://stackoverflow.com/questions/2358801/what-are-devel-packages</a></li><li><a href="https://docs.ros.org/melodic/api/catkin/html/howto/format2/index.html">https://docs.ros.org/melodic/api/catkin/html/howto/format2/index.html</a></li></ol>
 <!-- /wp:list -->

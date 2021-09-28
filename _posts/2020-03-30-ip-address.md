@@ -6,6 +6,7 @@ author: zgxsin
 comments: true
 categories: [Miscellaneous]
 ---
+
 <!-- wp:heading -->
 <h2>What is IP Address</h2>
 <!-- /wp:heading -->
@@ -45,7 +46,7 @@ https://www.youtube.com/watch?v=8zEVA-Bxs-0
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":914,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-23-1024x572.png" alt="" class="wp-image-914"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-23-1024x572.png" alt="" class="wp-image-914"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"level":3} -->
@@ -89,7 +90,7 @@ https://www.youtube.com/watch?v=8zEVA-Bxs-0
 <!-- /wp:syntaxhighlighter/code -->
 
 <!-- wp:paragraph -->
-<p>to check the <strong>private</strong> IP address of the device. <strong>ifconfig</strong> is not recommended ((<a href="http://blog.cyphermox.net/2017/05/if-youre-still-using-ifconfig-youre.html">http://blog.cyphermox.net/2017/05/if-youre-still-using-ifconfig-youre.html</a>)).</p>
+<p>to check the <strong>private</strong> IP address of the device. <strong>ifconfig</strong> is not recommended ((<a href="https://blog.cyphermox.net/2017/05/if-youre-still-using-ifconfig-youre.html">https://blog.cyphermox.net/2017/05/if-youre-still-using-ifconfig-youre.html</a>)).</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -97,19 +98,19 @@ https://www.youtube.com/watch?v=8zEVA-Bxs-0
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":956,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-26.png" alt="" class="wp-image-956"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-26.png" alt="" class="wp-image-956"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
-<p>Here are the <a href="http://linux-ip.net/html/tools-ip-address.html">explanations</a>. I briefly list it here and add detailed information.</p>
+<p>Here are the <a href="https://linux-ip.net/html/tools-ip-address.html">explanations</a>. I briefly list it here and add detailed information.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Each device is given an sequential number as an identifying number. This is merely a convenience, and should not be used to refer to devices. The second field in an entry is the interface name (which usually corresponds to the device name). Next, we see the<strong> device&nbsp;flags</strong>&nbsp;and <strong>maximum transmission unit size.</strong> The final fields in the first line of output for each device entry refer to the traffic control queuing discipline (<strong>qdisc</strong>) and the Ethernet buffer transmit queue length (<strong>qlen</strong>). For more on understanding and using traffic control under linux, see&nbsp;<a href="http://lartc.org/howto/">the LARTC documentation</a>.</p>
+<p>Each device is given an sequential number as an identifying number. This is merely a convenience, and should not be used to refer to devices. The second field in an entry is the interface name (which usually corresponds to the device name). Next, we see the<strong> device&nbsp;flags</strong>&nbsp;and <strong>maximum transmission unit size.</strong> The final fields in the first line of output for each device entry refer to the traffic control queuing discipline (<strong>qdisc</strong>) and the Ethernet buffer transmit queue length (<strong>qlen</strong>). For more on understanding and using traffic control under linux, see&nbsp;<a href="https://lartc.org/howto/">the LARTC documentation</a>.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>The second line of output describes the link layer characteristics of the device. <strong>For Ethernet devices, this will always say "link/ether" followed by the hardware address of the device and the media broadcast address</strong>. For more detail on the link layer characteristics of a device see&nbsp;<a href="http://linux-ip.net/html/tools-ip-link.html">here</a>.</p>
+<p>The second line of output describes the link layer characteristics of the device. <strong>For Ethernet devices, this will always say "link/ether" followed by the hardware address of the device and the media broadcast address</strong>. For more detail on the link layer characteristics of a device see&nbsp;<a href="https://linux-ip.net/html/tools-ip-link.html">here</a>.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -129,7 +130,7 @@ https://www.youtube.com/watch?v=8zEVA-Bxs-0
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Interface flags are listed in the angle brackets. Check the flags <a href="http://linux-ip.net/html/tools-ifconfig.html#tb-tools-ifconfig-flags">here</a> and <a href="http://man7.org/linux/man-pages/man7/netdevice.7.html">here</a>.</p>
+<p>Interface flags are listed in the angle brackets. Check the flags <a href="https://linux-ip.net/html/tools-ifconfig.html#tb-tools-ifconfig-flags">here</a> and <a href="https://man7.org/linux/man-pages/man7/netdevice.7.html">here</a>.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:group -->
@@ -248,7 +249,7 @@ https://www.youtube.com/watch?v=8zEVA-Bxs-0
 <!-- /wp:paragraph -->
 
 <!-- wp:list -->
-<ul><li><code>qdisc <a href="http://man7.org/linux/man-pages/man8/tc-fq_codel.8.html">fq_codel</a></code> &nbsp;</li></ul>
+<ul><li><code>qdisc <a href="https://man7.org/linux/man-pages/man8/tc-fq_codel.8.html">fq_codel</a></code> &nbsp;</li></ul>
 <!-- /wp:list -->
 
 <!-- wp:paragraph -->
@@ -305,5 +306,7 @@ https://www.youtube.com/watch?v=8zEVA-Bxs-0
 <!-- /wp:group -->
 
 <!-- wp:shortcode -->
+
 [thumbs-rating-buttons]
+
 <!-- /wp:shortcode -->

@@ -6,6 +6,7 @@ author: zgxsin
 comments: true
 categories: [Linux and Ubuntu]
 ---
+
 <!-- wp:paragraph -->
 <p>Today I talk about how to locate and search files in Linux system. There are different commands to do that. I will discuss the most used ones .</p>
 <!-- /wp:paragraph -->
@@ -15,7 +16,7 @@ categories: [Linux and Ubuntu]
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>The syntax of <strong><a href="http://man7.org/linux/man-pages/man1/locate.1.html">locate</a></strong> command is:</p>
+<p>The syntax of <strong><a href="https://man7.org/linux/man-pages/man1/locate.1.html">locate</a></strong> command is:</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:syntaxhighlighter/code {"language":"bash"} -->
@@ -48,7 +49,7 @@ locate tmp_test.txt</pre>
 <!-- /wp:syntaxhighlighter/code -->
 
 <!-- wp:image {"id":739,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-13.png" alt="" class="wp-image-739"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-13.png" alt="" class="wp-image-739"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -77,7 +78,7 @@ $ export PATH="$PATH:/path/to/dir"</pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":704,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-11.png" alt="" class="wp-image-704"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-11.png" alt="" class="wp-image-704"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -85,7 +86,7 @@ $ export PATH="$PATH:/path/to/dir"</pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":705,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-12.png" alt="" class="wp-image-705"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-12.png" alt="" class="wp-image-705"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -129,7 +130,7 @@ For more details see whereis(1).
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>The&nbsp;<strong>find</strong>&nbsp;command in UNIX is a command line utility for <strong>walking a file hierarchy </strong>rooted at each given starting-point<strong>.</strong> If no starting point is specified, '.' is assumed. It can be used to find files and directories and perform subsequent operations on them. It supports searching by file, folder, name, creation date, modification date, owner and permissions. By using the ‘-exec’, other UNIX commands can be executed on files or folders found ((<a href="https://www.geeksforgeeks.org/find-command-in-linux-with-examples/">https://www.geeksforgeeks.org/find-command-in-linux-with-examples/</a>)). The syntax of find command ((<a href="http://man7.org/linux/man-pages/man1/find.1.html">http://man7.org/linux/man-pages/man1/find.1.html</a>)) is:</p>
+<p>The&nbsp;<strong>find</strong>&nbsp;command in UNIX is a command line utility for <strong>walking a file hierarchy </strong>rooted at each given starting-point<strong>.</strong> If no starting point is specified, '.' is assumed. It can be used to find files and directories and perform subsequent operations on them. It supports searching by file, folder, name, creation date, modification date, owner and permissions. By using the ‘-exec’, other UNIX commands can be executed on files or folders found ((<a href="https://www.geeksforgeeks.org/find-command-in-linux-with-examples/">https://www.geeksforgeeks.org/find-command-in-linux-with-examples/</a>)). The syntax of find command ((<a href="https://man7.org/linux/man-pages/man1/find.1.html">https://man7.org/linux/man-pages/man1/find.1.html</a>)) is:</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:syntaxhighlighter/code {"language":"bash"} -->
@@ -157,7 +158,7 @@ For more details see whereis(1).
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":747,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-14.png" alt="" class="wp-image-747"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-14.png" alt="" class="wp-image-747"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"level":3} -->
@@ -171,7 +172,7 @@ find . -name sample.txt</pre>
 <!-- /wp:syntaxhighlighter/code -->
 
 <!-- wp:image {"id":749,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-16.png" alt="" class="wp-image-749"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-16.png" alt="" class="wp-image-749"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"level":3} -->
@@ -186,7 +187,7 @@ find . -name "*.txt"</pre>
 <!-- /wp:syntaxhighlighter/code -->
 
 <!-- wp:image {"id":771,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-17.png" alt="" class="wp-image-771"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-17.png" alt="" class="wp-image-771"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"level":3} -->
@@ -199,7 +200,7 @@ find . -empty</pre>
 <!-- /wp:syntaxhighlighter/code -->
 
 <!-- wp:image {"id":772,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-18.png" alt="" class="wp-image-772"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-18.png" alt="" class="wp-image-772"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"level":3} -->
@@ -211,7 +212,7 @@ find . -empty</pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":773,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-19.png" alt="" class="wp-image-773"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-19.png" alt="" class="wp-image-773"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -228,7 +229,7 @@ find . -perm 755</pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":774,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-20.png" alt="" class="wp-image-774"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-20.png" alt="" class="wp-image-774"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -245,7 +246,7 @@ find . -type f -perm 755</pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":775,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-21.png" alt="" class="wp-image-775"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-21.png" alt="" class="wp-image-775"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -257,7 +258,7 @@ find . -type f -perm 755</pre>
 <!-- /wp:syntaxhighlighter/code -->
 
 <!-- wp:image {"id":776,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-22.png" alt="" class="wp-image-776"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-22.png" alt="" class="wp-image-776"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -268,5 +269,7 @@ find . -type f -perm 755</pre>
 <p style="padding-left: 40px;">Execute command; true if 0 status is returned. All following<br>arguments to find are taken to be arguments to the command<br>until an argument consisting of ';' is encountered. <strong>The</strong><br><strong>string '{}' is replaced by the current file name being</strong><br><strong>processed everywhere it occurs in the arguments to the</strong><br><strong>command, not just in arguments where it is alone, as in some</strong><br><strong>versions of find</strong>. <strong>Both of these constructions might need to</strong><br><strong>be escaped (with a `\') or quoted to protect them from</strong><br><strong>expansion by the shell</strong>. &nbsp;The specified command is run<br>once for each matched file. The command is executed <strong>in the</strong><br><strong>starting directory.</strong> There are unavoidable security problems<br>surrounding use of the -exec action; you should use the<br><strong>-execdir </strong>option instead.</p>
 
 <!-- wp:shortcode -->
+
 [thumbs-rating-buttons]
+
 <!-- /wp:shortcode -->

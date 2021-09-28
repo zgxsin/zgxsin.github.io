@@ -6,6 +6,7 @@ author: zgxsin
 comments: true
 categories: [Technical]
 ---
+
 <!-- wp:paragraph -->
 <p>此博客转载自参考文献。路由器的工作模式包含：AP模式（Access Point接入点模式）、Router模式（路由模式）、Repeater模式（中继模式）、Bridge模式（桥接模式）、Client模式（客户端的模式）。<br></p>
 <!-- /wp:paragraph -->
@@ -23,11 +24,11 @@ categories: [Technical]
 <!-- /wp:paragraph -->
 
 <!-- wp:image -->
-<figure class="wp-block-image"><img src="http://bbs.raindi.net/data/attachment/forum/201805/11/205712e7ffsxsize1xecf1.png" alt=""/></figure>
+<figure class="wp-block-image"><img src="https://bbs.raindi.net/data/attachment/forum/201805/11/205712e7ffsxsize1xecf1.png" alt=""/></figure>
 <!-- /wp:image -->
 
 <!-- wp:image {"id":5039,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/05/1.png" alt="" class="wp-image-5039"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/05/1.png" alt="" class="wp-image-5039"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -39,11 +40,11 @@ categories: [Technical]
 <!-- /wp:paragraph -->
 
 <!-- wp:image -->
-<figure class="wp-block-image"><img src="http://bbs.raindi.net/data/attachment/forum/201805/11/205713yb5g39fzoqc357zb.png" alt=""/></figure>
+<figure class="wp-block-image"><img src="https://bbs.raindi.net/data/attachment/forum/201805/11/205713yb5g39fzoqc357zb.png" alt=""/></figure>
 <!-- /wp:image -->
 
 <!-- wp:image {"id":5040,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/05/2.png" alt="" class="wp-image-5040"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/05/2.png" alt="" class="wp-image-5040"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -55,11 +56,11 @@ categories: [Technical]
 <!-- /wp:paragraph -->
 
 <!-- wp:image -->
-<figure class="wp-block-image"><img src="http://bbs.raindi.net/data/attachment/forum/201805/11/205713pwfm39zxm9yim6mn.png" alt=""/></figure>
+<figure class="wp-block-image"><img src="https://bbs.raindi.net/data/attachment/forum/201805/11/205713pwfm39zxm9yim6mn.png" alt=""/></figure>
 <!-- /wp:image -->
 
 <!-- wp:image {"id":5041,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/05/3.png" alt="" class="wp-image-5041"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/05/3.png" alt="" class="wp-image-5041"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -71,11 +72,11 @@ categories: [Technical]
 <!-- /wp:paragraph -->
 
 <!-- wp:image -->
-<figure class="wp-block-image"><img src="http://bbs.raindi.net/data/attachment/forum/201805/11/205712wpy6bn0hp1ussz1p.png" alt=""/></figure>
+<figure class="wp-block-image"><img src="https://bbs.raindi.net/data/attachment/forum/201805/11/205712wpy6bn0hp1ussz1p.png" alt=""/></figure>
 <!-- /wp:image -->
 
 <!-- wp:image {"id":5042,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/05/4.png" alt="" class="wp-image-5042"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/05/4.png" alt="" class="wp-image-5042"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -87,11 +88,11 @@ categories: [Technical]
 <!-- /wp:paragraph -->
 
 <!-- wp:image -->
-<figure class="wp-block-image"><img src="http://bbs.raindi.net/data/attachment/forum/201805/11/205713jcya48npybnynba2.png" alt="" width="NaN" height="NaN"/></figure>
+<figure class="wp-block-image"><img src="https://bbs.raindi.net/data/attachment/forum/201805/11/205713jcya48npybnynba2.png" alt="" width="NaN" height="NaN"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:image {"id":5043,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/05/5.png" alt="" class="wp-image-5043"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/05/5.png" alt="" class="wp-image-5043"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->

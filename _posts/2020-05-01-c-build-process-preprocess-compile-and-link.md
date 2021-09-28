@@ -7,6 +7,7 @@ author: zgxsin
 comments: true
 categories: [C++]
 ---
+
 <!-- wp:paragraph -->
 <p>Each C++ <strong>source file</strong> needs to be <strong>compiled</strong> into an object file. The object files resulting from the compilation of multiple source files are then linked into an executable, a shared library, or a static library (the last of these being just an archive of object files). <strong>C++ source files generally have the .cpp, .cxx or .cc extension suffixes.</strong></p>
 <!-- /wp:paragraph -->
@@ -16,7 +17,7 @@ categories: [C++]
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>For each C++ source file, the preprocessor will build a translation unit by inserting content in it when it finds an #include directive at the same time that it’ll be stripping code out of the source file and of the headers when it finds <a href="http://www.cplusplus.com/doc/tutorial/preprocessor/#conditional_inclusions">conditional compilation</a> blocks whose directive evaluates to <code>false</code>. It’ll also do some <a href="http://www.cplusplus.com/doc/tutorial/preprocessor/">other tasks</a> like macro replacements.</p>
+<p>For each C++ source file, the preprocessor will build a translation unit by inserting content in it when it finds an #include directive at the same time that it’ll be stripping code out of the source file and of the headers when it finds <a href="https://www.cplusplus.com/doc/tutorial/preprocessor/#conditional_inclusions">conditional compilation</a> blocks whose directive evaluates to <code>false</code>. It’ll also do some <a href="https://www.cplusplus.com/doc/tutorial/preprocessor/">other tasks</a> like macro replacements.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->

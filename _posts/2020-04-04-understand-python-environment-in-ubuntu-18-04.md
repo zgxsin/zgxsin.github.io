@@ -6,6 +6,7 @@ author: zgxsin
 comments: true
 categories: [Miscellaneous]
 ---
+
 <!-- wp:paragraph -->
 <p>Many people might be confused about python environments in Ubuntu. I will give a short introduction about python environments on Ubuntu 18.04.</p>
 <!-- /wp:paragraph -->
@@ -101,7 +102,7 @@ DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please
 Name: matplotlib
 Version: 2.2.5
 Summary: Python plotting package
-Home-page: http://matplotlib.org
+Home-page: https://matplotlib.org
 Author: John D. Hunter, Michael Droettboom
 Author-email: matplotlib-users@python.org
 License: PSF

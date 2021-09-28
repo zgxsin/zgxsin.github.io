@@ -6,6 +6,7 @@ author: zgxsin
 comments: true
 categories: [Technical]
 ---
+
 <!-- wp:paragraph -->
 <p>There are difference scenarios to use <a href="https://en.wikipedia.org/wiki/Secure_Shell">ssh</a> connection. Many people might prefer to have a powerful laptop of their own, which they don't move a lot. And they use their other light devices to connect to it whenever they want.  In this blog, I will take about how to set up this kind of service.</p>
 <!-- /wp:paragraph -->
@@ -43,7 +44,7 @@ categories: [Technical]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":3421,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/04/image-17.png" alt="" class="wp-image-3421"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-17.png" alt="" class="wp-image-3421"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -59,11 +60,11 @@ categories: [Technical]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"align":"center","id":3431,"sizeSlug":"large"} -->
-<div class="wp-block-image"><figure class="aligncenter size-large"><img src="http://localhost/wp-content/uploads/2020/04/image-21.png" alt="" class="wp-image-3431"/></figure></div>
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-21.png" alt="" class="wp-image-3431"/></figure></div>
 <!-- /wp:image -->
 
 <!-- wp:image {"align":"center","width":572,"height":406} -->
-<div class="wp-block-image"><figure class="aligncenter is-resized"><img src="http://localhost/wp-content/uploads/2020/04/image-18.png" alt="" width="572" height="406"/></figure></div>
+<div class="wp-block-image"><figure class="aligncenter is-resized"><img src="https://localhost/wp-content/uploads/2020/04/image-18.png" alt="" width="572" height="406"/></figure></div>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -115,7 +116,7 @@ From 10.0.147.209 icmp_seq=18 Destination Host Unreachable
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":3485,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/04/image-24.png" alt="" class="wp-image-3485"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-24.png" alt="" class="wp-image-3485"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -123,11 +124,11 @@ From 10.0.147.209 icmp_seq=18 Destination Host Unreachable
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"align":"center","id":3478,"width":568,"height":244,"sizeSlug":"large"} -->
-<div class="wp-block-image"><figure class="aligncenter size-large is-resized"><img src="http://localhost/wp-content/uploads/2020/04/image-22.png" alt="" class="wp-image-3478" width="568" height="244"/></figure></div>
+<div class="wp-block-image"><figure class="aligncenter size-large is-resized"><img src="https://localhost/wp-content/uploads/2020/04/image-22.png" alt="" class="wp-image-3478" width="568" height="244"/></figure></div>
 <!-- /wp:image -->
 
 <!-- wp:image {"align":"center","id":3480,"sizeSlug":"large"} -->
-<div class="wp-block-image"><figure class="aligncenter size-large"><img src="http://localhost/wp-content/uploads/2020/04/image-23.png" alt="" class="wp-image-3480"/></figure></div>
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-23.png" alt="" class="wp-image-3480"/></figure></div>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->

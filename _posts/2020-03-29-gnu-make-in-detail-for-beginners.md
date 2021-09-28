@@ -6,8 +6,9 @@ author: zgxsin
 comments: true
 categories: [Technical]
 ---
+
 <!-- wp:paragraph -->
-<p>For those who wants to understand <strong>GNU Make</strong> better, I found this <a href="http://opensourceforu.com/2012/06/gnu-make-in-detail-for-beginners/">article</a> very helpful and useful. </p>
+<p>For those who wants to understand <strong>GNU Make</strong> better, I found this <a href="https://opensourceforu.com/2012/06/gnu-make-in-detail-for-beginners/">article</a> very helpful and useful. </p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -218,5 +219,7 @@ clean:
 <!-- /wp:code -->
 
 <!-- wp:shortcode -->
+
 [thumbs-rating-buttons]
+
 <!-- /wp:shortcode -->

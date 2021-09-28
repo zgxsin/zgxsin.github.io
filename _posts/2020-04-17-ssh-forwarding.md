@@ -6,6 +6,7 @@ author: zgxsin
 comments: true
 categories: [Miscellaneous]
 ---
+
 <!-- wp:paragraph -->
 <p>I will talk about ssh forwarding in this blog. The main content contains local  forwarding and remote forwarding. I will take the <a href="https://github.com/cdr/code-server">coder_server</a> as an example in the end.</p>
 <!-- /wp:paragraph -->
@@ -45,7 +46,7 @@ ssh user_name@ssh_connected_ip_address -L  local_port_number:forwarded_host:forw
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":3374,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/04/image-13.png" alt="" class="wp-image-3374"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-13.png" alt="" class="wp-image-3374"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -83,7 +84,7 @@ ssh user_name@ssh_connected_ip_address -R  remote_port_number:forwarded_host:for
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":3375,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/04/image-14.png" alt="" class="wp-image-3375"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-14.png" alt="" class="wp-image-3375"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -105,32 +106,42 @@ ssh user_name@ssh_connected_ip_address -R  remote_port_number:forwarded_host:for
 ssh user_name@remote_server_ip_address -L 8443:localhost:8443
 
 # Step 2. Download coder server.
+
 # Now you ssh into your remote server.
+
 # Download the latest code server release file. You need to choose the file based on your machine type.
+
 wget https://github.com/cdr/code-server/releases/download/3.1.1/code-server-3.1.1-linux-x86_64.tar.gz
+
 # Uncompress the file
+
 tar xvf code-server-3.1.1-linux-x86_64.tar.gz
+
 # Go to the uncompressed folder
+
 cd code-server-3.1.1-linux-x86_64/
 
 # Step 3. Start code server in the remote server.
+
 # Run code server with the consistent port number with ssh local forwarding.
+
 ./code-server --port 8443
 
-info  code-server 3.1.1 28e91ba70cd70fa9adf3f2e3e3b87631b5667ecf
-info  HTTP server listening on http://127.0.0.1:8443
-info    - Password is XXXXXXXXXXXXX
-info      - To use your own password set the PASSWORD environment variable
-info      - To disable use `--auth none`
-info    - Not serving HTTPS
-info  Automatic updates are enabled
-info  SSH server listening on localhost:33253
-info    - To disable use `--disable-ssh`
-
+info code-server 3.1.1 28e91ba70cd70fa9adf3f2e3e3b87631b5667ecf
+info HTTP server listening on https://127.0.0.1:8443
+info - Password is XXXXXXXXXXXXX
+info - To use your own password set the PASSWORD environment variable
+info - To disable use `--auth none`
+info - Not serving HTTPS
+info Automatic updates are enabled
+info SSH server listening on localhost:33253
+info - To disable use `--disable-ssh`
 
 # Step 4. Open a browser in your local machine to visit the VS Code running in the remote server.
+
 Open the browser in the local machine and visit localhost:8443
 </code></pre>
+
 <!-- /wp:code -->
 
 <!-- wp:paragraph -->
@@ -138,7 +149,7 @@ Open the browser in the local machine and visit localhost:8443
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":3378,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/04/image-15-1024x582.png" alt="" class="wp-image-3378"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-15-1024x582.png" alt="" class="wp-image-3378"/></figure>
 <!-- /wp:image --></div></div>
 <!-- /wp:group -->
 

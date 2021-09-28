@@ -6,6 +6,7 @@ author: zgxsin
 comments: true
 categories: [Technical]
 ---
+
 <!-- wp:paragraph -->
 <p>In this blog, I will talk about how to set up your personal website using <a href="https://wordpress.org/">WordPress</a> step-by-step. It is oriented for those who just start building their personal website.</p>
 <!-- /wp:paragraph -->
@@ -47,7 +48,7 @@ categories: [Technical]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":442,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-10-1024x576.png" alt="" class="wp-image-442"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-10-1024x576.png" alt="" class="wp-image-442"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -115,14 +116,14 @@ exit
 # Install WordPress
 # ==================================================
 cd /tmp
-wget http://wordpress.org/latest.zip
+wget https://wordpress.org/latest.zip
 unzip -q latest.zip -d /var/www/html/
 chown -R www-data:www-data /var/www/html
 chmod -R 755 /var/www/html
 mkdir -p /var/www/html/wp-content/uploads
 chown -R www-data:www-data /var/www/html/wp-content/uploads
 
-# Finally, open http://your_server_ip/wordpress in your local laptop and set up and install WordPress.</code></pre>
+# Finally, open https://your_server_ip/wordpress in your local laptop and set up and install WordPress.</code></pre>
 <!-- /wp:code -->
 
 <!-- wp:heading {"level":3} -->
@@ -150,7 +151,7 @@ chown -R www-data:www-data /var/www/html/wp-content/uploads
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":409,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-4.png" alt="" class="wp-image-409"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-4.png" alt="" class="wp-image-409"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -173,7 +174,7 @@ cp wordpress/.htacccess .</code></pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":412,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-7.png" alt="" class="wp-image-412"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-7.png" alt="" class="wp-image-412"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -181,7 +182,7 @@ cp wordpress/.htacccess .</code></pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":410,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-5.png" alt="" class="wp-image-410"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-5.png" alt="" class="wp-image-410"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -236,7 +237,7 @@ cp wordpress/.htacccess .</code></pre>
 <!-- /wp:list -->
 
 <!-- wp:image {"id":413,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/03/image-8.png" alt="" class="wp-image-413"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-8.png" alt="" class="wp-image-413"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:list -->
@@ -244,7 +245,7 @@ cp wordpress/.htacccess .</code></pre>
 <!-- /wp:list -->
 
 <!-- wp:image {"id":415,"width":597,"height":391,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large is-resized"><img src="http://localhost/wp-content/uploads/2020/03/image-9.png" alt="" class="wp-image-415" width="597" height="391"/></figure>
+<figure class="wp-block-image size-large is-resized"><img src="https://localhost/wp-content/uploads/2020/03/image-9.png" alt="" class="wp-image-415" width="597" height="391"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:list -->
@@ -276,5 +277,7 @@ cp wordpress/.htacccess .</code></pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:shortcode -->
+
 [thumbs-rating-buttons]
+
 <!-- /wp:shortcode -->

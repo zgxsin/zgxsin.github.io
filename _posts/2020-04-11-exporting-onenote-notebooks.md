@@ -6,6 +6,7 @@ author: zgxsin
 comments: true
 categories: [Tips]
 ---
+
 <!-- wp:paragraph -->
 <p>I came across some problems recently when I wanted to migrate the contents from <strong>my university OneNote account</strong> (office 365 suite) to my local laptop.  This is necessary as your account will be revoked when you leave the university. I am mainly using <strong>OneNote for Mac and Onenote Web.</strong> Here is how I deal with exporting OneNote notebooks. I created a OneNote notebook named "Test OneNote" for demonstration.</p>
 <!-- /wp:paragraph -->
@@ -19,7 +20,7 @@ categories: [Tips]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":2543,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/04/image-11-1024x638.png" alt="" class="wp-image-2543"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-11-1024x638.png" alt="" class="wp-image-2543"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -27,7 +28,7 @@ categories: [Tips]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":2544,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/04/image-12-1024x640.png" alt="" class="wp-image-2544"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-12-1024x640.png" alt="" class="wp-image-2544"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -39,7 +40,7 @@ categories: [Tips]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":2500,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/04/image-7-1024x576.png" alt="" class="wp-image-2500"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-7-1024x576.png" alt="" class="wp-image-2500"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -47,7 +48,7 @@ categories: [Tips]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":2538,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/04/image-8-1024x576.png" alt="" class="wp-image-2538"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-8-1024x576.png" alt="" class="wp-image-2538"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -59,7 +60,7 @@ categories: [Tips]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":2540,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/04/image-9-1024x576.png" alt="" class="wp-image-2540"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-9-1024x576.png" alt="" class="wp-image-2540"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -67,7 +68,7 @@ categories: [Tips]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":2541,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="http://localhost/wp-content/uploads/2020/04/image-10-1024x576.png" alt="" class="wp-image-2541"/></figure>
+<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-10-1024x576.png" alt="" class="wp-image-2541"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->

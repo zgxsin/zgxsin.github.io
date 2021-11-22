@@ -1,3 +1,7 @@
+collections:
+  my_media:
+    output: true
+
 layout: stacked
 style: light
 

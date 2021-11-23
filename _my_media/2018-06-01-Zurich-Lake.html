@@ -5,6 +5,23 @@ title: Zurich Lake
 ---
 
 <div class="trip-log">
-  <h2>Zurich Lake | June 2018</h2>
+  <h2>{{ page.title }}</h2>
+  <p
+    class="
+      {%
+      if
+      site.style
+      ==
+      'dark'
+      %}text-white{%
+      else
+      %}text-gray{%
+      endif
+      %}
+      mb-5
+    "
+  >
+    Date: {{ page.date | date: "%b %d, %Y"}}
+  </p>
   <iframe src="https://www.youtube.com/embed/imCyfLba9cA"> </iframe>
 </div>

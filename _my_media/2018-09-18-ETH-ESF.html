@@ -5,6 +5,24 @@ title: ETH Zurich ESF
 ---
 
 <div class="trip-log">
+  <h2>{{ page.title }}</h2>
+  <p
+    class="
+      {%
+      if
+      site.style
+      ==
+      'dark'
+      %}text-white{%
+      else
+      %}text-gray{%
+      endif
+      %}
+      mb-5
+    "
+  >
+    Date: {{ page.date | date: "%b %d, %Y"}}
+  </p>
   <h2
     style="
       font-variant-ligatures: normal;
@@ -14,8 +32,7 @@ title: ETH Zurich ESF
       white-space: normal;
     "
   >
-    <a href="https://www.facebook.com/esfzh/" style="font-size: 20px">ESF</a
-    >&nbsp;ETH Zurich | September 2018
+    <a href="https://www.facebook.com/esfzh/" style="font-size: 20px">ESF</a>
   </h2>
   <iframe src="https://www.youtube.com/embed/k980k8F6OK8"> </iframe>
 </div>

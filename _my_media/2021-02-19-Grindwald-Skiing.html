@@ -5,17 +5,24 @@ title: Skiing in Grindwald
 ---
 
 <div class="trip-log">
-  <h2
-    style="
-      font-variant-ligatures: normal;
-      font-variant-caps: normal;
-      font-family: 'Times New Roman', Times, serif;
-      font-style: normal;
-      white-space: normal;
+  <h2>{{ page.title }}</h2>
+  <p
+    class="
+      {%
+      if
+      site.style
+      ==
+      'dark'
+      %}text-white{%
+      else
+      %}text-gray{%
+      endif
+      %}
+      mb-5
     "
   >
-    Switzerland: Grindwald-Skiing | February 2021
-  </h2>
+    Date: {{ page.date | date: "%b %d, %Y"}}
+  </p>
   Thank Menglong Xu for video editting.
   <iframe src="https://www.youtube.com/embed/b1br-zBY3Ys"> </iframe>
 </div>

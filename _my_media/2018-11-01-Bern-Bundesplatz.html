@@ -5,6 +5,24 @@ title: Rendez-vous Bundesplatz in Bern
 ---
 
 <div class="trip-log">
+  <h2>{{ page.title }}</h2>
+  <p
+    class="
+      {%
+      if
+      site.style
+      ==
+      'dark'
+      %}text-white{%
+      else
+      %}text-gray{%
+      endif
+      %}
+      mb-5
+    "
+  >
+    Date: {{ page.date | date: "%b %d, %Y"}}
+  </p>
   <h2
     style="
       font-variant-ligatures: normal;
@@ -18,7 +36,7 @@ title: Rendez-vous Bundesplatz in Bern
       href="https://www.rendezvousbundesplatz.ch/"
       style="font-size: 20px; color: rgb(19, 175, 240)"
       >Rendez-vous Bundesplatz</a
-    >, Bern | November 2018
+    >
   </h2>
 
   <p>

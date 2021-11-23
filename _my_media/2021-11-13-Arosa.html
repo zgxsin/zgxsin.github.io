@@ -5,9 +5,24 @@ title: Skiing in Arosa
 ---
 
 <div class="trip-log">
-  <h2 style="font-family: 'Times New Roman'">
-    Skiing Day Trip | Arosa Lenzerheide | 13 November 2021
-  </h2>
+  <h2>{{ page.title }}</h2>
+  <p
+    class="
+      {%
+      if
+      site.style
+      ==
+      'dark'
+      %}text-white{%
+      else
+      %}text-gray{%
+      endif
+      %}
+      mb-5
+    "
+  >
+    Date: {{ page.date | date: "%b %d, %Y"}}
+  </p>
   We went to
   <a href="https://arosalenzerheide.swiss/en/Ski-Area/Skiing-Snowboarding"
     >Arosa ski resort</a

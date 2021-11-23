@@ -5,17 +5,24 @@ title: Road Trip in Lausanne and Montreux
 ---
 
 <div class="trip-log">
-  <h2
-    style="
-      font-variant-ligatures: normal;
-      font-variant-caps: normal;
-      font-family: 'Times New Roman', Times, serif;
-      font-style: normal;
-      white-space: normal;
+  <h2>{{ page.title }}</h2>
+  <p
+    class="
+      {%
+      if
+      site.style
+      ==
+      'dark'
+      %}text-white{%
+      else
+      %}text-gray{%
+      endif
+      %}
+      mb-5
     "
   >
-    Switzerland: Lausanne, Montreux | June 2021
-  </h2>
+    Date: {{ page.date | date: "%b %d, %Y"}}
+  </p>
   <img src="../assets/images/media/2021-06-lausanne.jpeg" alt="" />
   <br />
   <img src="../assets/images/media/2021-06-montreux-01.jpeg" alt="" />

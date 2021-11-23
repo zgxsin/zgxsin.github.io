@@ -31,7 +31,7 @@ truncate: 300 %} {% endif %}
     <h1 class="f00-light lh-condensed mb-5">{{ page.title }}</h1> -->
     {% assign sorted = site.my_media | sort: 'date' | reverse %}
     {% for my_media in sorted %}
-      <p>{{ my_media.content | markdownify }}</p>
+      <p>{{ my_media.excerpt | markdownify }}</p>
     {% endfor %}
     
   {% else %}

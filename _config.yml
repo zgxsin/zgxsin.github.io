@@ -3,7 +3,7 @@ collections:
     output: true
 
 # https://stackoverflow.com/questions/16422933/how-do-i-use-markdownify-in-jekyll-to-show-an-excerpt-on-the-index
-excerpt_separator: <!--more-->  # You can also specify a different one. Please add a blank line above and one below when using it.
+excerpt_separator: <!--more--> # You can also specify a different one. Please add a blank line above and one below when using it.
 
 layout: stacked
 style: light
@@ -17,6 +17,7 @@ kramdown:
   syntax_highlighter_opts:
     # Use existing pygments syntax highlighting css
     css_class: "highlight"
+  math_engine: katex
 
 plugins:
   - jekyll-octicons

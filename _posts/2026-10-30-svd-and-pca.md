@@ -244,27 +244,35 @@ This also gives orthonormal bases for the four fundamental subspaces of the prev
 
 ### Truncation: keep only what matters
 
-Keep only the first $r$ terms:
+Keep only the first $k$ terms, with $k < r$ (keeping all $r$ non-zero terms would give back $X$ exactly):
 
 $$
-X \approx \tilde{X} = \sum_{k=1}^{r} \sigma_k \vec{u}_k\vec{v}_k^T = \tilde{U} \tilde{\Sigma} \tilde{V}^T
+X \approx \tilde{X} = \sum _{i=1}^{k} \sigma _i \vec{u} _i\vec{v} _i^T = \tilde{U} \tilde{\Sigma} \tilde{V}^T
 $$
 
-**Eckart–Young theorem**: $\tilde{X}$ is the best rank-$r$ approximation of $X$ in the least-squares sense:
+The tilde means "keep only the first $k$":
+
+- $\tilde{U} = [\vec{u} _1, \dots, \vec{u} _k]$, the first $k$ columns of $U$ ($n \times k$).
+- $\tilde{\Sigma} = \text{diag}(\sigma _1, \dots, \sigma _k)$, the top-left $k \times k$ block of $\Sigma$.
+- $\tilde{V} = [\vec{v} _1, \dots, \vec{v} _k]$, the first $k$ columns of $V$ ($m \times k$).
+
+Multiplying them out column times row, exactly as in the dyadic summation steps, gives the sum. So the sum and $\tilde{U}\tilde{\Sigma}\tilde{V}^T$ are two ways to write the same matrix.
+
+**Eckart–Young theorem**: $\tilde{X}$ is the best rank-$k$ approximation of $X$ in the least-squares sense:
 
 $$
-\underset{\tilde{X},\ \text{rank}(\tilde{X}) = r}{\arg\min} \lVert X - \tilde{X} \rVert_F = \tilde{U}\tilde{\Sigma}\tilde{V}^T
+\underset{\tilde{X},\ \text{rank}(\tilde{X}) = k}{\arg\min} \lVert X - \tilde{X} \rVert _F = \tilde{U}\tilde{\Sigma}\tilde{V}^T
 $$
 
-No other rank-$r$ matrix gets closer. The error is exactly what you threw away, $\lVert X - \tilde{X} \rVert_F^2 = \sigma_{r+1}^2 + \sigma_{r+2}^2 + \dots$
+No other rank-$k$ matrix gets closer. The error is exactly what you threw away, $\lVert X - \tilde{X} \rVert _F^2 = \sigma _{k+1}^2 + \sigma _{k+2}^2 + \dots + \sigma _r^2$.
 
-**Example: image compression.** A grayscale image is just a matrix. The book's $2000 \times 1500$ photo of a dog stores $3 \times 10^6$ numbers. Keeping $r = 100$ terms means storing the first 100 columns of $U$ and $V$ plus 100 singular values: $100 \times (2000 + 1500 + 1)$ numbers, about 11.7% of the original, and the image already looks quite accurate. With $r = 5$ (0.57% storage) you only see blurry blobs; with $r = 20$ (2.33%) the dog is recognizable.
+**Example: image compression.** A grayscale image is just a matrix. The book's $2000 \times 1500$ photo of a dog stores $3 \times 10^6$ numbers. Keeping $k = 100$ terms means storing the first 100 columns of $U$ and $V$ plus 100 singular values: $100 \times (2000 + 1500 + 1)$ numbers, about 11.7% of the original, and the image already looks quite accurate. With $k = 5$ (0.57% storage) you only see blurry blobs; with $k = 20$ (2.33%) the dog is recognizable.
 
 ### How many terms to keep?
 
 This is one of the most important (and contentious) choices when using the SVD. Common options:
 
-1. **Energy threshold.** Keep enough terms to capture, e.g., 90% or 99% of the "energy". The book plots the cumulative sum of the singular values, $\sum_{k=1}^{r}\sigma_k / \sum_k\sigma_k$. Another common definition uses squares, $\sum_{k=1}^{r}\sigma_k^2 / \sum_k\sigma_k^2$, which matches the Frobenius error above. Crude, but widely used.
+1. **Energy threshold.** Keep enough terms to capture, e.g., 90% or 99% of the "energy". The book plots the cumulative sum of the singular values, $\sum _{i=1}^{k}\sigma _i / \sum _i\sigma _i$. Another common definition uses squares, $\sum _{i=1}^{k}\sigma _i^2 / \sum _i\sigma _i^2$, which matches the Frobenius error above. Crude, but widely used.
 2. **Elbow.** Plot $\sigma_k$ on a log scale and look for the "knee" where the curve flattens: the big values are signal, the flat tail is noise.
 3. **Optimal hard threshold (Gavish & Donoho).** If the data is a low-rank signal plus Gaussian white noise of magnitude $\gamma$, there is a provably optimal cutoff $\tau$: keep only the $\sigma_k > \tau$. For a square $n \times n$ matrix with known noise, $\tau = \frac{4}{\sqrt{3}}\sqrt{n}\,\gamma$. When the noise level is unknown (the usual case), $\tau = \omega(\beta)\,\sigma_{\text{med}}$, where $\sigma_{\text{med}}$ is the median singular value and $\omega(\beta)$ depends only on the aspect ratio $\beta = m/n$. In the book's toy example, this cleans up noise much better than a 90% energy cutoff.
 
@@ -272,7 +280,7 @@ One caveat: the SVD assumes the data "separates" into column patterns times row 
 
 ### Pseudo-inverse and least squares
 
-The SVD also solves $A\vec{x} = \vec{b}$ when $A$ is not square or not invertible. Since $A = \tilde{U}\tilde{\Sigma}\tilde{V}^T$, undo each step in turn: rotate back with $\tilde{U}^T$, un-stretch with $\tilde{\Sigma}^{-1}$, rotate back with $\tilde{V}$. That gives the Moore–Penrose **pseudo-inverse**:
+The SVD also solves $A\vec{x} = \vec{b}$ when $A$ is not square or not invertible. Write $A = \tilde{U}\tilde{\Sigma}\tilde{V}^T$, keeping all $r$ non-zero singular values (so this is exact, not an approximation). Then undo each step in turn: rotate back with $\tilde{U}^T$, un-stretch with $\tilde{\Sigma}^{-1}$, rotate back with $\tilde{V}$. That gives the Moore–Penrose **pseudo-inverse**:
 
 $$
 A^\dagger = \tilde{V}\tilde{\Sigma}^{-1}\tilde{U}^T, \quad \tilde{\vec{x}} = A^\dagger\vec{b}
@@ -299,7 +307,7 @@ The best slope is the dot product of $\vec{b}$ with the unit direction of $\vec{
 
 Suppose we have $n$ samples (experiments, patients, people), each with $m$ measured features. PCA literature puts each sample as a **row** of the data matrix $X$ ($n \times m$), the opposite of the snapshot-as-column convention above. Plot the samples and you get a cloud of points in $m$ dimensions.
 
-PCA asks: **which direction does the cloud spread out the most?** Then: which direction, orthogonal to the first, spreads out the most next? And so on. These directions are the **principal components**. If the cloud is long and thin, the first direction captures most of the information and the others are mostly noise. For height and weight of people, the first direction is roughly "overall size", and the second, "heavy for one's height", has much less spread.
+PCA asks: **which direction does the cloud spread out the most?** Then: which direction, orthogonal to the first, spreads out the most next? And so on. These directions are the **principal components**. If the cloud is long and thin, the first direction captures most of the information and the others are mostly noise. 
 
 ### Step 1: center the data
 
@@ -430,13 +438,13 @@ The most famous demonstration of SVD/PCA. Take the Extended Yale Face Database: 
 2. Compute the average face and subtract it from each column (the centering step of PCA).
 3. Take the economy SVD of the resulting matrix $X$. The columns of $U$, reshaped back into $192 \times 168$ images, are the **eigenfaces**.
 
-To represent a new face $\vec{x}$ that was never in the training data, project it onto the first $r$ eigenfaces and add the average back:
+To represent a new face $\vec{x}$ that was never in the training data, project it onto the first $k$ eigenfaces and add the average back:
 
 $$
 \tilde{\vec{x}} = \bar{\vec{x}} + \tilde{U}\tilde{U}^T(\vec{x} - \bar{\vec{x}})
 $$
 
-$\tilde{U}^T(\vec{x} - \bar{\vec{x}})$ gives the $r$ coordinates of the face in "eigenface space", and $\tilde{U}$ turns them back into an image. With $r \le 200$ the result is poor; past $r = 400$ it becomes a passable likeness. Fun fact: the eigenfaces can even roughly approximate a dog or a cappuccino, since they capture broad, smooth features rather than anything specific to faces.
+$\tilde{U}^T(\vec{x} - \bar{\vec{x}})$ gives the $k$ coordinates of the face in "eigenface space", and $\tilde{U}$ turns them back into an image. With $k \le 200$ the result is poor; past $k = 400$ it becomes a passable likeness. Fun fact: the eigenfaces can even roughly approximate a dog or a cappuccino, since they capture broad, smooth features rather than anything specific to faces.
 
 The coordinates themselves are useful: images of two different people, projected onto just the 5th and 6th eigenfaces, already fall into two separate clusters. Some principal components capture what all faces share, some capture lighting, and some distinguish individuals. This is the basis of classic face recognition.
 

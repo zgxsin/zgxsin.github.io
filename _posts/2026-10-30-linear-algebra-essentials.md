@@ -94,13 +94,10 @@ $$
 We are using the transformation $A$ to transform $[x, y]^T$ to $[x, y]^T$. Since the transformation matrix is orthonormal, the following condition holds:
 
 $$
-\begin{bmatrix} x \\ y \end{bmatrix} \cdot \begin{bmatrix} 1 \\ 0 \end{bmatrix} = 
-
-A \times \begin{bmatrix} x \\ y \end{bmatrix} \cdot A \times \begin{bmatrix} 1 \\ 0 \end{bmatrix}=
-
-
+\begin{bmatrix} x \\ y \end{bmatrix} \cdot \begin{bmatrix} 1 \\ 0 \end{bmatrix} =
+A \times \begin{bmatrix} x \\ y \end{bmatrix} \cdot A \times \begin{bmatrix} 1 \\ 0 \end{bmatrix} =
 \begin{bmatrix} 1 \\ 2 \end{bmatrix} \cdot \begin{bmatrix}
-\cos(30^\circ) \\ sin(30^\circ)
+\cos(30^\circ) \\ \sin(30^\circ)
 \end{bmatrix}
 $$
 
@@ -108,20 +105,22 @@ so
 
 $$
 x = \begin{bmatrix} 1 \\ 2 \end{bmatrix} \cdot \begin{bmatrix}
-\cos(30^\circ) \\ sin(30^\circ)
+\cos(30^\circ) \\ \sin(30^\circ)
 \end{bmatrix}
 $$
 
 Similarly,
+
 $$
 y = \begin{bmatrix} 1 \\ 2 \end{bmatrix} \cdot \begin{bmatrix}
--\sin(30^\circ) \\ cos(30^\circ)
+-\sin(30^\circ) \\ \cos(30^\circ)
 \end{bmatrix}
 $$
 
 But orthonormal matrix is a special case, what about general matrix?
 
 Take the following for example:
+
 $$
 \begin{gathered}
 \begin{bmatrix}
@@ -131,7 +130,7 @@ $$
 \begin{bmatrix} x \\ y \end{bmatrix}
 =
 \begin{bmatrix} 4 \\ 2 \end{bmatrix}
-\\[2em]
+\\ \\
 A = \begin{bmatrix}
 2 & -1 \\
 0 & 1

@@ -19,7 +19,7 @@ The Singular Value Decomposition (SVD) removes both limits. **Every** matrix, of
 In data-driven science, measurements are naturally stacked into a matrix. Following the book's convention, each column $\vec{x}_k$ is one "snapshot":
 
 $$
-X = \begin{bmatrix} | & | & & | \\ \vec{x}_1 & \vec{x}_2 & \cdots & \vec{x}_m \\ | & | & & | \end{bmatrix} \in \mathbb{R}^{n \times m}
+X = \begin{bmatrix} \vert & \vert & & \vert \\ \vec{x}_1 & \vec{x}_2 & \cdots & \vec{x}_m \\ \vert & \vert & & \vert \end{bmatrix} \in \mathbb{R}^{n \times m}
 $$
 
 For example, each column can be a face image flattened into a vector ($n$ = number of pixels), or the state of a fluid simulation at time $k\Delta t$. Usually $n \gg m$: millions of numbers per snapshot, a few hundred or thousand snapshots. The matrix is tall and skinny.
@@ -157,17 +157,17 @@ Step by step:
 
    $$
    U\Sigma =
-   \begin{bmatrix} | & | & \\ \vec{u}_1 & \vec{u}_2 & \cdots \\ | & | & \end{bmatrix}
+   \begin{bmatrix} \vert & \vert & \\ \vec{u}_1 & \vec{u}_2 & \cdots \\ \vert & \vert & \end{bmatrix}
    \begin{bmatrix} \sigma_1 & & \\ & \sigma_2 & \\ & & \ddots \end{bmatrix}
    =
-   \begin{bmatrix} | & | & \\ \sigma_1\vec{u}_1 & \sigma_2\vec{u}_2 & \cdots \\ | & | & \end{bmatrix}
+   \begin{bmatrix} \vert & \vert & \\ \sigma_1\vec{u}_1 & \sigma_2\vec{u}_2 & \cdots \\ \vert & \vert & \end{bmatrix}
    $$
 
 2. Write $V^T$ as rows. The columns of $V$ are $\vec{v}_i$, so the rows of $V^T$ are $\vec{v}_i^T$:
 
    $$
    X = (U\Sigma)V^T =
-   \begin{bmatrix} | & | & \\ \sigma_1\vec{u}_1 & \sigma_2\vec{u}_2 & \cdots \\ | & | & \end{bmatrix}
+   \begin{bmatrix} \vert & \vert & \\ \sigma_1\vec{u}_1 & \sigma_2\vec{u}_2 & \cdots \\ \vert & \vert & \end{bmatrix}
    \begin{bmatrix} \text{---}\ \vec{v}_1^T\ \text{---} \\ \text{---}\ \vec{v}_2^T\ \text{---} \\ \vdots \end{bmatrix}
    $$
 
@@ -177,7 +177,7 @@ Step by step:
    AB = \sum_k \vec{a}_k \vec{b}_k^T
    $$
 
-   Entry $(i, j)$ of $AB$ is $\sum_k A_{ik}B_{kj}$, and entry $(i, j)$ of the outer product $\vec{a}_k\vec{b}_k^T$ is $A_{ik}B_{kj}$. Summing the outer products over $k$ gives the same entries.
+   Entry $(i, j)$ of $AB$ is $\sum_k A_{ik}B_{kj}$, and entry $(i, j)$ of the outer product $\vec{a}_k\vec{b}_k^T$ is $A _{ik}B _{kj}$. Summing the outer products over $k$ gives the same entries.
 
 4. Apply it with column $k$ of $U\Sigma$ being $\sigma_k\vec{u}_k$ and row $k$ of $V^T$ being $\vec{v}_k^T$:
 
@@ -271,7 +271,7 @@ PCA asks: **which direction does the cloud spread out the most?** Then: which di
 Spread is measured around the center, so subtract the mean of each column (feature):
 
 $$
-\bar{x}_j = \frac{1}{n}\sum_{i=1}^{n} X_{ij}, \quad
+\bar{x}_j = \frac{1}{n}\sum _{i=1}^{n} X _{ij}, \quad
 \bar{X} = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix} \bar{\vec{x}}, \quad
 B = X - \bar{X}
 $$

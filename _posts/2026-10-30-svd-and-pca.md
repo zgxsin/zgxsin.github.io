@@ -196,7 +196,42 @@ $$
 = \begin{bmatrix} 1.5 & -1.5 \\ -0.5 & 0.5 \end{bmatrix}
 $$
 
-They add up to $\begin{bmatrix} 3 & 0 \\ 4 & 5 \end{bmatrix} = A$. The first piece alone is the best rank-1 approximation of $A$, and the error is the second piece, with $\lVert \cdot \rVert_F^2 = \sigma_2^2 = 5$.
+They add up to $\begin{bmatrix} 3 & 0 \\ 4 & 5 \end{bmatrix} = A$.
+
+The first piece alone, $A _1 = \sigma _1\vec{u} _1\vec{v} _1^T$, is the best rank-1 approximation of $A$. What it misses is the error matrix, which here is exactly the second piece:
+
+$$
+E = A - A _1 = \sigma _2\vec{u} _2\vec{v} _2^T = \begin{bmatrix} 1.5 & -1.5 \\ -0.5 & 0.5 \end{bmatrix}
+$$
+
+To say how big this error is, we need a size for a matrix. The **Frobenius norm** treats a matrix as one long vector of its entries, and takes the usual vector length: square every entry, add them up, take the square root.
+
+$$
+\lVert M \rVert _F = \sqrt{\sum _{i,j} M _{ij}^2}
+$$
+
+For the error matrix:
+
+$$
+\lVert E \rVert _F^2 = 1.5^2 + (-1.5)^2 + (-0.5)^2 + 0.5^2 = 5 = \sigma _2^2
+$$
+
+That's no coincidence. For any rank-1 piece, entry $(i, j)$ of $\sigma\vec{u}\vec{v}^T$ is $\sigma u _i v _j$, so
+
+$$
+\lVert \sigma\vec{u}\vec{v}^T \rVert _F^2 = \sum _{i,j} \sigma^2 u _i^2 v _j^2 = \sigma^2 \Big(\sum _i u _i^2\Big)\Big(\sum _j v _j^2\Big) = \sigma^2 \lVert\vec{u}\rVert^2\lVert\vec{v}\rVert^2 = \sigma^2
+$$
+
+since $\vec{u}$ and $\vec{v}$ are unit vectors. **The singular value is exactly the size of its piece.**
+
+Moreover, seen as long vectors, the pieces are orthogonal to each other (because the $\vec{u} _i$ are orthogonal and the $\vec{v} _i$ are orthogonal). So their squared sizes add up like in Pythagoras' theorem:
+
+$$
+\lVert A \rVert _F^2 = \sigma _1^2 + \sigma _2^2 + \cdots, \qquad
+\lVert A - A _k \rVert _F^2 = \sigma _{k+1}^2 + \sigma _{k+2}^2 + \cdots
+$$
+
+Check: $\lVert A \rVert _F^2 = 3^2 + 0^2 + 4^2 + 5^2 = 50 = 45 + 5 = \sigma _1^2 + \sigma _2^2$. The rank-1 approximation captures 45 of the 50 (90% of the "energy"), and the error is the remaining 5.
 
 For a data matrix, read it this way: $\vec{u}_i$ is a pattern (e.g. a spatial shape), and $\sigma_i\vec{v}_i^T$ says how much of that pattern is present in each snapshot (e.g. over time). If the columns are spatial measurements over time, $U$ holds spatial patterns and $V$ holds temporal patterns.
 

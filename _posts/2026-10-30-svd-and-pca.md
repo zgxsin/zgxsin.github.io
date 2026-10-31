@@ -12,6 +12,8 @@ In the Linear Algebra Essentials post, eigen decomposition $A = PDP^{-1}$ lets u
 
 The Singular Value Decomposition (SVD) removes both limits. **Every** matrix, of any shape, can be written as rotate $\rightarrow$ stretch $\rightarrow$ rotate. PCA is then just SVD applied to mean-centered data.
 
+Notation: all vectors are column vectors. A row vector is always written as a transpose, e.g. $\vec{v}^T$, and $\vec{a} \cdot \vec{b} = \vec{a}^T\vec{b}$.
+
 ## Singular Value Decomposition
 
 ### Why we care: data is a matrix, and it is usually low rank
@@ -171,7 +173,7 @@ Step by step:
    \begin{bmatrix} \text{---}\ \vec{v}_1^T\ \text{---} \\ \text{---}\ \vec{v}_2^T\ \text{---} \\ \vdots \end{bmatrix}
    $$
 
-3. Multiply column times row. Any matrix product is the sum of (column $k$ of $A$) times (row $k$ of $B$):
+3. Multiply column times row. Any matrix product is the sum of (column $k$ of $A$) times (row $k$ of $B$). Writing $\vec{a}_k$ for column $k$ of $A$ and $\vec{b}_k^T$ for row $k$ of $B$:
 
    $$
    AB = \sum_k \vec{a}_k \vec{b}_k^T
@@ -305,36 +307,59 @@ The best slope is the dot product of $\vec{b}$ with the unit direction of $\vec{
 
 ### The question PCA answers
 
-Suppose we have $n$ samples (experiments, patients, people), each with $m$ measured features. PCA literature puts each sample as a **row** of the data matrix $X$ ($n \times m$), the opposite of the snapshot-as-column convention above. Plot the samples and you get a cloud of points in $m$ dimensions.
+Suppose we have $n$ samples (experiments, patients, people), each with $m$ measured features. PCA literature puts each sample as a **row** of the data matrix $X$ ($n \times m$), the opposite of the snapshot-as-column convention above. As everywhere in this post, vectors are columns, so if sample $j$ is the vector $\vec{x}_j \in \mathbb{R}^m$, it appears in $X$ transposed:
+
+$$
+X = \begin{bmatrix} \text{---}\ \vec{x}_1^T\ \text{---} \\ \vdots \\ \text{---}\ \vec{x}_n^T\ \text{---} \end{bmatrix}
+$$
+
+Plot the samples and you get a cloud of points in $m$ dimensions.
 
 PCA asks: **which direction does the cloud spread out the most?** Then: which direction, orthogonal to the first, spreads out the most next? And so on. These directions are the **principal components**. If the cloud is long and thin, the first direction captures most of the information and the others are mostly noise. 
 
 ### Step 1: center the data
 
-Spread is measured around the center, so subtract the mean of each column (feature):
+Spread is measured around the center, so subtract the mean of each column (feature). First compute the mean of every feature, and collect them into the **mean vector** $\bar{\vec{x}}$:
 
 $$
-\bar{x}_j = \frac{1}{n}\sum _{i=1}^{n} X _{ij}, \quad
-\bar{X} = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix} \bar{\vec{x}}, \quad
+\bar{x} _j = \frac{1}{n}\sum _{i=1}^{n} X _{ij}, \qquad
+\bar{\vec{x}} = \begin{bmatrix} \bar{x} _1 \\ \bar{x} _2 \\ \vdots \\ \bar{x} _m \end{bmatrix} = \frac{1}{n}\sum _{j=1}^{n} \vec{x} _j
+$$
+
+$\bar{x} _j$ is the average of column $j$ (e.g. the average height of all people), so $\bar{\vec{x}} \in \mathbb{R}^m$ is the "average sample", the center of the cloud. Like every sample, it appears in $X$-shaped matrices as the row $\bar{\vec{x}}^T$.
+
+To subtract it from every sample at once, stack $n$ copies of $\bar{\vec{x}}^T$ into an $n \times m$ matrix. A column of ones ($n \times 1$) times the row $\bar{\vec{x}}^T$ ($1 \times m$) does exactly that, since each row of the product is $1 \cdot \bar{\vec{x}}^T$:
+
+$$
+\bar{X} = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix} \bar{\vec{x}}^T
+= \begin{bmatrix} \bar{x} _1 & \cdots & \bar{x} _m \\ \vdots & & \vdots \\ \bar{x} _1 & \cdots & \bar{x} _m \end{bmatrix}, \qquad
 B = X - \bar{X}
 $$
+
+Each row of $B$ is a sample minus the average sample, $\vec{b} _j^T = (\vec{x} _j - \bar{\vec{x}})^T$, so the cloud is now centered at the origin, and every column of $B$ averages to zero.
 
 Without this step, the first direction found would just point from the origin to the center of the cloud, which says nothing about its shape. The book also recommends scaling each feature to unit variance before the SVD (see practical notes).
 
 ### Step 2: find the direction of maximum variance
 
-Project every sample (row $\vec{b}_j$) onto a unit direction $\vec{w}$. The projected value is a dot product, $\vec{b}_j \cdot \vec{w}$, which for all samples at once is $B\vec{w}$. The variance of those projections is:
+Project every centered sample $\vec{b}_j$ (row $j$ of $B$ is $\vec{b}_j^T$) onto a unit direction $\vec{w}$. The projected value is a dot product, $\vec{b}_j \cdot \vec{w} = \vec{b}_j^T\vec{w}$, which for all samples at once is $B\vec{w}$. The variance of those projections is:
 
 $$
 \frac{1}{n-1}\lVert B\vec{w}\rVert^2 = \vec{w}^T \underbrace{\frac{B^TB}{n-1}}_{C} \vec{w}
 $$
 
+where $C$ is the **covariance matrix** of the data, defined as
+
+$$
+C = \frac{1}{n-1} B^TB \qquad (m \times m)
+$$
+
 Where this comes from:
 
-1. The projections are just numbers, $p_j = \vec{b}_j \cdot \vec{w}$. Stacking them gives $B\vec{w}$, since each row of $B$ dotted with $\vec{w}$ is one entry:
+1. The projections are just numbers, $p_j = \vec{b}_j \cdot \vec{w}$. Stacking them gives $B\vec{w}$, since each row $\vec{b}_j^T$ of $B$ times $\vec{w}$ is one entry:
 
    $$
-   B\vec{w} = \begin{bmatrix} \vec{b}_1 \cdot \vec{w} \\ \vdots \\ \vec{b}_n \cdot \vec{w} \end{bmatrix} = \begin{bmatrix} p_1 \\ \vdots \\ p_n \end{bmatrix}
+   B\vec{w} = \begin{bmatrix} \vec{b}_1^T\vec{w} \\ \vdots \\ \vec{b}_n^T\vec{w} \end{bmatrix} = \begin{bmatrix} p_1 \\ \vdots \\ p_n \end{bmatrix}
    $$
 
 2. Their sample variance is the usual formula:
@@ -363,16 +388,54 @@ Where this comes from:
 
 Why $n-1$ and not $n$? This is Bessel's correction: the mean was estimated from the same data, which makes the deviations slightly smaller than around the true mean, and dividing by $n-1$ compensates. For PCA it is just a constant factor that scales every variance equally, so it doesn't change which direction wins.
 
-$C$ is the $m \times m$ **covariance matrix**. Entry $(i, k)$ of $B^TB$ is $\sum_j B_{ji}B_{jk}$: the sum over samples of (feature $i$'s deviation from its mean) times (feature $k$'s deviation from its mean). Divided by $n-1$, that is the covariance of features $i$ and $k$, i.e. how they vary together. On the diagonal, $C_{ii}$ is the variance of feature $i$. So the first principal direction is:
+Why is $C$ called the covariance matrix? Entry $(i, k)$ of $B^TB$ is the dot product of columns $i$ and $k$ of $B$, and $B _{ji} = X _{ji} - \bar{x} _i$ is how far sample $j$'s feature $i$ is from its mean. Written out entry by entry:
+
+$$
+C _{ik} = \frac{1}{n-1}\sum _{j=1}^{n} (X _{ji} - \bar{x} _i)(X _{jk} - \bar{x} _k)
+$$
+
+That is the textbook definition of the covariance of features $i$ and $k$: the average of (feature $i$'s deviation) times (feature $k$'s deviation). It is positive if the two features tend to be above or below their means together, negative if one tends to be high when the other is low, and near zero if they are unrelated. On the diagonal ($i = k$) it becomes the average squared deviation, i.e. the variance of feature $i$.
+
+For example, with two features, height and weight:
+
+$$
+C = \begin{bmatrix} \text{Var}(\text{height}) & \text{Cov}(\text{height}, \text{weight}) \\ \text{Cov}(\text{weight}, \text{height}) & \text{Var}(\text{weight}) \end{bmatrix}
+$$
+
+The off-diagonal entries are equal ($C _{ik} = C _{ki}$), so $C$ is always symmetric. So the first principal direction is:
 
 $$
 \vec{w}_1 = \underset{\lVert\vec{w}\rVert = 1}{\arg\max}\ \vec{w}^T B^TB \vec{w}
 $$
 
-$C$ is symmetric, so it has an orthonormal eigenbasis. Writing $\vec{w}$ in that eigenbasis, $\vec{w}^TC\vec{w} = \sum_i \lambda_i w_i^2$ with $\sum_i w_i^2 = 1$. This is largest when all the weight goes on the largest eigenvalue. So:
+Which unit $\vec{w}$ maximizes $\vec{w}^TC\vec{w}$? The answer is the top eigenvector of $C$, because $\vec{w}^TC\vec{w}$ turns out to be a weighted average of the eigenvalues:
+
+1. Rewrite in the eigenbasis. $C$ is symmetric, so it has an orthonormal eigenbasis: $C = Q\Lambda Q^T$, where the columns of $Q$ are the eigenvectors $\vec{q} _1, \dots, \vec{q} _m$ and $\Lambda = \text{diag}(\lambda _1, \dots, \lambda _m)$ with $\lambda _1 \ge \lambda _2 \ge \dots \ge 0$. Write $\vec{w}$ in eigenbasis coordinates, $\vec{w} = Q\vec{c} = c _1\vec{q} _1 + \dots + c _m\vec{q} _m$. Then
+
+   $$
+   \vec{w}^TC\vec{w} = \vec{c}^TQ^T(Q\Lambda Q^T)Q\vec{c} = \vec{c}^T\Lambda\vec{c} = \lambda _1 c _1^2 + \lambda _2 c _2^2 + \dots + \lambda _m c _m^2
+   $$
+
+   This is the same change-of-basis idea as $A = PDP^{-1}$: in its own eigenbasis, $C$ only scales.
+
+2. The weights add up to 1. $Q$ is a rotation, so it doesn't change lengths, and a unit $\vec{w}$ has unit coordinates:
+
+   $$
+   c _1^2 + c _2^2 + \dots + c _m^2 = \lVert\vec{c}\rVert^2 = \lVert\vec{w}\rVert^2 = 1
+   $$
+
+   So the weights $c _i^2$ are non-negative and sum to 1: $\vec{w}^TC\vec{w}$ is a **weighted average** of the eigenvalues.
+
+3. An average can't beat the maximum. Replacing every $\lambda _i$ by the largest one, $\lambda _1$, can only make the sum bigger:
+
+   $$
+   \lambda _1 c _1^2 + \lambda _2 c _2^2 + \dots + \lambda _m c _m^2 \;\le\; \lambda _1 (c _1^2 + c _2^2 + \dots + c _m^2) = \lambda _1
+   $$
+
+   The bound is reached by putting all the weight on the largest eigenvalue: $c _1 = 1$ and all other $c _i = 0$, i.e. $\vec{w} = \vec{q} _1$. Any weight moved to a smaller eigenvalue pulls the average down. It's like averaging grades: however you weight your courses, your average can't exceed your best grade.
 
 - The first principal direction is the eigenvector of $C$ with the largest eigenvalue.
-- The variance along it is that eigenvalue $\lambda_1$.
+- The variance along it is that eigenvalue $\lambda _1$.
 - The next directions are the next eigenvectors, automatically orthogonal.
 
 In eigenbasis coordinates, $C$ becomes diagonal: the new coordinates are **uncorrelated**. PCA is a change of basis (as in the previous post) to the coordinate system where the features no longer vary together.

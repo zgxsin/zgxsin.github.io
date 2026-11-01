@@ -5,7 +5,7 @@ date: 2026-10-30
 author: zgxsin
 ---
 
-## Linar Transformations
+## Linear Transformations
 
 Two properties:
 

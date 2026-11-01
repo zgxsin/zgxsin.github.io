@@ -114,12 +114,14 @@ truncate: 300 %} {% endif %}
         },
         // MathJax 4: break long display equations at operators to fit narrow screens.
         output: { displayOverflow: 'linebreak', linebreaks: { inline: true } },
+        // SVG output: CHTML misplaces \vec arrows on iOS WebKit.
+        svg: { fontCache: 'global' },
         options: {
           skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
         }
       };
       var mathjaxScript = document.createElement('script');
-      mathjaxScript.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.js';
+      mathjaxScript.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-svg.js';
       mathjaxScript.async = true;
       document.head.appendChild(mathjaxScript);
     }

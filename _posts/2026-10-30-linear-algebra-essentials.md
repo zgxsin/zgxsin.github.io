@@ -1,6 +1,6 @@
 ---
 title: Linear Algebra Essentials
-published: false
+published: true
 date: 2026-10-30
 author: zgxsin
 ---

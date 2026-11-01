@@ -1,17 +1,15 @@
-<div
-  class="two-column-row"
-  style="border-bottom: 1px solid #ddd; margin-top: 0"
->
-  <div class="row-column-1 navigation-logo">
-    <h1><a href="{{site.baseurl}}/">Guoxiang Zhou</a></h1>
+{% assign nav_section = page.url | split: '/' | where_exp: 'part', 'part != ""' | first %}
+{% if page.collection == 'posts' %}{% assign nav_section = 'blogs' %}{% endif %}
+{% if page.collection == 'my_media' %}{% assign nav_section = 'media' %}{% endif %}
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-title" href="{{ site.baseurl }}/">Guoxiang Zhou</a>
+    <nav class="site-nav">
+      <a href="{{ site.baseurl }}/" {% if nav_section == nil or nav_section == 'index.html' %}class="active"{% endif %}>Home</a>
+      <a href="{{ site.baseurl }}/education" {% if nav_section contains 'education' %}class="active"{% endif %}>Education</a>
+      <a href="{{ site.baseurl }}/projects_and_publications" {% if nav_section contains 'projects_and_publications' %}class="active"{% endif %}>Projects &amp; Publications</a>
+      <a href="{{ site.baseurl }}/media" {% if nav_section contains 'media' %}class="active"{% endif %}>Media</a>
+      <a href="{{ site.baseurl }}/blogs" {% if nav_section contains 'blogs' %}class="active"{% endif %}>Blogs</a>
+    </nav>
   </div>
-  <div class="row-column-2 navigation-bar">
-    <a href="{{site.baseurl}}/">HOME</a>
-    <a href="{{site.baseurl}}/education">EDUCATION</a>
-    <a href="{{site.baseurl}}/projects_and_publications"
-      >PROJECTS & PUBLICATIONS</a
-    >
-    <a href="{{site.baseurl}}/media">MEDIA</a>
-    <a href="{{site.baseurl}}/blogs">BLOGS</a>
-  </div>
-</div>
+</header>

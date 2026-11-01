@@ -12,14 +12,10 @@ truncate: 300 %} {% endif %}
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="description" content="{{ meta_description }}" />
-  <meta property="og:title" content="{{ user.name }}" />
   <meta property="og:image" content="{{ user.avatar_url }}" />
-  <meta property="og:description" content="{{ meta_description }}" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="{{ "/assets/styles.css" | relative_url }}" rel="stylesheet"
   type="text/css">
-  <title>{{ page_title }}</title>
   {% feed_meta %}
   {% seo %}
 </head>

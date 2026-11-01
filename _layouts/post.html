@@ -12,10 +12,7 @@ truncate: 300 %} {% endif %}
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="description" content="{{ meta_description }}" />
-  <meta property="og:title" content="{{ user.name }}" />
   <meta property="og:image" content="{{ user.avatar_url }}" />
-  <meta property="og:description" content="{{ meta_description }}" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="{{ "/assets/styles.css" | relative_url }}" rel="stylesheet"
   type="text/css">
@@ -48,7 +45,6 @@ truncate: 300 %} {% endif %}
       white-space: nowrap;
     }
   </style>
-  <title>{{ page_title }}</title>
   {% feed_meta %}
   {% seo %}
 </head>
@@ -94,7 +90,7 @@ truncate: 300 %} {% endif %}
     
   <div class="post-page">
     <p class="f5"><a href="{{site.baseurl}}/blogs" class="d-flex flex-items-center">{% octicon chevron-left height:16 class:"mr-2 v-align-middle" fill:#0366d6 aria-label:Blog %}BLOGS</a></p>
-    <h1 class="f00-light lh-condensed">{{ page.title }}</h1>
+    <h1 class="post-title">{{ page.title }}</h1>
     <p class="{% if site.style == 'dark' %}text-white{% else %}text-gray{% endif %} mb-5">Published {{ page.date | date: "%b %d, %Y"}}  - Author: {{page.author}}</p>
     {{ post_body }}
   </div>
@@ -110,7 +106,7 @@ truncate: 300 %} {% endif %}
           <div class="f4 {% if site.style == 'dark' %}text-white{% endif %} mb-6">
             <div class="f4 {% if site.style == 'dark' %}text-white{% endif %}">
               <p class="f5"><a href="{{ site.url }}{{ site.baseurl | append:'/' }}" class="d-flex flex-items-center {% if site.style == 'dark' %}text-white{% endif %}">{% octicon chevron-left height:16 class:"mr-2 v-align-middle" fill:{{ icon_color }} aria-label:Home %}Home</a></p>
-              <h1 class="f00-light lh-condensed">{{ page.title }}</h1>
+              <h1 class="post-title">{{ page.title }}</h1>
               <p class="{% if site.style == 'dark' %}text-white{% else %}text-gray{% endif %} mb-5">Published {{ page.date | date: "%b %d, %Y"}}</p>
               {{ post_body }}
             </div>

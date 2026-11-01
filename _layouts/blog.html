@@ -14,7 +14,7 @@ truncate: 300 %} {% endif %}
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta property="og:image" content="{{ user.avatar_url }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="{{ "/assets/styles.css" | relative_url }}" rel="stylesheet"
+    <link href="{{ "/assets/styles.css" | relative_url }}?v={{ site.time | date: "%s" }}" rel="stylesheet"
     type="text/css"> 
     {% feed_meta %} {% seo %}
   </head>

@@ -417,10 +417,10 @@ $$
 
 That is the textbook definition of the covariance of features $i$ and $k$: the average of (feature $i$'s deviation) times (feature $k$'s deviation). It is positive if the two features tend to be above or below their means together, negative if one tends to be high when the other is low, and near zero if they are unrelated. On the diagonal ($i = k$) it becomes the average squared deviation, i.e. the variance of feature $i$.
 
-For example, with two features, height and weight:
+For example, with two features, height $h$ and weight $w$:
 
 $$
-C = \begin{bmatrix} \text{Var}(\text{height}) & \text{Cov}(\text{height}, \text{weight}) \\ \text{Cov}(\text{weight}, \text{height}) & \text{Var}(\text{weight}) \end{bmatrix}
+C = \begin{bmatrix} \text{Var}(h) & \text{Cov}(h, w) \\ \text{Cov}(w, h) & \text{Var}(w) \end{bmatrix}
 $$
 
 The off-diagonal entries are equal ($C _{ik} = C _{ki}$), so $C$ is always symmetric. So the first principal direction is:

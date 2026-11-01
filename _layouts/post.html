@@ -20,7 +20,7 @@ truncate: 300 %} {% endif %}
   <link href="{{ "/assets/styles.css" | relative_url }}" rel="stylesheet"
   type="text/css">
   <style>
-    /* Wide display equations (matrices) stay on screen. */
+    /* Fallback: equations that cannot be broken scroll horizontally. */
     mjx-container[display="true"] {
       overflow-x: auto;
       overflow-y: hidden;
@@ -112,13 +112,14 @@ truncate: 300 %} {% endif %}
           inlineMath: [['$', '$'], ['\\(', '\\)']],
           displayMath: [['$$', '$$'], ['\\[', '\\]']]
         },
-        svg: { fontCache: 'global' },
+        // MathJax 4: break long display equations at operators to fit narrow screens.
+        output: { displayOverflow: 'linebreak', linebreaks: { inline: true } },
         options: {
           skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
         }
       };
       var mathjaxScript = document.createElement('script');
-      mathjaxScript.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      mathjaxScript.src = 'https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-mml-chtml.js';
       mathjaxScript.async = true;
       document.head.appendChild(mathjaxScript);
     }

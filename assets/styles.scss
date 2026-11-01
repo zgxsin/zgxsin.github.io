@@ -193,6 +193,12 @@
 }
 
 @media screen and (max-width: 600px) {
+  .post-page {
+    width: auto;
+    margin: 1rem 0.5rem;
+    padding: 0.75rem;
+  }
+
   .navigation-logo {
     width: 100%;
   }

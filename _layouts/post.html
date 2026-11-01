@@ -19,6 +19,14 @@ truncate: 300 %} {% endif %}
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="{{ "/assets/styles.css" | relative_url }}" rel="stylesheet"
   type="text/css">
+  <style>
+    /* Wide display equations (matrices) stay on screen. */
+    mjx-container[display="true"] {
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-width: 100%;
+    }
+  </style>
   <title>{{ page_title }}</title>
   {% feed_meta %}
   {% seo %}
@@ -92,7 +100,29 @@ truncate: 300 %} {% endif %}
   {% endif %}
 
   {% include footer.html %}
-  
+
+  <!--
+    GitHub Pages does not run jekyll-spaceship, which is what injects MathJax
+    locally. Load it here when that plugin did not, so $...$ and \[...\] render.
+  -->
+  <script>
+    if (!window.MathJax || !window.MathJax.version) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: { fontCache: 'global' },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      };
+      var mathjaxScript = document.createElement('script');
+      mathjaxScript.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      mathjaxScript.async = true;
+      document.head.appendChild(mathjaxScript);
+    }
+  </script>
 </body>
 </html>
 

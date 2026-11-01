@@ -342,7 +342,28 @@ Without this step, the first direction found would just point from the origin to
 
 ### Step 2: find the direction of maximum variance
 
-Project every centered sample $\vec{b}_j$ (row $j$ of $B$ is $\vec{b}_j^T$) onto a unit direction $\vec{w}$. The projected value is a dot product, $\vec{b}_j \cdot \vec{w} = \vec{b}_j^T\vec{w}$, which for all samples at once is $B\vec{w}$. The variance of those projections is:
+Why maximum variance? Because the direction with the most variance is also the line that fits the data best. Step by step:
+
+**(a) Split each point.** Take a centered point $\vec{b} _j$ and a unit direction $\vec{w}$. The point is its projection onto the line, $(\vec{b} _j^T\vec{w})\vec{w}$, plus a perpendicular leftover $\vec{b} _j - (\vec{b} _j^T\vec{w})\vec{w}$.
+
+**(b) Apply Pythagoras.** The two pieces are perpendicular, so
+
+$$
+\lVert\vec{b} _j\rVert^2 = \underbrace{(\vec{b} _j^T\vec{w})^2} _{\text{kept}} + \underbrace{\lVert\vec{b} _j - (\vec{b} _j^T\vec{w})\vec{w}\rVert^2} _{\text{lost}}
+$$
+
+**(c) Sum over all samples.** The left side, $\sum _j \lVert\vec{b} _j\rVert^2$, is fixed by the data and does not depend on $\vec{w}$. So whatever is kept is not lost, and vice versa.
+
+**(d) Conclude.** Maximizing the kept part, $\sum _j (\vec{b} _j^T\vec{w})^2$ (which is $n-1$ times the variance along $\vec{w}$), is the same as minimizing the lost part, the total squared distance from the points to the line.
+
+So the maximum-variance direction is the best-fitting line through the cloud, and dropping the low-variance directions throws away as little as possible. The same argument with $k$ directions gives the best-fitting $k$-dimensional subspace, which is Eckart–Young seen from the PCA side.
+
+The assumption is that large variance is signal and small variance is noise or redundancy. That often holds, but two caveats apply:
+
+- Units matter: measuring a feature in millimetres instead of metres inflates its variance, which is why features are often standardized first.
+- PCA ignores labels: a direction that separates two classes can have small variance and get dropped.
+
+Now the computation. Project every centered sample $\vec{b}_j$ (row $j$ of $B$ is $\vec{b}_j^T$) onto a unit direction $\vec{w}$. The projected value is a dot product, $\vec{b}_j \cdot \vec{w} = \vec{b}_j^T\vec{w}$, which for all samples at once is $B\vec{w}$. The variance of those projections is:
 
 $$
 \frac{1}{n-1}\lVert B\vec{w}\rVert^2 = \vec{w}^T \underbrace{\frac{B^TB}{n-1}}_{C} \vec{w}
@@ -439,6 +460,53 @@ Which unit $\vec{w}$ maximizes $\vec{w}^TC\vec{w}$? The answer is the top eigenv
 - The next directions are the next eigenvectors, automatically orthogonal.
 
 In eigenbasis coordinates, $C$ becomes diagonal: the new coordinates are **uncorrelated**. PCA is a change of basis (as in the previous post) to the coordinate system where the features no longer vary together.
+
+What does that mean? Take centered height and weight with covariance matrix
+
+$$
+C = \begin{bmatrix} 25 & 20 \\ 20 & 25 \end{bmatrix}
+$$
+
+The off-diagonal 20 says the features are correlated: taller people tend to be heavier, and the cloud is a tilted ellipse. Knowing someone is above average in height lets you guess they are probably above average in weight too, so the two coordinates share information.
+
+This $C$ has eigenvectors $\vec{q} _1 = \frac{1}{\sqrt{2}}[1, 1]^T$ and $\vec{q} _2 = \frac{1}{\sqrt{2}}[1, -1]^T$, with eigenvalues 45 and 5. For one person, let $\vec{b}$ be their centered sample (a row of $B$, as in Step 1):
+
+$$
+\vec{b} = \begin{bmatrix} \text{height} - \overline{\text{height}} \\ \text{weight} - \overline{\text{weight}} \end{bmatrix}
+$$
+
+Describe each person by the projections of $\vec{b}$ onto the eigenvectors instead of by height and weight (below, "height" and "weight" are short for the centered values, the two entries of $\vec{b}$):
+
+$$
+z _1 = \vec{q} _1^T\vec{b} = \tfrac{1}{\sqrt{2}}(\text{height} + \text{weight}) \ \ \text{("overall size")}, \qquad
+z _2 = \vec{q} _2^T\vec{b} = \tfrac{1}{\sqrt{2}}(\text{height} - \text{weight}) \ \ \text{("tall for one's weight")}
+$$
+
+The data points don't move; we only describe them in new axes that point along the long and short axes of the ellipse. To get the variances and covariance of the new coordinates, use the variance formula from above: the variance along a unit direction $\vec{q}$ is $\vec{q}^TC\vec{q}$, and likewise the covariance of the projections onto two directions is $\vec{q} _1^TC\vec{q} _2$. For example,
+
+$$
+\text{Var}(z _1) = \vec{q} _1^TC\vec{q} _1 = \tfrac{1}{2}\begin{bmatrix} 1 & 1 \end{bmatrix}\begin{bmatrix} 25 & 20 \\ 20 & 25 \end{bmatrix}\begin{bmatrix} 1 \\ 1 \end{bmatrix} = \tfrac{1}{2}(25 + 25 + 2 \cdot 20)
+$$
+
+This is the familiar rule $\text{Var}(aX + bY) = a^2\text{Var}(X) + b^2\text{Var}(Y) + 2ab\,\text{Cov}(X, Y)$ with $a = b = \frac{1}{\sqrt{2}}$. For $z _2$ the minus sign flips the covariance term, and in $\text{Cov}(z _1, z _2)$ the two covariance contributions cancel:
+
+$$
+\text{Var}(z _1) = \tfrac{1}{2}(25 + 25 + 2 \cdot 20) = 45, \quad
+\text{Var}(z _2) = \tfrac{1}{2}(25 + 25 - 2 \cdot 20) = 5, \quad
+\text{Cov}(z _1, z _2) = \tfrac{1}{2}(25 - 25) = 0
+$$
+
+So in the new coordinates the covariance matrix is $\begin{bmatrix} 45 & 0 \\ 0 & 5 \end{bmatrix}$. The zero off-diagonal means $z _1$ and $z _2$ are uncorrelated: knowing someone's "size" tells you nothing (linearly) about whether they are tall for their weight. The diagonal holds the variances along the new axes, which are exactly the eigenvalues. Seen from these axes, the ellipse is no longer tilted.
+
+In general, with all eigenvectors as the columns of $Q$, the new coordinates of all samples are $Z = BQ$, and their covariance matrix is
+
+$$
+\frac{1}{n-1}Z^TZ = Q^T\Big(\frac{B^TB}{n-1}\Big)Q = Q^TCQ = \Lambda
+$$
+
+This is the same move as $D = P^{-1}AP$ in the previous post: the same object, seen from its eigenbasis, becomes diagonal.
+
+Why this matters: correlated features are partly redundant (height and weight largely tell you the same thing, "size"). After the rotation, each coordinate carries its own information, and its variance (45 vs. 5) says how much it matters, so the small ones can be dropped with little loss. That is Step 4. One caveat: uncorrelated is weaker than independent. PCA removes linear relationships between coordinates, but a curved relationship can remain.
 
 ### Step 3: PCA is just the SVD of $B$
 

@@ -26,6 +26,27 @@ truncate: 300 %} {% endif %}
       overflow-y: hidden;
       max-width: 100%;
     }
+    /* Tables: borders, padding, and horizontal scroll on narrow screens. */
+    .post-page table {
+      display: block;
+      max-width: 100%;
+      overflow-x: auto;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+    }
+    .post-page th,
+    .post-page td {
+      padding: 6px 12px;
+      border: 1px solid #d0d7de;
+      text-align: left;
+      vertical-align: middle;
+    }
+    .post-page th {
+      background: #f6f8fa;
+    }
+    .post-page td mjx-container {
+      white-space: nowrap;
+    }
   </style>
   <title>{{ page_title }}</title>
   {% feed_meta %}
@@ -113,7 +134,7 @@ truncate: 300 %} {% endif %}
           displayMath: [['$$', '$$'], ['\\[', '\\]']]
         },
         // MathJax 4: break long display equations at operators to fit narrow screens.
-        output: { displayOverflow: 'linebreak', linebreaks: { inline: true } },
+        output: { displayOverflow: 'linebreak', linebreaks: { inline: false } },
         // SVG output: CHTML misplaces \vec arrows on iOS WebKit.
         svg: { fontCache: 'global' },
         options: {

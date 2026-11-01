@@ -524,7 +524,7 @@ That is the eigen decomposition of $C$. So:
 | Variance along direction $i$ | $\lambda_i = \sigma_i^2 / (n-1)$ |
 | Coordinates of samples in the new basis ("scores") | $T = BV = U\Sigma$ |
 
-A handy trick from the book: take the SVD of $B / \sqrt{n}$ instead. Then the singular values are directly the standard deviations along each principal direction.
+A handy trick from the book: take the SVD of $B / \sqrt{n-1}$ instead. Then the singular values are directly the standard deviations along each principal direction.
 
 In practice, compute PCA with the SVD rather than forming $C$ explicitly. Forming $B^TB$ squares the condition number and loses numerical precision.
 
@@ -536,7 +536,7 @@ The book's example makes the geometry very concrete. Generate 10,000 2D points f
 2. rotate by $\pi/3$,
 3. shift the center to $[2, 1]^T$.
 
-That is, the data is literally built as rotate $\cdot$ stretch $\cdot$ (random points) + shift. Now forget how it was built and run PCA: subtract the mean, take the SVD of $B/\sqrt{n}$. The singular values come out as $1.974$ and $0.503$ (vs. the true 2 and 0.5), and the singular vectors match the rotation by $\pi/3$ up to sign:
+That is, the data is literally built as rotate $\cdot$ stretch $\cdot$ (random points) + shift. Now forget how it was built and run PCA: subtract the mean, take the SVD of $B/\sqrt{n-1}$. The singular values come out as $1.974$ and $0.503$ (vs. the true 2 and 0.5), and the singular vectors match the rotation by $\pi/3$ up to sign:
 
 $$
 R_{\pi/3} = \begin{bmatrix} 0.5 & -0.8660 \\ 0.8660 & 0.5 \end{bmatrix}, \quad

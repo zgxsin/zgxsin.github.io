@@ -42,7 +42,9 @@ Determinants are how much a unit area is stretched by the matrix transformation.
 
 Take the following 3*2 matrix for example, 
 
-![3x2 matrix](/assets/images/posts/2026-10-30-linear-algebra-essentials-3x2-matrix.png)
+$$
+\underbrace{\begin{bmatrix} \color{#3a9a5b}2 & \color{#d9534f}0 \\ \color{#3a9a5b}-1 & \color{#d9534f}1 \\ \color{#3a9a5b}-2 & \color{#d9534f}1 \end{bmatrix}}_{3 \text{ rows} \,\times\, 2 \text{ columns}}
+$$
 
 This matrix has two basis vectors of dimention $3$. It is transforming a vector in 2D space to a vector in 3D space. The transformed vectors are in a plane of the 3D space. The number of dimentions in the matrix's column space is the same as the number of dimentions in the input space. So the matrix is still full rank.
 
@@ -52,13 +54,17 @@ This matrix has two basis vectors of dimention $3$. It is transforming a vector 
 
 A dot product of two vectors can be throught as linar transformation which transforms one vector to one dimentional space.
 
-From 
+From
 
-![dot product](/assets/images/posts/2026-10-30-linear-algebra-essentials-dot-product.png)
+$$
+\begin{bmatrix} x_1 \\ y_1 \end{bmatrix} \cdot \begin{bmatrix} x_2 \\ y_2 \end{bmatrix}
+$$
 
-to 
+to
 
-![dot product transformation](/assets/images/posts/2026-10-30-linear-algebra-essentials-dot-product-transformation.png)
+$$
+\underbrace{\begin{bmatrix} x_1 & y_1 \end{bmatrix}}_{\text{transform}} \begin{bmatrix} x_2 \\ y_2 \end{bmatrix} = x_1 x_2 + y_1 y_2
+$$
 
 
 ## Cross-products
@@ -68,7 +74,11 @@ to
 
 Orthonormal Matrix (Rotation Matrix) has the following properties:
 
-![orthonormal](/assets/images/posts/2026-10-30-linear-algebra-essentials-orthonormal.png)
+$$
+T(\vec{v}) \cdot T(\vec{w}) = \vec{v} \cdot \vec{w} \quad \text{for all } \vec{v}, \vec{w}
+$$
+
+In other words, $T$ preserves lengths and angles.
 
 Think about the following example.
 
@@ -140,7 +150,17 @@ $$
 
 ## Change of Basis
 
-![change of basis](/assets/images/posts/2026-10-30-linear-algebra-essentials-change-of-basis.png)
+Suppose Jennifer uses a different basis. Write her basis vectors in our coordinates and put them in the columns of $A$:
+
+$$
+A = \begin{bmatrix} \color{#3a9a5b}2 & \color{#d9534f}-1 \\ \color{#3a9a5b}1 & \color{#d9534f}1 \end{bmatrix}
+$$
+
+$A$ translates a vector from her coordinates into ours:
+
+$$
+A \underbrace{\begin{bmatrix} x_j \\ y_j \end{bmatrix}}_{\text{her coordinates}} = \underbrace{\begin{bmatrix} x_o \\ y_o \end{bmatrix}}_{\text{our coordinates}}
+$$
 
 
 ## Eigen Vectors and Eigen Values

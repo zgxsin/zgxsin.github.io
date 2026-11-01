@@ -198,7 +198,7 @@ $$
 = \begin{bmatrix} 1.5 & -1.5 \\ -0.5 & 0.5 \end{bmatrix}
 $$
 
-They add up to $\begin{bmatrix} 3 & 0 \\ 4 & 5 \end{bmatrix} = A$.
+They add up to $$\begin{bmatrix} 3 & 0 \\ 4 & 5 \end{bmatrix} = A$$.
 
 The first piece alone, $A _1 = \sigma _1\vec{u} _1\vec{v} _1^T$, is the best rank-1 approximation of $A$. What it misses is the error matrix, which here is exactly the second piece:
 
@@ -496,7 +496,7 @@ $$
 \text{Cov}(z _1, z _2) = \tfrac{1}{2}(25 - 25) = 0
 $$
 
-So in the new coordinates the covariance matrix is $\begin{bmatrix} 45 & 0 \\ 0 & 5 \end{bmatrix}$. The zero off-diagonal means $z _1$ and $z _2$ are uncorrelated: knowing someone's "size" tells you nothing (linearly) about whether they are tall for their weight. The diagonal holds the variances along the new axes, which are exactly the eigenvalues. Seen from these axes, the ellipse is no longer tilted.
+So in the new coordinates the covariance matrix is $$\begin{bmatrix} 45 & 0 \\ 0 & 5 \end{bmatrix}$$. The zero off-diagonal means $z _1$ and $z _2$ are uncorrelated: knowing someone's "size" tells you nothing (linearly) about whether they are tall for their weight. The diagonal holds the variances along the new axes, which are exactly the eigenvalues. Seen from these axes, the ellipse is no longer tilted.
 
 In general, with all eigenvectors as the columns of $Q$, the new coordinates of all samples are $Z = BQ$, and their covariance matrix is
 

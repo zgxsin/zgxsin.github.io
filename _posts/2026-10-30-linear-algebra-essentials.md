@@ -193,8 +193,8 @@ For a 3D rotation, the eigenvector is the axis of rotation, and its eigenvalue i
 
 - Special cases
 
-  1. 90° rotation $\begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}$: $\lambda^2 + 1 = 0$ has only imaginary roots $\pm i$, so there are no real eigenvectors.
-  2. Shear $\begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$: the only eigenvalue is 1, and only the vectors on the x-axis are eigenvectors.
+  1. 90° rotation $$\begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}$$: $\lambda^2 + 1 = 0$ has only imaginary roots $\pm i$, so there are no real eigenvectors.
+  2. Shear $$\begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$$: the only eigenvalue is 1, and only the vectors on the x-axis are eigenvectors.
   3. Scaling by 2: the only eigenvalue is 2, but every vector is an eigenvector.
 
 - Eigenbasis

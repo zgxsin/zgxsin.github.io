@@ -307,13 +307,13 @@ The best slope is the dot product of $\vec{b}$ with the unit direction of $\vec{
 
 ### The question PCA answers
 
-Suppose we have $n$ samples (experiments, patients, people), each with $m$ measured features. PCA literature puts each sample as a **row** of the data matrix $X$ ($n \times m$), the opposite of the snapshot-as-column convention above. As everywhere in this post, vectors are columns, so if sample $j$ is the vector $\vec{x}_j \in \mathbb{R}^m$, it appears in $X$ transposed:
+Suppose we have $m$ samples (experiments, patients, people), each with $n$ measured features. PCA literature puts each sample as a **row** of the data matrix $X$ ($m \times n$), the transpose of the snapshot-as-column convention above. The letters keep their meaning: $m$ samples, $n$ features. As everywhere in this post, vectors are columns, so if sample $j$ is the vector $\vec{x}_j \in \mathbb{R}^n$, it appears in $X$ transposed:
 
 $$
-X = \begin{bmatrix} \text{---}\ \vec{x}_1^T\ \text{---} \\ \vdots \\ \text{---}\ \vec{x}_n^T\ \text{---} \end{bmatrix}
+X = \begin{bmatrix} \text{---}\ \vec{x}_1^T\ \text{---} \\ \vdots \\ \text{---}\ \vec{x}_m^T\ \text{---} \end{bmatrix}
 $$
 
-Plot the samples and you get a cloud of points in $m$ dimensions.
+Plot the samples and you get a cloud of points in $n$ dimensions.
 
 PCA asks: **which direction does the cloud spread out the most?** Then: which direction, orthogonal to the first, spreads out the most next? And so on. These directions are the **principal components**. If the cloud is long and thin, the first direction captures most of the information and the others are mostly noise. 
 
@@ -322,17 +322,17 @@ PCA asks: **which direction does the cloud spread out the most?** Then: which di
 Spread is measured around the center, so subtract the mean of each column (feature). First compute the mean of every feature, and collect them into the **mean vector** $\bar{\vec{x}}$:
 
 $$
-\bar{x} _j = \frac{1}{n}\sum _{i=1}^{n} X _{ij}, \qquad
-\bar{\vec{x}} = \begin{bmatrix} \bar{x} _1 \\ \bar{x} _2 \\ \vdots \\ \bar{x} _m \end{bmatrix} = \frac{1}{n}\sum _{j=1}^{n} \vec{x} _j
+\bar{x} _i = \frac{1}{m}\sum _{j=1}^{m} X _{ji}, \qquad
+\bar{\vec{x}} = \begin{bmatrix} \bar{x} _1 \\ \bar{x} _2 \\ \vdots \\ \bar{x} _n \end{bmatrix} = \frac{1}{m}\sum _{j=1}^{m} \vec{x} _j
 $$
 
-$\bar{x} _j$ is the average of column $j$ (e.g. the average height of all people), so $\bar{\vec{x}} \in \mathbb{R}^m$ is the "average sample", the center of the cloud. Like every sample, it appears in $X$-shaped matrices as the row $\bar{\vec{x}}^T$.
+$\bar{x} _i$ is the average of column $i$ (e.g. the average height of all people), so $\bar{\vec{x}} \in \mathbb{R}^n$ is the "average sample", the center of the cloud. Like every sample, it appears in $X$-shaped matrices as the row $\bar{\vec{x}}^T$.
 
-To subtract it from every sample at once, stack $n$ copies of $\bar{\vec{x}}^T$ into an $n \times m$ matrix. A column of ones ($n \times 1$) times the row $\bar{\vec{x}}^T$ ($1 \times m$) does exactly that, since each row of the product is $1 \cdot \bar{\vec{x}}^T$:
+To subtract it from every sample at once, stack $m$ copies of $\bar{\vec{x}}^T$ into an $m \times n$ matrix. A column of ones ($m \times 1$) times the row $\bar{\vec{x}}^T$ ($1 \times n$) does exactly that, since each row of the product is $1 \cdot \bar{\vec{x}}^T$:
 
 $$
 \bar{X} = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix} \bar{\vec{x}}^T
-= \begin{bmatrix} \bar{x} _1 & \cdots & \bar{x} _m \\ \vdots & & \vdots \\ \bar{x} _1 & \cdots & \bar{x} _m \end{bmatrix}, \qquad
+= \begin{bmatrix} \bar{x} _1 & \cdots & \bar{x} _n \\ \vdots & & \vdots \\ \bar{x} _1 & \cdots & \bar{x} _n \end{bmatrix}, \qquad
 B = X - \bar{X}
 $$
 
@@ -354,7 +354,7 @@ $$
 
 **(c) Sum over all samples.** The left side, $\sum _j \lVert\vec{b} _j\rVert^2$, is fixed by the data and does not depend on $\vec{w}$. So whatever is kept is not lost, and vice versa.
 
-**(d) Conclude.** Maximizing the kept part, $\sum _j (\vec{b} _j^T\vec{w})^2$ (which is $n-1$ times the variance along $\vec{w}$), is the same as minimizing the lost part, the total squared distance from the points to the line.
+**(d) Conclude.** Maximizing the kept part, $\sum _j (\vec{b} _j^T\vec{w})^2$ (which is $m-1$ times the variance along $\vec{w}$), is the same as minimizing the lost part, the total squared distance from the points to the line.
 
 So the maximum-variance direction is the best-fitting line through the cloud, and dropping the low-variance directions throws away as little as possible. The same argument with $k$ directions gives the best-fitting $k$-dimensional subspace, which is Eckart–Young seen from the PCA side.
 
@@ -366,13 +366,13 @@ The assumption is that large variance is signal and small variance is noise or r
 Now the computation. Project every centered sample $\vec{b}_j$ (row $j$ of $B$ is $\vec{b}_j^T$) onto a unit direction $\vec{w}$. The projected value is a dot product, $\vec{b}_j \cdot \vec{w} = \vec{b}_j^T\vec{w}$, which for all samples at once is $B\vec{w}$. The variance of those projections is:
 
 $$
-\frac{1}{n-1}\lVert B\vec{w}\rVert^2 = \vec{w}^T \underbrace{\frac{B^TB}{n-1}}_{C} \vec{w}
+\frac{1}{m-1}\lVert B\vec{w}\rVert^2 = \vec{w}^T \underbrace{\frac{B^TB}{m-1}}_{C} \vec{w}
 $$
 
 where $C$ is the **covariance matrix** of the data, defined as
 
 $$
-C = \frac{1}{n-1} B^TB \qquad (m \times m)
+C = \frac{1}{m-1} B^TB \qquad (n \times n)
 $$
 
 Where this comes from:
@@ -380,39 +380,39 @@ Where this comes from:
 1. The projections are just numbers, $p_j = \vec{b}_j \cdot \vec{w}$. Stacking them gives $B\vec{w}$, since each row $\vec{b}_j^T$ of $B$ times $\vec{w}$ is one entry:
 
    $$
-   B\vec{w} = \begin{bmatrix} \vec{b}_1^T\vec{w} \\ \vdots \\ \vec{b}_n^T\vec{w} \end{bmatrix} = \begin{bmatrix} p_1 \\ \vdots \\ p_n \end{bmatrix}
+   B\vec{w} = \begin{bmatrix} \vec{b}_1^T\vec{w} \\ \vdots \\ \vec{b}_m^T\vec{w} \end{bmatrix} = \begin{bmatrix} p_1 \\ \vdots \\ p_m \end{bmatrix}
    $$
 
 2. Their sample variance is the usual formula:
 
    $$
-   \text{Var}(p) = \frac{1}{n-1}\sum_{j=1}^{n}(p_j - \bar{p})^2
+   \text{Var}(p) = \frac{1}{m-1}\sum_{j=1}^{m}(p_j - \bar{p})^2
    $$
 
 3. The mean is zero because the data is centered. Dot products are linear, so the mean of the projections is the projection of the mean:
 
    $$
-   \bar{p} = \frac{1}{n}\sum_j \vec{b}_j \cdot \vec{w} = \Big(\frac{1}{n}\sum_j \vec{b}_j\Big) \cdot \vec{w} = \vec{0} \cdot \vec{w} = 0
+   \bar{p} = \frac{1}{m}\sum_j \vec{b}_j \cdot \vec{w} = \Big(\frac{1}{m}\sum_j \vec{b}_j\Big) \cdot \vec{w} = \vec{0} \cdot \vec{w} = 0
    $$
 
-   So $\text{Var}(p) = \frac{1}{n-1}\sum_j p_j^2$. This is the payoff of Step 1.
+   So $\text{Var}(p) = \frac{1}{m-1}\sum_j p_j^2$. This is the payoff of Step 1.
 
 4. A sum of squares is a squared length: $\sum_j p_j^2 = \lVert B\vec{w}\rVert^2$.
 
 5. Using $\lVert\vec{y}\rVert^2 = \vec{y}^T\vec{y}$ and $(B\vec{w})^T = \vec{w}^TB^T$:
 
    $$
-   \frac{1}{n-1}(B\vec{w})^T(B\vec{w}) = \vec{w}^T\Big(\frac{B^TB}{n-1}\Big)\vec{w}
+   \frac{1}{m-1}(B\vec{w})^T(B\vec{w}) = \vec{w}^T\Big(\frac{B^TB}{m-1}\Big)\vec{w}
    $$
 
    Pulling $\vec{w}$ out to the sides separates the direction we choose ($\vec{w}$) from a matrix that depends only on the data ($C$). That turns "find the best direction" into an eigenvector problem.
 
-Why $n-1$ and not $n$? This is Bessel's correction: the mean was estimated from the same data, which makes the deviations slightly smaller than around the true mean, and dividing by $n-1$ compensates. For PCA it is just a constant factor that scales every variance equally, so it doesn't change which direction wins.
+Why $m-1$ and not $m$? This is Bessel's correction: the mean was estimated from the same data, which makes the deviations slightly smaller than around the true mean, and dividing by $m-1$ compensates. For PCA it is just a constant factor that scales every variance equally, so it doesn't change which direction wins.
 
 Why is $C$ called the covariance matrix? Entry $(i, k)$ of $B^TB$ is the dot product of columns $i$ and $k$ of $B$, and $B _{ji} = X _{ji} - \bar{x} _i$ is how far sample $j$'s feature $i$ is from its mean. Written out entry by entry:
 
 $$
-C _{ik} = \frac{1}{n-1}\sum _{j=1}^{n} (X _{ji} - \bar{x} _i)(X _{jk} - \bar{x} _k)
+C _{ik} = \frac{1}{m-1}\sum _{j=1}^{m} (X _{ji} - \bar{x} _i)(X _{jk} - \bar{x} _k)
 $$
 
 That is the textbook definition of the covariance of features $i$ and $k$: the average of (feature $i$'s deviation) times (feature $k$'s deviation). It is positive if the two features tend to be above or below their means together, negative if one tends to be high when the other is low, and near zero if they are unrelated. On the diagonal ($i = k$) it becomes the average squared deviation, i.e. the variance of feature $i$.
@@ -431,10 +431,10 @@ $$
 
 Which unit $\vec{w}$ maximizes $\vec{w}^TC\vec{w}$? The answer is the top eigenvector of $C$, because $\vec{w}^TC\vec{w}$ turns out to be a weighted average of the eigenvalues:
 
-1. Rewrite in the eigenbasis. $C$ is symmetric, so it has an orthonormal eigenbasis: $C = Q\Lambda Q^T$, where the columns of $Q$ are the eigenvectors $\vec{q} _1, \dots, \vec{q} _m$ and $\Lambda = \text{diag}(\lambda _1, \dots, \lambda _m)$ with $\lambda _1 \ge \lambda _2 \ge \dots \ge 0$. Write $\vec{w}$ in eigenbasis coordinates, $\vec{w} = Q\vec{c} = c _1\vec{q} _1 + \dots + c _m\vec{q} _m$. Then
+1. Rewrite in the eigenbasis. $C$ is symmetric, so it has an orthonormal eigenbasis: $C = Q\Lambda Q^T$, where the columns of $Q$ are the eigenvectors $\vec{q} _1, \dots, \vec{q} _n$ and $\Lambda = \text{diag}(\lambda _1, \dots, \lambda _n)$ with $\lambda _1 \ge \lambda _2 \ge \dots \ge 0$. Write $\vec{w}$ in eigenbasis coordinates, $\vec{w} = Q\vec{c} = c _1\vec{q} _1 + \dots + c _n\vec{q} _n$. Then
 
    $$
-   \vec{w}^TC\vec{w} = \vec{c}^TQ^T(Q\Lambda Q^T)Q\vec{c} = \vec{c}^T\Lambda\vec{c} = \lambda _1 c _1^2 + \lambda _2 c _2^2 + \dots + \lambda _m c _m^2
+   \vec{w}^TC\vec{w} = \vec{c}^TQ^T(Q\Lambda Q^T)Q\vec{c} = \vec{c}^T\Lambda\vec{c} = \lambda _1 c _1^2 + \lambda _2 c _2^2 + \dots + \lambda _n c _n^2
    $$
 
    This is the same change-of-basis idea as $A = PDP^{-1}$: in its own eigenbasis, $C$ only scales.
@@ -442,7 +442,7 @@ Which unit $\vec{w}$ maximizes $\vec{w}^TC\vec{w}$? The answer is the top eigenv
 2. The weights add up to 1. $Q$ is a rotation, so it doesn't change lengths, and a unit $\vec{w}$ has unit coordinates:
 
    $$
-   c _1^2 + c _2^2 + \dots + c _m^2 = \lVert\vec{c}\rVert^2 = \lVert\vec{w}\rVert^2 = 1
+   c _1^2 + c _2^2 + \dots + c _n^2 = \lVert\vec{c}\rVert^2 = \lVert\vec{w}\rVert^2 = 1
    $$
 
    So the weights $c _i^2$ are non-negative and sum to 1: $\vec{w}^TC\vec{w}$ is a **weighted average** of the eigenvalues.
@@ -450,7 +450,7 @@ Which unit $\vec{w}$ maximizes $\vec{w}^TC\vec{w}$? The answer is the top eigenv
 3. An average can't beat the maximum. Replacing every $\lambda _i$ by the largest one, $\lambda _1$, can only make the sum bigger:
 
    $$
-   \lambda _1 c _1^2 + \lambda _2 c _2^2 + \dots + \lambda _m c _m^2 \;\le\; \lambda _1 (c _1^2 + c _2^2 + \dots + c _m^2) = \lambda _1
+   \lambda _1 c _1^2 + \lambda _2 c _2^2 + \dots + \lambda _n c _n^2 \;\le\; \lambda _1 (c _1^2 + c _2^2 + \dots + c _n^2) = \lambda _1
    $$
 
    The bound is reached by putting all the weight on the largest eigenvalue: $c _1 = 1$ and all other $c _i = 0$, i.e. $\vec{w} = \vec{q} _1$. Any weight moved to a smaller eigenvalue pulls the average down. It's like averaging grades: however you weight your courses, your average can't exceed your best grade.
@@ -501,7 +501,7 @@ So in the new coordinates the covariance matrix is $$\begin{bmatrix} 45 & 0 \\ 0
 In general, with all eigenvectors as the columns of $Q$, the new coordinates of all samples are $Z = BQ$, and their covariance matrix is
 
 $$
-\frac{1}{n-1}Z^TZ = Q^T\Big(\frac{B^TB}{n-1}\Big)Q = Q^TCQ = \Lambda
+\frac{1}{m-1}Z^TZ = Q^T\Big(\frac{B^TB}{m-1}\Big)Q = Q^TCQ = \Lambda
 $$
 
 This is the same move as $D = P^{-1}AP$ in the previous post: the same object, seen from its eigenbasis, becomes diagonal.
@@ -513,7 +513,7 @@ Why this matters: correlated features are partly redundant (height and weight la
 Take the SVD of the centered data, $B = U\Sigma V^T$. Then:
 
 $$
-C = \frac{B^TB}{n-1} = V \frac{\Sigma^T\Sigma}{n-1} V^T
+C = \frac{B^TB}{m-1} = V \frac{\Sigma^T\Sigma}{m-1} V^T
 $$
 
 That is the eigen decomposition of $C$. So:
@@ -521,10 +521,10 @@ That is the eigen decomposition of $C$. So:
 | PCA | SVD of $B$ |
 | --- | --- |
 | Principal directions | Columns of $V$ |
-| Variance along direction $i$ | $\lambda_i = \sigma_i^2 / (n-1)$ |
+| Variance along direction $i$ | $\lambda_i = \sigma_i^2 / (m-1)$ |
 | Coordinates of samples in the new basis ("scores") | $T = BV = U\Sigma$ |
 
-A handy trick from the book: take the SVD of $B / \sqrt{n-1}$ instead. Then the singular values are directly the standard deviations along each principal direction.
+A handy trick from the book: take the SVD of $B / \sqrt{m-1}$ instead. Then the singular values are directly the standard deviations along each principal direction.
 
 In practice, compute PCA with the SVD rather than forming $C$ explicitly. Forming $B^TB$ squares the condition number and loses numerical precision.
 
@@ -536,7 +536,7 @@ The book's example makes the geometry very concrete. Generate 10,000 2D points f
 2. rotate by $\pi/3$,
 3. shift the center to $[2, 1]^T$.
 
-That is, the data is literally built as rotate $\cdot$ stretch $\cdot$ (random points) + shift. Now forget how it was built and run PCA: subtract the mean, take the SVD of $B/\sqrt{n-1}$. The singular values come out as $1.974$ and $0.503$ (vs. the true 2 and 0.5), and the singular vectors match the rotation by $\pi/3$ up to sign:
+That is, the data is literally built as rotate $\cdot$ stretch $\cdot$ (random points) + shift. Now forget how it was built and run PCA: subtract the mean, take the SVD of $B/\sqrt{m-1}$. The singular values come out as $1.974$ and $0.503$ (vs. the true 2 and 0.5), and the singular vectors match the rotation by $\pi/3$ up to sign:
 
 $$
 R_{\pi/3} = \begin{bmatrix} 0.5 & -0.8660 \\ 0.8660 & 0.5 \end{bmatrix}, \quad
@@ -547,7 +547,7 @@ PCA recovered the stretch and the rotation purely from the data. Drawing $\sigma
 
 ### Step 4: reduce the dimension
 
-Keep only the first $k$ principal directions, $V_k$, and each sample goes from $m$ numbers to $k$ numbers:
+Keep only the first $k$ principal directions, $V_k$, and each sample goes from $n$ numbers to $k$ numbers:
 
 $$
 T_k = BV_k
@@ -556,7 +556,7 @@ $$
 By Eckart–Young, this is the best possible $k$-dimensional linear summary of the data. The fraction of variance kept is:
 
 $$
-\frac{\sum_{i=1}^{k}\lambda_i}{\sum_{i=1}^{m}\lambda_i} = \frac{\sum_{i=1}^{k}\sigma_i^2}{\sum_{i=1}^{m}\sigma_i^2}
+\frac{\sum_{i=1}^{k}\lambda_i}{\sum_{i=1}^{n}\lambda_i} = \frac{\sum_{i=1}^{k}\sigma_i^2}{\sum_{i=1}^{n}\sigma_i^2}
 $$
 
 **Example: ovarian cancer.** 216 patients (121 with ovarian cancer, 95 without), each with expression levels of 4000 genes. The singular values drop quickly, because gene expressions are highly correlated. Projecting each patient onto just the first three principal components (three dot products, $\vec{v}_1 \cdot \vec{x}$, $\vec{v}_2 \cdot \vec{x}$, $\vec{v}_3 \cdot \vec{x}$) turns 4000 numbers into a 3D point, and patients with and without cancer form visibly separate clusters. Clustering in PCA space is a foundation of machine learning and pattern recognition.
@@ -584,7 +584,7 @@ The coordinates themselves are useful: images of two different people, projected
 ```python
 import numpy as np
 
-# X: n samples (rows) x m features (columns)
+# X: m samples (rows) x n features (columns)
 X_mean = X.mean(axis=0)
 B = X - X_mean
 
@@ -594,7 +594,7 @@ variance = S**2 / (X.shape[0] - 1)       # variance along each principal directi
 explained = variance / variance.sum()     # fraction of variance explained
 
 k = 2
-T_k = B @ Vt[:k].T                        # n x k: data in the top-k principal coordinates
+T_k = B @ Vt[:k].T                        # m x k: data in the top-k principal coordinates
 X_approx = T_k @ Vt[:k] + X_mean          # back to the original space (rank-k reconstruction)
 ```
 

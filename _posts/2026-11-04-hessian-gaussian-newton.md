@@ -373,7 +373,66 @@ $$
 J^TWJ\,\vec{\delta} = -J^TW\vec{r}
 $$
 
-$J^TWJ$ is the **information matrix** of the estimate: near the solution, its inverse is the covariance of $\vec{x}$. Robust kernels (Huber, Cauchy) are implemented as weights that are recomputed every iteration from the current residuals, giving large residuals (outliers) a small weight. This is called iteratively reweighted least squares.
+Here $\Sigma$ is the $m \times m$ covariance of the measurement noise: $\Sigma_{ii} = \sigma_i^2$ is the variance of measurement $i$, and the off-diagonal entries say whether the noise on two measurements is correlated. Its inverse turns uncertainty into confidence. For independent measurements, $\Sigma$ is diagonal and $\Sigma^{-1} = \text{diag}(1/\sigma_1^2, \dots, 1/\sigma_m^2)$, so the cost becomes $\frac{1}{2}\sum_i r_i^2/\sigma_i^2$. Each residual is measured in units of its own standard deviation: a 1 cm miss on a sensor with $\sigma = 1$ cm costs as much as a 1 m miss on a sensor with $\sigma = 1$ m. With correlations, $\vec{r}^T\Sigma^{-1}\vec{r}$ is the squared Mahalanobis distance, which automatically counts correlated (partly redundant) measurements less than independent ones.
+
+$J^TWJ$ is the **information matrix** of the estimate: near the solution, its inverse is the covariance of $\vec{x}$ (derived in the next section). Robust kernels (Huber, Cauchy) are implemented as weights that are recomputed every iteration from the current residuals, giving large residuals (outliers) a small weight. This is called iteratively reweighted least squares.
+
+### Why the information matrix gives the covariance
+
+The measurements are noisy, so the estimate $\hat{\vec{x}}$ is random too. Repeat the experiment with fresh noise and Gauss-Newton converges somewhere slightly different. The covariance $\text{Cov}(\hat{\vec{x}})$ describes that scatter, and it can be read off the matrix we already built for the step.
+
+**Setup.** Model the measurements as $\vec{z} = \vec{h}(\vec{x}^\circ) + \vec{\varepsilon}$, where $\vec{x}^\circ$ is the true value and the noise $\vec{\varepsilon}$ has zero mean and covariance $\Sigma$. The residuals are $\vec{r}(\vec{x}) = \vec{h}(\vec{x}) - \vec{z}$, so at the true value they are pure noise: $\vec{r}(\vec{x}^\circ) = -\vec{\varepsilon}$.
+
+**Step 1: the error is a linear function of the noise.** If the noise is small, $\hat{\vec{x}}$ is close to $\vec{x}^\circ$, and one Gauss-Newton step from $\vec{x}^\circ$ lands on $\hat{\vec{x}}$ to first order:
+
+$$
+\hat{\vec{x}} - \vec{x}^\circ \approx -(J^TWJ)^{-1}J^TW\,\vec{r}(\vec{x}^\circ) = \underbrace{(J^TWJ)^{-1}J^TW} _{A}\,\vec{\varepsilon}
+$$
+
+**Step 2: propagate the covariance.** For any linear map, $\text{Cov}(A\vec{\varepsilon}) = A\Sigma A^T$. With $W = \Sigma^{-1}$, and using that both are symmetric:
+
+$$
+\text{Cov}(\hat{\vec{x}}) \approx (J^TWJ)^{-1}J^TW\,\Sigma\,WJ\,(J^TWJ)^{-1}
+$$
+
+Since $W\Sigma W = W$, the middle part $J^TW\Sigma WJ$ is just $J^TWJ$, which cancels one of the inverses:
+
+$$
+\boxed{\text{Cov}(\hat{\vec{x}}) \approx (J^TWJ)^{-1}}
+$$
+
+This is also why the weights should be the inverse noise covariance: with any other $W$ the sandwich does not collapse, and the estimate ends up with a larger covariance (the Gauss-Markov theorem).
+
+**Another view: the cost is a log-likelihood.** For Gaussian noise, $p(\vec{z} \mid \vec{x}) \propto \exp(-\frac{1}{2}\vec{r}^TW\vec{r})$, so minimizing the cost is maximum likelihood estimation. Near the minimum, the cost is the quadratic bowl $F(\hat{\vec{x}} + \vec{\delta}) \approx F(\hat{\vec{x}}) + \frac{1}{2}\vec{\delta}^T(J^TWJ)\vec{\delta}$, so the likelihood around $\hat{\vec{x}}$ is $\propto \exp(-\frac{1}{2}\vec{\delta}^T(J^TWJ)\vec{\delta})$, a Gaussian with covariance $(J^TWJ)^{-1}$. **The curvature of the cost is the precision of the estimate.** A sharp bowl means $\vec{x}$ is pinned down; a flat bowl means many values fit almost equally well. Along each eigenvector of $J^TWJ$, the variance is $1/\lambda$.
+
+**Why "near the solution".** $J$ has to be evaluated at the converged $\hat{\vec{x}}$, and the derivation assumes the residuals are close to linear over the size of the noise. For strongly nonlinear problems or large noise, it is an approximation. It also assumes $\Sigma$ is the true noise covariance: if the weights are guesses, $(J^TWJ)^{-1}$ is only as good as the guess.
+
+**Toy example: averaging.** Estimate a scalar $x$ from $n$ measurements $z_i$, each with noise $\sigma$. The residuals are $r_i = x - z_i$, so $J$ is a column of ones and $W = I/\sigma^2$. Then $J^TWJ = n/\sigma^2$, and the variance is $\sigma^2/n$: the familiar standard error of the mean. Information adds up over measurements, so variance shrinks as $1/n$.
+
+**Toy example: the beacons.** Suppose each distance in the trilateration example has noise $\sigma = 0.1$. At the solution $(3, 4)$, the rows of $J$ are $(0.6, 0.8)$, $(-0.6, 0.8)$ and $(0.6, -0.8)$:
+
+$$
+J^TWJ = \frac{1}{\sigma^2}\begin{bmatrix} 1.08 & -0.48 \\ -0.48 & 1.92 \end{bmatrix}, \qquad (J^TWJ)^{-1} = \begin{bmatrix} 0.0104 & 0.0026 \\ 0.0026 & 0.0059 \end{bmatrix}
+$$
+
+So the predicted standard deviation is $0.102$ in $x$ and $0.077$ in $y$. The position is better determined in $y$ because all three beacon directions have a large $y$ component. A Monte Carlo run confirms it:
+
+```python
+sigma = 0.1
+W = np.eye(3) / sigma**2
+J = jacobian(np.array([3.0, 4.0]))
+print(np.linalg.inv(J.T @ W @ J))  # [[0.0104 0.0026] [0.0026 0.0059]]
+
+rng = np.random.default_rng(0)
+X = []
+for _ in range(20000):
+    d = 5.0 + sigma * rng.standard_normal(3)
+    residual = lambda x, d=d: np.linalg.norm(x - P, axis=1) - d
+    X.append(gauss_newton(residual, jacobian, np.array([1.0, 1.0])))
+print(np.cov(np.array(X).T))  # [[0.0105 0.0026] [0.0026 0.0058]]
+```
+
+The same reading explains degeneracy. If $J^TWJ$ has a zero eigenvalue, the variance in that direction is $1/0 = \infty$: the data says nothing about it. We will see exactly this in the ICP floor example.
 
 ## Levenberg-Marquardt: Gauss-Newton with a safety net
 

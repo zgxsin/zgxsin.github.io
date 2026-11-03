@@ -259,6 +259,121 @@ img {
   }
 }
 
+/*
+  Table of contents: kramdown renders `* TOC {:toc}` as ul#markdown-toc, and
+  post.html moves it into this panel. Without JavaScript it stays inline.
+*/
+$toc-width: 260px;
+$toc-accent: #0366d6;
+
+.toc-panel {
+  position: fixed;
+  top: 80px;
+  right: 16px;
+  z-index: 20;
+  width: $toc-width;
+  max-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(27, 31, 35, 0.08);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.toc-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px 8px 14px;
+  border-bottom: 1px solid $border;
+  font-weight: 600;
+  color: $text;
+}
+
+.toc-panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.toc-panel > ul {
+  position: relative;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.toc-panel ul ul a {
+  padding-left: 28px;
+  color: $muted;
+}
+
+.toc-panel a {
+  display: block;
+  padding: 3px 14px;
+  border-left: 2px solid transparent;
+  color: $text;
+  text-decoration: none;
+}
+
+.toc-panel a:hover {
+  color: $toc-accent;
+  text-decoration: none;
+}
+
+.toc-panel a.active {
+  color: $toc-accent;
+  border-left-color: $toc-accent;
+  background: #f1f8ff;
+}
+
+.toc-hide,
+.toc-show {
+  font: inherit;
+  cursor: pointer;
+  color: $muted;
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 6px;
+}
+
+.toc-hide {
+  padding: 2px 8px;
+  font-size: 0.75rem;
+}
+
+.toc-hide:hover,
+.toc-show:hover {
+  color: $toc-accent;
+  border-color: $toc-accent;
+}
+
+.toc-show {
+  position: fixed;
+  top: 80px;
+  right: 16px;
+  z-index: 20;
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(27, 31, 35, 0.08);
+}
+
+body.toc-hidden .toc-panel,
+body:not(.toc-hidden) .toc-show {
+  display: none;
+}
+
+/* Narrower than reading column + panel on both sides: the panel overlays the text. */
+@media screen and (max-width: #{$reading-width + 2 * ($toc-width + 32px)}) {
+  .toc-panel {
+    max-width: calc(100vw - 32px);
+    box-shadow: 0 8px 24px rgba(27, 31, 35, 0.2);
+  }
+}
+
 /* Media trip logs */
 .trip-log {
   max-width: $reading-width;

@@ -118,6 +118,66 @@ truncate: 300 %} {% endif %}
 
   {% include footer.html %}
 
+  <script>
+    (function () {
+      var toc = document.getElementById('markdown-toc');
+      if (!toc) return;
+
+      var panel = document.createElement('aside');
+      panel.className = 'toc-panel';
+      panel.setAttribute('aria-label', 'Table of contents');
+      panel.innerHTML =
+        '<div class="toc-panel-header"><span>Contents</span>' +
+        '<button type="button" class="toc-hide" aria-label="Hide table of contents">Hide</button></div>';
+      panel.appendChild(toc);
+
+      var showButton = document.createElement('button');
+      showButton.type = 'button';
+      showButton.className = 'toc-show';
+      showButton.textContent = 'Contents';
+      showButton.setAttribute('aria-label', 'Show table of contents');
+
+      document.body.appendChild(panel);
+      document.body.appendChild(showButton);
+
+      // Keep in sync with the overlay breakpoint in assets/styles.scss.
+      var overlay = window.matchMedia('(max-width: 1344px)');
+      var stored = localStorage.getItem('toc-hidden');
+      var setHidden = function (hidden, remember) {
+        document.body.classList.toggle('toc-hidden', hidden);
+        if (remember) localStorage.setItem('toc-hidden', hidden ? '1' : '0');
+      };
+      setHidden(stored === null ? overlay.matches : stored === '1', false);
+
+      panel.querySelector('.toc-hide').addEventListener('click', function () { setHidden(true, true); });
+      showButton.addEventListener('click', function () { setHidden(false, true); });
+      toc.addEventListener('click', function (event) {
+        if (event.target.closest('a') && overlay.matches) setHidden(true, false);
+      });
+
+      var links = Array.prototype.slice.call(toc.querySelectorAll('a[href^="#"]'));
+      var headings = links.map(function (link) {
+        return document.getElementById(decodeURIComponent(link.getAttribute('href').slice(1)));
+      });
+      var highlight = function () {
+        var current = -1;
+        for (var i = 0; i < headings.length; i++) {
+          if (headings[i] && headings[i].getBoundingClientRect().top <= 16) current = i;
+        }
+        links.forEach(function (link, i) { link.classList.toggle('active', i === current); });
+        if (current >= 0 && !document.body.classList.contains('toc-hidden')) {
+          var list = panel.querySelector('ul');
+          var link = links[current];
+          if (link.offsetTop < list.scrollTop || link.offsetTop > list.scrollTop + list.clientHeight - link.offsetHeight) {
+            list.scrollTop = link.offsetTop - list.clientHeight / 2;
+          }
+        }
+      };
+      window.addEventListener('scroll', highlight, { passive: true });
+      highlight();
+    })();
+  </script>
+
   <!--
     GitHub Pages does not run jekyll-spaceship, which is what injects MathJax
     locally. Load it here when that plugin did not, so $...$ and \[...\] render.

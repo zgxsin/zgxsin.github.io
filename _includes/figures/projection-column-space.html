@@ -1,0 +1,130 @@
+<figure id="proj-col-space" class="pcs">
+  <div class="pcs-legend">
+    <span><i class="pcs-swatch pcs-blue"></i>b, the data</span>
+    <span><i class="pcs-swatch pcs-purple"></i>A x̂, the projection</span>
+    <span><i class="pcs-swatch pcs-gray"></i>another A x</span>
+  </div>
+  <svg class="pcs-svg" role="img" aria-label="The plane of reachable vectors A x, with b above it and the projection A x-hat directly below b"></svg>
+  <label class="pcs-control">
+    <span>Move another A x along the plane:</span>
+    <output class="pcs-readout"></output>
+    <input class="pcs-slider" type="range" min="-1.5" max="0.5" step="0.01" value="-0.9">
+  </label>
+</figure>
+<style>
+  .pcs { margin: 1.5rem 0; }
+  .pcs-svg { width: 100%; display: block; overflow: visible; }
+  .pcs-svg text { font-size: 13px; fill: #24292e; }
+  .pcs-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
+  .pcs-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+  .pcs-blue { background: #0366d6; }
+  .pcs-purple { background: #6f42c1; }
+  .pcs-gray { background: #959da5; }
+  .pcs-control { display: block; margin-top: 8px; font-size: 0.875rem; color: #586069; }
+  .pcs-readout { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
+  .pcs-slider { display: block; width: 100%; margin-top: 6px; }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('proj-col-space');
+  var svg = root.querySelector('.pcs-svg');
+  var slider = root.querySelector('.pcs-slider');
+  var readout = root.querySelector('.pcs-readout');
+  var NS = 'http://www.w3.org/2000/svg';
+  var COLOR = { text: '#24292e', muted: '#586069', gray: '#959da5', border: '#d0d7de', plane: '#f6f8fa', blue: '#0366d6', purple: '#6f42c1' };
+  var r3 = Math.sqrt(3), r2 = Math.sqrt(2), r6 = Math.sqrt(6);
+
+  // Coordinates in an orthonormal frame of the column space: s along (1,1,1)/sqrt(3),
+  // t along (-1,0,1)/sqrt(2), h along the plane normal (-1,2,-1)/sqrt(6).
+  var P = { s: 5 / r3, t: 1 / r2, h: 0 };
+  var B = { s: 5 / r3, t: 1 / r2, h: 1 / r6 };
+  var minDist = 1 / r6;
+
+  function el(name, attrs, text) {
+    var node = document.createElementNS(NS, name);
+    for (var key in attrs) node.setAttribute(key, attrs[key]);
+    if (text !== undefined) node.textContent = text;
+    svg.appendChild(node);
+    return node;
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var W = Math.max(300, svg.getBoundingClientRect().width || 728);
+    var k = (W - 48) / 5.04;
+    var top = 0.62 * k + 36;
+    var H = top + 0.12 * k + 40;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    var x0 = 24 + 0.25 * k;
+    function pt(v) {
+      return [x0 + k * (v.s + 0.45 * v.t), top - k * (0.28 * v.t) - k * v.h];
+    }
+    function line(a, b, color, width, dash) {
+      var p = pt(a), q = pt(b);
+      var attrs = { x1: p[0], y1: p[1], x2: q[0], y2: q[1], stroke: color, 'stroke-width': width, fill: 'none' };
+      if (dash) attrs['stroke-dasharray'] = dash;
+      return el('line', attrs);
+    }
+    function arrow(a, b, color, width) {
+      line(a, b, color, width);
+      var p = pt(a), q = pt(b);
+      var ang = Math.atan2(q[1] - p[1], q[0] - p[0]), L = 9;
+      el('polygon', {
+        points: [q, [q[0] - L * Math.cos(ang - 0.4), q[1] - L * Math.sin(ang - 0.4)], [q[0] - L * Math.cos(ang + 0.4), q[1] - L * Math.sin(ang + 0.4)]].map(function (c) { return c.join(','); }).join(' '),
+        fill: color
+      });
+    }
+    function label(v, text, dx, dy, color, anchor) {
+      var p = pt(v);
+      var node = el('text', { x: p[0] + dx, y: p[1] + dy, 'text-anchor': anchor || 'start' }, text);
+      if (color) node.style.fill = color;
+      return node;
+    }
+
+    var corners = [{ s: -0.25, t: -0.25 }, { s: 4.0, t: -0.25 }, { s: 4.0, t: 1.75 }, { s: -0.25, t: 1.75 }];
+    el('polygon', {
+      points: corners.map(function (c) { return pt({ s: c.s, t: c.t, h: 0 }).join(','); }).join(' '),
+      fill: COLOR.plane, stroke: COLOR.text, 'stroke-width': 1
+    });
+    label({ s: 4.0, t: -0.25, h: 0 }, 'column space of A (every A x)', 0, 18, COLOR.muted, 'end');
+
+    var O = { s: 0, t: 0, h: 0 };
+    el('circle', { cx: pt(O)[0], cy: pt(O)[1], r: 2.5, fill: COLOR.text });
+    label(O, '0', -8, 4, null, 'end');
+
+    var tau = parseFloat(slider.value);
+    var Q = { s: P.s + tau, t: P.t, h: 0 };
+    line(P, Q, COLOR.border, 1, '2 3');
+    line(Q, B, COLOR.gray, 1.25, '5 4');
+    el('circle', { cx: pt(Q)[0], cy: pt(Q)[1], r: 4, fill: '#fff', stroke: COLOR.gray, 'stroke-width': 1.5 });
+
+    arrow(O, P, COLOR.purple, 1.5);
+    arrow(O, B, COLOR.blue, 1.5);
+    line(P, B, COLOR.text, 1.5);
+
+    var m = 0.09;
+    var a1 = pt({ s: P.s + m, t: P.t, h: 0 }), a2 = pt({ s: P.s + m, t: P.t, h: m }), a3 = pt({ s: P.s, t: P.t, h: m });
+    el('polyline', { points: [a1, a2, a3].map(function (c) { return c.join(','); }).join(' '), fill: 'none', stroke: COLOR.text, 'stroke-width': 1 });
+    el('circle', { cx: pt(P)[0], cy: pt(P)[1], r: 3, fill: COLOR.purple });
+
+    var wide = W >= 560;
+    label(B, wide ? 'b = (1, 2, 2)' : 'b', 8, -8, COLOR.blue);
+    label(P, wide ? 'A x̂ = (7/6, 5/3, 13/6)' : 'A x̂', 0, 26, COLOR.purple, 'middle');
+    var mid = { s: P.s, t: P.t, h: B.h / 2 };
+    label(mid, '⟂ ' + minDist.toFixed(2), 14, 4);
+  }
+
+  function update() {
+    var tau = parseFloat(slider.value);
+    var a = 7 / 6 + tau / r3;
+    var dist = Math.sqrt(tau * tau + minDist * minDist);
+    var note = Math.abs(tau) < 0.005 ? ' (the projection)' : '';
+    readout.textContent = 'intercept ' + a.toFixed(2) + ', slope 0.50, distance to b ' + dist.toFixed(2) + note;
+    draw();
+  }
+
+  slider.addEventListener('input', update);
+  if (window.ResizeObserver) new ResizeObserver(draw).observe(svg);
+  update();
+})();
+</script>

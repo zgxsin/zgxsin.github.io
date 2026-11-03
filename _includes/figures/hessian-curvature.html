@@ -1,0 +1,222 @@
+<figure id="hessian-curvature" class="hc">
+  <div class="hc-cases" role="group" aria-label="Choose a function">
+    <button type="button" data-case="bowl" aria-pressed="true">Bowl</button>
+    <button type="button" data-case="saddle" aria-pressed="false">Saddle</button>
+    <button type="button" data-case="valley" aria-pressed="false">Flat valley</button>
+  </div>
+  <div class="hc-formula"></div>
+  <div class="hc-panels">
+    <div class="hc-panel">
+      <div class="hc-title">Level sets of f, seen from above</div>
+      <canvas class="hc-map" role="img" aria-label="Contour map of f with the eigenvector directions of H and the chosen direction v"></canvas>
+      <div class="hc-key"><span><i class="hc-sw hc-up"></i>f above 0</span><span><i class="hc-sw hc-down"></i>f below 0</span></div>
+    </div>
+    <div class="hc-panel">
+      <div class="hc-title">Slice f(t v), dashed: eigenvectors</div>
+      <svg class="hc-slice" role="img" aria-label="The parabola f along direction v, between the steepest and flattest eigen-directions"></svg>
+    </div>
+  </div>
+  <label class="hc-control">
+    <span>Rotate the direction v:</span>
+    <output class="hc-readout"></output>
+    <input class="hc-angle" type="range" min="0" max="179" step="1" value="20">
+  </label>
+</figure>
+<style>
+  .hc { margin: 1.5rem 0; }
+  .hc-cases { display: flex; gap: 8px; margin-bottom: 8px; }
+  .hc-cases button { font: inherit; font-size: 0.875rem; padding: 4px 12px; border: 1px solid #d0d7de; border-radius: 6px; background: #fff; color: #24292e; cursor: pointer; }
+  .hc-cases button[aria-pressed="true"] { border-color: #0366d6; background: #f1f8ff; color: #0366d6; }
+  .hc-formula { font-size: 0.875rem; color: #586069; margin-bottom: 8px; }
+  .hc-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .hc-title { font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
+  .hc-map { width: 100%; aspect-ratio: 1; display: block; border: 1px solid #e1e4e8; border-radius: 4px; }
+  .hc-slice { width: 100%; display: block; overflow: visible; }
+  .hc-slice text { font-size: 12px; fill: #586069; }
+  .hc-key { display: flex; gap: 16px; font-size: 0.8rem; color: #586069; margin-top: 4px; }
+  .hc-sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+  .hc-up { background: #6ea8e6; }
+  .hc-down { background: #f0a36e; }
+  .hc-control { display: block; margin-top: 10px; font-size: 0.875rem; color: #586069; }
+  .hc-readout { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
+  .hc-angle { display: block; width: 100%; margin-top: 6px; }
+  @media (max-width: 560px) { .hc-panels { grid-template-columns: minmax(0, 1fr); } }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('hessian-curvature');
+  var canvas = root.querySelector('.hc-map');
+  var svg = root.querySelector('.hc-slice');
+  var slider = root.querySelector('.hc-angle');
+  var readout = root.querySelector('.hc-readout');
+  var formula = root.querySelector('.hc-formula');
+  var buttons = Array.prototype.slice.call(root.querySelectorAll('.hc-cases button'));
+  var NS = 'http://www.w3.org/2000/svg';
+  var R = 1.5;
+  var UP = [3, 102, 214], DOWN = [227, 98, 9];
+
+  var CASES = {
+    bowl: { H: [2, 1, 2], text: 'f = x₁² + x₁x₂ + x₂²,  H = [2 1; 1 2]' },
+    saddle: { H: [2, 3, 4], text: 'f = x₁² + 3x₁x₂ + 2x₂²,  H = [2 3; 3 4]' },
+    valley: { H: [1, 1, 1], text: 'f = ½(x₁ + x₂)²,  H = [1 1; 1 1]' }
+  };
+  var current = 'bowl';
+  var base = null;
+
+  function eig(H) {
+    var a = H[0], b = H[1], c = H[2];
+    var m = (a + c) / 2, d = Math.sqrt((a - c) * (a - c) / 4 + b * b);
+    var list = [m + d, m - d].map(function (lam) {
+      var v = Math.abs(b) > 1e-12 ? [b, lam - a] : (Math.abs(lam - a) < 1e-12 ? [1, 0] : [0, 1]);
+      var n = Math.hypot(v[0], v[1]);
+      v = [v[0] / n, v[1] / n];
+      if (v[1] < 0 || (v[1] === 0 && v[0] < 0)) v = [-v[0], -v[1]];
+      return { lam: lam, v: v };
+    });
+    return list;
+  }
+
+  function f(H, x, y) { return 0.5 * (H[0] * x * x + 2 * H[1] * x * y + H[2] * y * y); }
+
+  function renderBase(S, dpr) {
+    var H = CASES[current].H;
+    var N = Math.round(S * dpr);
+    var img = new ImageData(N, N);
+    var step = 0.5;
+    for (var j = 0; j < N; j++) {
+      for (var i = 0; i < N; i++) {
+        var x = (i / N) * 2 * R - R, y = R - (j / N) * 2 * R;
+        var v = f(H, x, y);
+        var col = v >= 0 ? UP : DOWN;
+        var w = Math.abs(v) < 1e-9 ? 0 : 0.18 + 0.4 * Math.tanh(Math.abs(v) / 2.5);
+        var r = 255 + (col[0] - 255) * w, g = 255 + (col[1] - 255) * w, bl = 255 + (col[2] - 255) * w;
+        var gx = H[0] * x + H[1] * y, gy = H[1] * x + H[2] * y;
+        var grad = Math.hypot(gx, gy) * (N / (2 * R));
+        var level = v / step, dist = Math.abs(level - Math.round(level)) * step;
+        var px = grad > 1e-9 ? dist * (N / (2 * R)) * (N / (2 * R)) / grad : (Math.abs(v) < 1e-9 ? 0 : 99);
+        var isZero = Math.round(level) === 0;
+        var widthPx = (isZero ? 1.1 : 0.6) * dpr;
+        if (px < widthPx) {
+          var a = isZero ? 0.85 : 0.45;
+          r = r + (88 - r) * a; g = g + (96 - g) * a; bl = bl + (105 - bl) * a;
+        }
+        var o = 4 * (j * N + i);
+        img.data[o] = r; img.data[o + 1] = g; img.data[o + 2] = bl; img.data[o + 3] = 255;
+      }
+    }
+    var off = document.createElement('canvas');
+    off.width = N; off.height = N;
+    off.getContext('2d').putImageData(img, 0, 0);
+    return off;
+  }
+
+  function drawMap() {
+    var S = canvas.clientWidth || 340;
+    var dpr = window.devicePixelRatio || 1;
+    var N = Math.round(S * dpr);
+    if (canvas.width !== N) { canvas.width = N; canvas.height = N; base = null; }
+    if (!base) base = renderBase(S, dpr);
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.drawImage(base, 0, 0);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    function P(x, y) { return [(x + R) / (2 * R) * S, (R - y) / (2 * R) * S]; }
+    function halo(text, p, align) {
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = align; ctx.textBaseline = 'middle';
+      ctx.lineWidth = 3; ctx.strokeStyle = '#fff'; ctx.strokeText(text, p[0], p[1]);
+      ctx.fillStyle = '#24292e'; ctx.fillText(text, p[0], p[1]);
+    }
+    var es = eig(CASES[current].H);
+    ctx.setLineDash([4, 3]); ctx.lineWidth = 1; ctx.strokeStyle = '#586069';
+    es.forEach(function (e) {
+      var a = P(-1.4 * e.v[0], -1.4 * e.v[1]), b = P(1.4 * e.v[0], 1.4 * e.v[1]);
+      ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+    });
+    ctx.setLineDash([]);
+    es.forEach(function (e) {
+      var p = P(-1.12 * e.v[0], -1.12 * e.v[1]);
+      halo('λ = ' + e.lam.toFixed(2), p, 'center');
+    });
+    var th = parseFloat(slider.value) * Math.PI / 180, v = [Math.cos(th), Math.sin(th)];
+    var a = P(-1.3 * v[0], -1.3 * v[1]), b = P(1.3 * v[0], 1.3 * v[1]);
+    ctx.lineWidth = 2; ctx.strokeStyle = '#24292e';
+    ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+    var ang = Math.atan2(b[1] - a[1], b[0] - a[0]), L = 9;
+    ctx.fillStyle = '#24292e';
+    ctx.beginPath(); ctx.moveTo(b[0], b[1]);
+    ctx.lineTo(b[0] - L * Math.cos(ang - 0.4), b[1] - L * Math.sin(ang - 0.4));
+    ctx.lineTo(b[0] - L * Math.cos(ang + 0.4), b[1] - L * Math.sin(ang + 0.4));
+    ctx.closePath(); ctx.fill();
+    halo('v', P(1.42 * v[0], 1.42 * v[1]), 'center');
+    var o = P(0, 0);
+    ctx.beginPath(); ctx.arc(o[0], o[1], 3, 0, 2 * Math.PI); ctx.fill();
+  }
+
+  function el(name, attrs, text) {
+    var node = document.createElementNS(NS, name);
+    for (var k in attrs) node.setAttribute(k, attrs[k]);
+    if (text !== undefined) node.textContent = text;
+    svg.appendChild(node);
+    return node;
+  }
+
+  function drawSlice(kv, es) {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var W = svg.getBoundingClientRect().width || 340;
+    var Hpx = Math.round(W * 0.9);
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + Hpx);
+    var padL = 8, padR = 44, padT = 10, padB = 24;
+    var T = 1.5, yMin = -1.5, yMax = 7;
+    function X(t) { return padL + (t + T) / (2 * T) * (W - padL - padR); }
+    function Y(y) { return padT + (yMax - y) / (yMax - yMin) * (Hpx - padT - padB); }
+    el('line', { x1: X(-T), y1: Y(0), x2: X(T), y2: Y(0), stroke: '#d0d7de' });
+    el('line', { x1: X(0), y1: Y(yMin), x2: X(0), y2: Y(yMax), stroke: '#d0d7de' });
+    el('text', { x: X(T), y: Y(0) + 16, 'text-anchor': 'end' }, 't');
+    el('text', { x: X(0) + 6, y: Y(yMax) + 10 }, 'f(t v)');
+    function curve(k, attrs) {
+      var d = '';
+      for (var i = 0; i <= 80; i++) {
+        var t = -T + 2 * T * i / 80, y = Math.max(yMin, Math.min(yMax, 0.5 * k * t * t));
+        d += (i ? 'L' : 'M') + X(t).toFixed(1) + ',' + Y(y).toFixed(1);
+      }
+      attrs.d = d; attrs.fill = 'none';
+      return el('path', attrs);
+    }
+    function endLabel(k, text, fill) {
+      var y = Math.max(yMin, Math.min(yMax, 0.5 * k * T * T));
+      var node = el('text', { x: X(T) + 6, y: Y(y) + 4 }, text);
+      if (fill) node.style.fill = fill;
+    }
+    curve(es[0].lam, { stroke: '#959da5', 'stroke-dasharray': '4 3', 'stroke-width': 1 });
+    curve(es[1].lam, { stroke: '#959da5', 'stroke-dasharray': '4 3', 'stroke-width': 1 });
+    curve(kv, { stroke: '#24292e', 'stroke-width': 2 });
+    var y0 = 0.5 * es[0].lam * T * T, y1 = 0.5 * es[1].lam * T * T;
+    endLabel(es[0].lam, 'λmax', null);
+    if (Math.abs(Y(Math.min(yMax, y0)) - Y(Math.max(yMin, y1))) > 14) endLabel(es[1].lam, 'λmin', null);
+  }
+
+  function update() {
+    var H = CASES[current].H;
+    var es = eig(H);
+    var th = parseFloat(slider.value) * Math.PI / 180, v = [Math.cos(th), Math.sin(th)];
+    var kv = H[0] * v[0] * v[0] + 2 * H[1] * v[0] * v[1] + H[2] * v[1] * v[1];
+    formula.textContent = CASES[current].text + ',  eigenvalues ' + es[0].lam.toFixed(2) + ' and ' + es[1].lam.toFixed(2);
+    readout.textContent = 'curvature vᵀHv = ' + kv.toFixed(2) + ' (always between λmin = ' + es[1].lam.toFixed(2) + ' and λmax = ' + es[0].lam.toFixed(2) + ')';
+    drawMap();
+    drawSlice(kv, es);
+  }
+
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      current = btn.getAttribute('data-case');
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+      base = null;
+      update();
+    });
+  });
+  slider.addEventListener('input', update);
+  if (window.ResizeObserver) new ResizeObserver(function () { base = null; update(); }).observe(canvas);
+  update();
+})();
+</script>

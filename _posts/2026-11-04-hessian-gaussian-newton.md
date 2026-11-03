@@ -1,5 +1,5 @@
 ---
-title: Hessain Matrix and Gaussian Newton
+title: "Nonlinear Least Squares for Robotics: Gauss-Newton, Levenberg-Marquardt and ICP"
 published: true
 date: 2026-11-03
 author: zgxsin

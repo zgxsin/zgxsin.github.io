@@ -78,8 +78,8 @@ Think about the following example.
 
 $$
 \begin{bmatrix}
-\cos(30^\circ) & -\sin(30^\circ) \\
-\sin(30^\circ) & \cos(30^\circ)
+\cos(30^\circ) & -\sin(30^\circ)
+\\ \sin(30^\circ) & \cos(30^\circ)
 \end{bmatrix}
 \begin{bmatrix} x \\ y \end{bmatrix}
 =
@@ -90,8 +90,8 @@ where
 
 $$
 A = \begin{bmatrix}
-\cos(30^\circ) & -\sin(30^\circ) \\
-\sin(30^\circ) & \cos(30^\circ)
+\cos(30^\circ) & -\sin(30^\circ)
+\\ \sin(30^\circ) & \cos(30^\circ)
 \end{bmatrix}
 $$
 
@@ -117,16 +117,16 @@ But an orthonormal matrix is a special case. A general matrix does not preserve 
 
 $$
 \begin{bmatrix}
-2 & -1 \\
-0 & 1
+2 & -1
+\\ 0 & 1
 \end{bmatrix}
 \begin{bmatrix} x \\ y \end{bmatrix}
 =
 \begin{bmatrix} 4 \\ 2 \end{bmatrix},
 \quad
 A = \begin{bmatrix}
-2 & -1 \\
-0 & 1
+2 & -1
+\\ 0 & 1
 \end{bmatrix}
 $$
 
@@ -168,8 +168,8 @@ For example, the matrix below stretches all vectors on the x-axis by a factor of
 
 $$
 A = \begin{bmatrix}
-3 & 1 \\
-0 & 2
+3 & 1
+\\ 0 & 2
 \end{bmatrix}
 $$
 

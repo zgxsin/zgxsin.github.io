@@ -28,6 +28,18 @@ plugins:
   - jekyll-seo-tag
   - github-pages
 
+# GitHub Pages does not run jekyll-spaceship. Its mathjax and table processors rewrite
+# math and any line containing "|" before kramdown, so local math would render
+# differently from the live site.
+jekyll-spaceship:
+  processors:
+    - plantuml-processor
+    - mermaid-processor
+    - polyfill-processor
+    - media-processor
+    - emoji-processor
+    - element-processor
+
 permalink: /:year/:month/:day/:title/
 
 defaults:

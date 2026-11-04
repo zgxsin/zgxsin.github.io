@@ -1,0 +1,107 @@
+<figure id="stereo-depth-uncertainty" class="sdu">
+  <div class="sdu-legend">
+    <span><i class="sdu-swatch sdu-blue"></i>left and right rays, with ± pixel noise</span>
+    <span><i class="sdu-swatch sdu-red"></i>where the triangulated point can be</span>
+  </div>
+  <svg class="sdu-svg" role="img" aria-label="Top-down view of a stereo pair triangulating a point. The region of possible positions is short across the line of sight and long along it, and it gets much longer as the point moves away."></svg>
+  <label class="sdu-control">
+    <span>Move the point away from the stereo pair:</span>
+    <output class="sdu-readout"></output>
+    <input class="sdu-slider" type="range" min="1.5" max="5" step="0.05" value="2.5">
+  </label>
+</figure>
+<style>
+  .sdu { margin: 1.5rem 0; }
+  .sdu-svg { width: 100%; display: block; overflow: visible; }
+  .sdu-svg text { font-size: 13px; fill: #24292e; }
+  .sdu-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
+  .sdu-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+  .sdu-blue { background: #0366d6; }
+  .sdu-red { background: #d73a49; }
+  .sdu-control { display: block; margin-top: 8px; font-size: 0.875rem; color: #586069; }
+  .sdu-readout { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
+  .sdu-slider { display: block; width: 100%; margin-top: 6px; }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('stereo-depth-uncertainty');
+  var svg = root.querySelector('.sdu-svg');
+  var slider = root.querySelector('.sdu-slider');
+  var readout = root.querySelector('.sdu-readout');
+  var NS = 'http://www.w3.org/2000/svg';
+  var COLOR = { text: '#24292e', muted: '#586069', border: '#d0d7de', blue: '#0366d6', red: '#d73a49' };
+
+  // Depth runs to the right; the two cameras sit at lateral offsets of -b/2 and +b/2.
+  var BASE = 1, NOISE = 0.03, ZMAX = 7.6;
+  var cams = [[0, -BASE / 2], [0, BASE / 2]];
+
+  function intersect(c1, a1, c2, a2) {
+    var d1 = [Math.cos(a1), Math.sin(a1)], d2 = [Math.cos(a2), Math.sin(a2)];
+    var det = d1[0] * -d2[1] + d2[0] * d1[1];
+    var dx = c2[0] - c1[0], dy = c2[1] - c1[1];
+    var s = (dx * -d2[1] + d2[0] * dy) / det;
+    return [c1[0] + s * d1[0], c1[1] + s * d1[1]];
+  }
+
+  function el(name, attrs, text) {
+    var node = document.createElementNS(NS, name);
+    for (var key in attrs) node.setAttribute(key, attrs[key]);
+    if (text !== undefined) node.textContent = text;
+    svg.appendChild(node);
+    return node;
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var W = Math.max(300, svg.getBoundingClientRect().width || 728);
+    var k = (W - 40) / (ZMAX + 0.4);
+    var H = k * 2.0 + 30;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    function pt(p) { return [20 + k * (p[0] + 0.3), H / 2 - k * p[1]]; }
+    function line(a, b, color, width, dash) {
+      var p = pt(a), q = pt(b);
+      var attrs = { x1: p[0], y1: p[1], x2: q[0], y2: q[1], stroke: color, 'stroke-width': width };
+      if (dash) attrs['stroke-dasharray'] = dash;
+      el('line', attrs);
+    }
+
+    var Z = parseFloat(slider.value), X = [Z, 0];
+    var angles = cams.map(function (c) { return Math.atan2(X[1] - c[1], X[0] - c[0]); });
+
+    // The uncertainty region is the overlap of the two wedges.
+    var near = intersect(cams[0], angles[0] + NOISE, cams[1], angles[1] - NOISE);
+    var farP = intersect(cams[0], angles[0] - NOISE, cams[1], angles[1] + NOISE);
+    var side1 = intersect(cams[0], angles[0] + NOISE, cams[1], angles[1] + NOISE);
+    var side2 = intersect(cams[0], angles[0] - NOISE, cams[1], angles[1] - NOISE);
+
+    // Wedges of possible rays, one per camera, drawn up to just past the region.
+    var reach = Math.min(ZMAX, farP[0] + 0.6);
+    function at(c, a) { return [reach, c[1] + (reach - c[0]) * Math.tan(a)]; }
+    cams.forEach(function (c, i) {
+      el('polygon', { points: [c, at(c, angles[i] - NOISE), at(c, angles[i] + NOISE)].map(function (p) { return pt(p).join(','); }).join(' '), fill: COLOR.blue, 'fill-opacity': 0.08, stroke: 'none' });
+      line(c, at(c, angles[i]), COLOR.blue, 1.25);
+    });
+    el('polygon', { points: [near, side1, farP, side2].map(function (p) { return pt(p).join(','); }).join(' '), fill: COLOR.red, 'fill-opacity': 0.35, stroke: COLOR.red, 'stroke-width': 1.25 });
+
+    cams.forEach(function (c, i) {
+      var q = pt(c);
+      el('rect', { x: q[0] - 7, y: q[1] - 5, width: 10, height: 10, fill: COLOR.text });
+      el('text', { x: q[0] - 2, y: q[1] + (i === 0 ? 20 : -10), 'text-anchor': 'middle' }, i === 0 ? 'right' : 'left');
+    });
+    line([0, -BASE / 2], [0, BASE / 2], COLOR.muted, 1, '3 3');
+    var mid = pt([0, 0]);
+    el('text', { x: mid[0] + 6, y: mid[1] + 4, fill: COLOR.muted }, 'b');
+
+    var q = pt(X);
+    el('circle', { cx: q[0], cy: q[1], r: 3, fill: COLOR.text });
+
+    var depthSpread = farP[0] - near[0];
+    var lateral = Math.abs(side1[1] - side2[1]);
+    readout.textContent = 'depth ' + Z.toFixed(2) + ' b: depth spread ' + depthSpread.toFixed(2) + ' b, sideways spread ' + lateral.toFixed(2) + ' b';
+  }
+
+  slider.addEventListener('input', draw);
+  if (window.ResizeObserver) new ResizeObserver(draw).observe(svg);
+  draw();
+})();
+</script>

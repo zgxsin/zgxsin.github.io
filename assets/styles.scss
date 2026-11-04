@@ -310,6 +310,10 @@ $toc-accent: #0366d6;
   color: $muted;
 }
 
+.toc-panel ul ul ul a {
+  padding-left: 42px;
+}
+
 .toc-panel a {
   display: block;
   padding: 3px 14px;

@@ -1,0 +1,235 @@
+<figure id="epipolar-figure" class="epg">
+  <div class="epg-legend">
+    <span><i class="epg-swatch epg-blue"></i>camera 1, ray of x₁</span>
+    <span><i class="epg-swatch epg-purple"></i>camera 2, ray to X</span>
+    <span><i class="epg-swatch epg-red"></i>epipolar lines and epipoles</span>
+    <span><i class="epg-swatch epg-plane"></i>epipolar plane</span>
+  </div>
+  <div class="epg-modes" role="radiogroup">
+    <label><input type="radio" name="epg-mode" value="converging" checked> Converging cameras</label>
+    <label><input type="radio" name="epg-mode" value="rectified"> Rectified (parallel) cameras</label>
+  </div>
+  <svg class="epg-svg" role="img" aria-label="Two cameras observe a 3D point X. The ray through x1 in image 1 projects to the epipolar line in image 2, and x2 always lies on that line."></svg>
+  <label class="epg-control">
+    <span>Slide X along the ray of x₁ (its unknown depth):</span>
+    <output class="epg-readout"></output>
+    <input class="epg-slider" type="range" step="0.01">
+  </label>
+</figure>
+<style>
+  .epg { margin: 1.5rem 0; }
+  .epg-svg { width: 100%; display: block; overflow: visible; }
+  .epg-svg text { font-size: 13px; fill: #24292e; }
+  .epg-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
+  .epg-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+  .epg-blue { background: #0366d6; }
+  .epg-purple { background: #6f42c1; }
+  .epg-red { background: #d73a49; }
+  .epg-plane { background: #c8e1ff; }
+  .epg-modes { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #24292e; margin-bottom: 4px; }
+  .epg-modes input { margin-right: 4px; }
+  .epg-control { display: block; margin-top: 8px; font-size: 0.875rem; color: #586069; }
+  .epg-readout { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
+  .epg-slider { display: block; width: 100%; margin-top: 6px; }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('epipolar-figure');
+  var svg = root.querySelector('.epg-svg');
+  var slider = root.querySelector('.epg-slider');
+  var readout = root.querySelector('.epg-readout');
+  var radios = root.querySelectorAll('input[name="epg-mode"]');
+  var NS = 'http://www.w3.org/2000/svg';
+  var COLOR = { text: '#24292e', muted: '#586069', gray: '#959da5', border: '#d0d7de', plane: '#f6f8fa', blue: '#0366d6', purple: '#6f42c1', red: '#d73a49', fill: 'rgba(3, 102, 214, 0.10)' };
+
+  // Image planes at focal length 1, in normalized image coordinates.
+  var HALF_W = 1.35, HALF_H = 0.7, BASELINE = 4;
+  var MODES = {
+    converging: { yaw: 40, x1: [-0.3, 0.35], depth: [0.6, 5], start: 2.6 },
+    rectified: { yaw: 0, x1: [0.6, 0.35], depth: [2.4, 6], start: 3.5 }
+  };
+
+  function add(a, b) { return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]; }
+  function sub(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+  function mul(a, s) { return [a[0] * s, a[1] * s, a[2] * s]; }
+  function dot(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+  function cross(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
+  function norm(a) { return mul(a, 1 / Math.sqrt(dot(a, a))); }
+
+  // A camera is a center plus its x, y, z axes in world coordinates (the columns of R_wc).
+  function camera(center, yawDeg) {
+    var a = yawDeg * Math.PI / 180;
+    var z = [Math.sin(a), 0, Math.cos(a)], y = [0, 1, 0];
+    return { c: center, x: cross(y, z), y: y, z: z };
+  }
+  function toCam(cam, p) { var d = sub(p, cam.c); return [dot(cam.x, d), dot(cam.y, d), dot(cam.z, d)]; }
+  function onPlane(cam, u, v) { return add(cam.c, add(add(mul(cam.x, u), mul(cam.y, v)), cam.z)); }
+  function project(cam, p) { var q = toCam(cam, p); return [q[0] / q[2], q[1] / q[2]]; }
+
+  // Clip the image line a u + b v + c = 0 to the image rectangle.
+  function clip(l) {
+    var pts = [], eps = 1e-9;
+    [-HALF_W, HALF_W].forEach(function (u) {
+      if (Math.abs(l[1]) > eps) { var v = -(l[0] * u + l[2]) / l[1]; if (Math.abs(v) <= HALF_H + eps) pts.push([u, v]); }
+    });
+    [-HALF_H, HALF_H].forEach(function (v) {
+      if (Math.abs(l[0]) > eps) { var u = -(l[1] * v + l[2]) / l[0]; if (Math.abs(u) <= HALF_W + eps) pts.push([u, v]); }
+    });
+    return pts.length >= 2 ? [pts[0], pts[pts.length - 1]] : null;
+  }
+
+  var mode, cam1, cam2, R, t, E, ray, view;
+
+  function setMode(name) {
+    mode = MODES[name];
+    cam1 = camera([0, 0, 0], mode.yaw);
+    cam2 = camera([BASELINE, 0, 0], -mode.yaw);
+    // Relative pose: X^2 = R X^1 + t.
+    R = [cam2.x, cam2.y, cam2.z].map(function (row) { return [cam1.x, cam1.y, cam1.z].map(function (col) { return dot(row, col); }); });
+    t = toCam(cam2, cam1.c);
+    var tx = [[0, -t[2], t[1]], [t[2], 0, -t[0]], [-t[1], t[0], 0]];
+    E = tx.map(function (row) { return [0, 1, 2].map(function (j) { return row[0] * R[0][j] + row[1] * R[1][j] + row[2] * R[2][j]; }); });
+    ray = sub(onPlane(cam1, mode.x1[0], mode.x1[1]), cam1.c);
+    slider.min = mode.depth[0];
+    slider.max = mode.depth[1];
+    slider.value = mode.start;
+    view = null;
+  }
+
+  // The viewer looks at the scene from behind and above the two cameras.
+  var eye = [2, 4.2, -5], target = [2, 0.4, 2.2];
+  var fwd = norm(sub(target, eye));
+  var right = norm(cross([0, 1, 0], fwd));
+  var up = cross(fwd, right);
+  function screen(p) {
+    var d = sub(p, eye), depth = dot(d, fwd);
+    return [dot(d, right) / depth, -dot(d, up) / depth];
+  }
+
+  function fit(W) {
+    var pts = [];
+    [cam1, cam2].forEach(function (cam) {
+      pts.push(cam.c);
+      [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(function (s) { pts.push(onPlane(cam, s[0] * HALF_W, s[1] * HALF_H)); });
+    });
+    pts.push(add(cam1.c, mul(ray, mode.depth[0])), add(cam1.c, mul(ray, mode.depth[1])));
+    var s = pts.map(screen);
+    var minX = Math.min.apply(null, s.map(function (q) { return q[0]; })), maxX = Math.max.apply(null, s.map(function (q) { return q[0]; }));
+    var minY = Math.min.apply(null, s.map(function (q) { return q[1]; })), maxY = Math.max.apply(null, s.map(function (q) { return q[1]; }));
+    var pad = 28, k = (W - 2 * pad) / (maxX - minX);
+    return { k: k, ox: pad - k * minX, oy: pad - k * minY, H: k * (maxY - minY) + 2 * pad };
+  }
+
+  function el(name, attrs, text) {
+    var node = document.createElementNS(NS, name);
+    for (var key in attrs) node.setAttribute(key, attrs[key]);
+    if (text !== undefined) node.textContent = text;
+    svg.appendChild(node);
+    return node;
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var W = Math.max(300, svg.getBoundingClientRect().width || 728);
+    if (!view || view.W !== W) { view = fit(W); view.W = W; }
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + view.H);
+    function pt(p) { var s = screen(p); return [view.ox + view.k * s[0], view.oy + view.k * s[1]]; }
+    function poly(ps, attrs) { attrs.points = ps.map(function (p) { return pt(p).join(','); }).join(' '); return el('polygon', attrs); }
+    function line(a, b, color, width, dash) {
+      var p = pt(a), q = pt(b);
+      var attrs = { x1: p[0], y1: p[1], x2: q[0], y2: q[1], stroke: color, 'stroke-width': width, fill: 'none' };
+      if (dash) attrs['stroke-dasharray'] = dash;
+      return el('line', attrs);
+    }
+    function dotAt(p, r, color, hollow) {
+      var q = pt(p);
+      return el('circle', { cx: q[0], cy: q[1], r: r, fill: hollow ? '#fff' : color, stroke: color, 'stroke-width': 1.5 });
+    }
+    function label(p, text, dx, dy, color, anchor) {
+      var q = pt(p);
+      var node = el('text', { x: q[0] + dx, y: q[1] + dy, 'text-anchor': anchor || 'start' }, text);
+      if (color) node.style.fill = color;
+      return node;
+    }
+    var wide = W >= 560;
+
+    [cam1, cam2].forEach(function (cam, i) {
+      var corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(function (s) { return onPlane(cam, s[0] * HALF_W, s[1] * HALF_H); });
+      poly(corners, { fill: COLOR.plane, 'fill-opacity': 0.85, stroke: COLOR.text, 'stroke-width': 1 });
+      if (wide) label(corners[3], 'image ' + (i + 1), 4, -6, COLOR.muted);
+    });
+
+    var depth = parseFloat(slider.value);
+    var X = add(cam1.c, mul(ray, depth));
+    var x1 = mode.x1, x2 = project(cam2, X);
+
+    poly([cam1.c, cam2.c, X], { fill: COLOR.fill, stroke: 'none' });
+    line(cam1.c, cam2.c, COLOR.gray, 1.25);
+    if (wide) label([BASELINE / 2, 0, 0], 'baseline', 0, 16, COLOR.muted, 'middle');
+
+    // The whole ray of x1: every depth is a candidate for X.
+    var far = add(cam1.c, mul(ray, mode.depth[1]));
+    line(cam1.c, far, COLOR.blue, 1, '4 4');
+    var n = 5;
+    for (var i = 0; i < n; i++) {
+      var d = mode.depth[0] + (mode.depth[1] - mode.depth[0]) * (i + 0.5) / n;
+      var G = add(cam1.c, mul(ray, d)), g = project(cam2, G);
+      line(G, cam2.c, COLOR.border, 0.75);
+      dotAt(G, 2.5, COLOR.gray, true);
+      dotAt(onPlane(cam2, g[0], g[1]), 2, COLOR.gray);
+    }
+
+    // Epipolar lines: l2 = E x1 in image 2 and l1 = E^T x2 in image 1.
+    var h1 = [x1[0], x1[1], 1], h2 = [x2[0], x2[1], 1];
+    var l2 = [0, 1, 2].map(function (r) { return dot(E[r], h1); });
+    var l1 = [0, 1, 2].map(function (c) { return E[0][c] * h2[0] + E[1][c] * h2[1] + E[2][c] * h2[2]; });
+    var seg2 = clip(l2), seg1 = clip(l1);
+    if (seg1) line(onPlane(cam1, seg1[0][0], seg1[0][1]), onPlane(cam1, seg1[1][0], seg1[1][1]), COLOR.red, 1.75);
+    if (seg2) {
+      var s0 = onPlane(cam2, seg2[0][0], seg2[0][1]), s1 = onPlane(cam2, seg2[1][0], seg2[1][1]);
+      line(s0, s1, COLOR.red, 1.75);
+      var end = pt(s0)[1] < pt(s1)[1] ? s0 : s1;
+      label(end, wide ? 'epipolar line l₂' : 'l₂', -6, -8, COLOR.red, 'end');
+    }
+
+    line(cam1.c, X, COLOR.blue, 1.75);
+    line(cam2.c, X, COLOR.purple, 1.75);
+
+    // Epipoles: each camera center seen by the other camera (at infinity when rectified).
+    var finite = Math.abs(t[2]) > 1e-9;
+    if (finite) {
+      var e2 = [t[0] / t[2], t[1] / t[2]], e1 = project(cam1, cam2.c);
+      var E1 = onPlane(cam1, e1[0], e1[1]), E2 = onPlane(cam2, e2[0], e2[1]);
+      dotAt(E1, 3.5, COLOR.red, true);
+      dotAt(E2, 3.5, COLOR.red, true);
+      label(E1, 'e₁', 0, 18, COLOR.red, 'middle');
+      label(E2, 'e₂', 0, 18, COLOR.red, 'middle');
+    }
+
+    var P1 = onPlane(cam1, x1[0], x1[1]), P2 = onPlane(cam2, x2[0], x2[1]);
+    dotAt(P1, 4, COLOR.blue);
+    dotAt(P2, 4, COLOR.purple);
+    label(P1, 'x₁', -8, -6, COLOR.blue, 'end');
+    label(P2, 'x₂', 8, -6, COLOR.purple);
+
+    dotAt(X, 4.5, COLOR.text);
+    label(X, 'X', 8, -6);
+    dotAt(cam1.c, 3.5, COLOR.text);
+    dotAt(cam2.c, 3.5, COLOR.text);
+    label(cam1.c, 'C₁', -8, 16, null, 'end');
+    label(cam2.c, 'C₂', 8, 16);
+
+    var residual = dot(h2, l2);
+    var epi = finite ? '' : ', epipoles at infinity';
+    readout.textContent = 'depth ' + depth.toFixed(2) + ', x₂ = (' + x2[0].toFixed(2) + ', ' + x2[1].toFixed(2) + '), x₂ᵀ E x₁ = ' + Math.abs(residual).toFixed(3) + epi;
+  }
+
+  for (var r = 0; r < radios.length; r++) {
+    radios[r].addEventListener('change', function (event) { setMode(event.target.value); draw(); });
+  }
+  slider.addEventListener('input', draw);
+  setMode('converging');
+  if (window.ResizeObserver) new ResizeObserver(draw).observe(svg);
+  draw();
+})();
+</script>

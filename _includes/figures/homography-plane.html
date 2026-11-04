@@ -1,0 +1,185 @@
+<figure id="homography-plane" class="hgp">
+  <div class="hgp-legend">
+    <span><i class="hgp-swatch hgp-board"></i>checkerboard on the plane</span>
+    <span><i class="hgp-swatch hgp-purple"></i>pole sticking out of the plane</span>
+    <span><i class="hgp-ring"></i>H applied to image-1 points</span>
+    <span><i class="hgp-swatch hgp-corners"></i>4 matches that fix H</span>
+  </div>
+  <div class="hgp-modes" role="radiogroup">
+    <label><input type="radio" name="hgp-mode" value="translate" checked> Camera translates (and turns)</label>
+    <label><input type="radio" name="hgp-mode" value="rotate"> Camera only rotates</label>
+  </div>
+  <svg class="hgp-svg" role="img" aria-label="Two images of a planar checkerboard and a pole. The homography computed from the plane predicts the checkerboard in image 2 exactly, but misses the tip of the pole unless the camera only rotates."></svg>
+  <label class="hgp-control">
+    <span>Move camera 2:</span>
+    <output class="hgp-readout"></output>
+    <input class="hgp-slider" type="range" min="-1" max="1" step="0.01" value="0.6">
+  </label>
+</figure>
+<style>
+  .hgp { margin: 1.5rem 0; }
+  .hgp-svg { width: 100%; display: block; overflow: visible; }
+  .hgp-svg text { font-size: 13px; fill: #24292e; }
+  .hgp-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
+  .hgp-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+  .hgp-board { background: #959da5; }
+  .hgp-purple { background: #6f42c1; }
+  .hgp-corners { background: linear-gradient(90deg, #d73a49 25%, #28a745 25% 50%, #0366d6 50% 75%, #dbab09 75%); }
+  .hgp-ring { display: inline-block; width: 8px; height: 8px; border-radius: 50%; border: 2px solid #f66a0a; margin-right: 6px; vertical-align: -1px; }
+  .hgp-modes { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #24292e; margin-bottom: 4px; }
+  .hgp-modes input { margin-right: 4px; }
+  .hgp-control { display: block; margin-top: 8px; font-size: 0.875rem; color: #586069; }
+  .hgp-readout { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
+  .hgp-slider { display: block; width: 100%; margin-top: 6px; }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('homography-plane');
+  var svg = root.querySelector('.hgp-svg');
+  var slider = root.querySelector('.hgp-slider');
+  var readout = root.querySelector('.hgp-readout');
+  var radios = root.querySelectorAll('input[name="hgp-mode"]');
+  var NS = 'http://www.w3.org/2000/svg';
+  var COLOR = { text: '#24292e', muted: '#586069', border: '#d0d7de', dark: '#959da5', light: '#f6f8fa', purple: '#6f42c1', orange: '#f66a0a', red: '#d73a49' };
+  var CORNER_COLORS = ['#d73a49', '#28a745', '#0366d6', '#dbab09'];
+
+  // Camera coordinates: x right, y down, z forward. Images are 320 x 240 pixels.
+  var IMG_W = 320, IMG_H = 240;
+  var K = [[300, 0, 160], [0, 300, 120], [0, 0, 1]];
+  var KINV = [[1 / 300, 0, -160 / 300], [0, 1 / 300, -120 / 300], [0, 0, 1]];
+
+  function sub(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+  function add(a, b) { return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]; }
+  function mul(a, s) { return [a[0] * s, a[1] * s, a[2] * s]; }
+  function dot(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+  function cross(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
+  function norm(a) { return mul(a, 1 / Math.sqrt(dot(a, a))); }
+  function matVec(M, v) { return M.map(function (row) { return dot(row, v); }); }
+  function matMul(A, B) { return A.map(function (row) { return [0, 1, 2].map(function (j) { return row[0] * B[0][j] + row[1] * B[1][j] + row[2] * B[2][j]; }); }); }
+
+  // The plane n^T P + d = 0, in camera-1 coordinates: a board leaning back, 4 m away.
+  var O = [0, -0.1, 4], A = [1, 0, 0], B = [0, -0.6, 0.8];
+  var N = cross(A, B), D = -dot(N, O);
+  function onPlane(s, r) { return add(O, add(mul(A, s), mul(B, r))); }
+  var COLS = 6, ROWS = 4, SW = 3, SH = 2;
+  function corner(i, j) { return onPlane(-SW / 2 + SW * i / COLS, -SH / 2 + SH * j / ROWS); }
+  var POLE_BASE = onPlane(0.9, -0.4), POLE_TIP = add(POLE_BASE, mul(N, 0.9));
+
+  // Camera 2 looks at a target point from a center; returns the motion X_2 = R X_1 + t.
+  function lookAt(center, target) {
+    var z = norm(sub(target, center));
+    var x = norm(cross([0, 1, 0], z));
+    var y = cross(z, x);
+    var R = [x, y, z];
+    return { R: R, t: mul(matVec(R, center), -1) };
+  }
+
+  function pose(mode, s) {
+    if (mode === 'rotate') return lookAt([0, 0, 0], [1.4 * s, -0.1 + 0.4 * s, 4]);
+    return lookAt([1.3 * s, -0.2 * s, -0.2 * Math.abs(s)], O);
+  }
+
+  function project(R, t, P) {
+    var q = matVec(K, add(matVec(R, P), t));
+    return [q[0] / q[2], q[1] / q[2]];
+  }
+  var I = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+  function apply(H, p) {
+    var q = matVec(H, [p[0], p[1], 1]);
+    return [q[0] / q[2], q[1] / q[2]];
+  }
+
+  var mode = 'translate';
+
+  function el(name, attrs, text, parent) {
+    var node = document.createElementNS(NS, name);
+    for (var key in attrs) node.setAttribute(key, attrs[key]);
+    if (text !== undefined && text !== null) node.textContent = text;
+    (parent || svg).appendChild(node);
+    return node;
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var W = Math.max(300, svg.getBoundingClientRect().width || 728);
+    var side = W >= 560;
+    var gap = 16, title = 20;
+    var pw = side ? (W - gap) / 2 : W;
+    var k = pw / IMG_W, ph = IMG_H * k;
+    var H = side ? title + ph : 2 * (title + ph) + gap;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    var s = parseFloat(slider.value);
+    var cam = pose(mode, s);
+    // H = K (R - t n^T / d) K^{-1}
+    var M = [0, 1, 2].map(function (i) { return [0, 1, 2].map(function (j) { return cam.R[i][j] - cam.t[i] * N[j] / D; }); });
+    var Hm = matMul(matMul(K, M), KINV);
+
+    var panels = [
+      { R: I, t: [0, 0, 0], ox: 0, oy: title, label: 'image 1' },
+      { R: cam.R, t: cam.t, ox: side ? pw + gap : 0, oy: side ? title : 2 * title + ph + gap, label: 'image 2, plus H applied to image-1 pixels' }
+    ];
+
+    panels.forEach(function (pn, idx) {
+      var g = el('g', {});
+      var clipId = 'hgp-clip-' + idx;
+      var defs = el('defs', {}, null, g);
+      var cp = el('clipPath', { id: clipId }, null, defs);
+      el('rect', { x: pn.ox, y: pn.oy, width: pw, height: ph }, null, cp);
+      el('text', { x: pn.ox, y: pn.oy - 6 }, pn.label, g);
+      el('rect', { x: pn.ox, y: pn.oy, width: pw, height: ph, fill: '#fff', stroke: COLOR.text, 'stroke-width': 1 }, null, g);
+      var inner = el('g', { 'clip-path': 'url(#' + clipId + ')' }, null, g);
+      function px(p) { return [pn.ox + k * p[0], pn.oy + k * p[1]]; }
+      function proj(P) { return px(project(pn.R, pn.t, P)); }
+
+      for (var i = 0; i < COLS; i++) {
+        for (var j = 0; j < ROWS; j++) {
+          var quad = [corner(i, j), corner(i + 1, j), corner(i + 1, j + 1), corner(i, j + 1)].map(proj);
+          el('polygon', { points: quad.map(function (q) { return q.join(','); }).join(' '), fill: (i + j) % 2 ? COLOR.dark : COLOR.light, stroke: COLOR.dark, 'stroke-width': 0.75 }, null, inner);
+        }
+      }
+      var b = proj(POLE_BASE), tp = proj(POLE_TIP);
+      el('line', { x1: b[0], y1: b[1], x2: tp[0], y2: tp[1], stroke: COLOR.purple, 'stroke-width': 3, 'stroke-linecap': 'round' }, null, inner);
+      el('circle', { cx: tp[0], cy: tp[1], r: 4, fill: COLOR.purple }, null, inner);
+
+      var outer = [corner(0, 0), corner(COLS, 0), corner(COLS, ROWS), corner(0, ROWS)];
+      outer.forEach(function (P, c) {
+        var q = proj(P);
+        el('circle', { cx: q[0], cy: q[1], r: 5, fill: CORNER_COLORS[c], stroke: '#fff', 'stroke-width': 1.5 }, null, inner);
+      });
+
+      if (idx === 1) {
+        // Predict image 2 from image-1 pixels with H alone.
+        for (var ii = 0; ii <= COLS; ii++) {
+          for (var jj = 0; jj <= ROWS; jj++) {
+            var q = px(apply(Hm, project(I, [0, 0, 0], corner(ii, jj))));
+            el('circle', { cx: q[0], cy: q[1], r: 3.5, fill: 'none', stroke: COLOR.orange, 'stroke-width': 1.5 }, null, inner);
+          }
+        }
+        var predTip = px(apply(Hm, project(I, [0, 0, 0], POLE_TIP)));
+        el('line', { x1: tp[0], y1: tp[1], x2: predTip[0], y2: predTip[1], stroke: COLOR.red, 'stroke-width': 1.25, 'stroke-dasharray': '3 3' }, null, inner);
+        el('circle', { cx: predTip[0], cy: predTip[1], r: 6, fill: 'none', stroke: COLOR.orange, 'stroke-width': 2 }, null, inner);
+      }
+    });
+
+    var planeErr = 0;
+    for (var a = 0; a <= COLS; a++) {
+      for (var c = 0; c <= ROWS; c++) {
+        var P = corner(a, c), pred = apply(Hm, project(I, [0, 0, 0], P)), real = project(cam.R, cam.t, P);
+        planeErr = Math.max(planeErr, Math.hypot(pred[0] - real[0], pred[1] - real[1]));
+      }
+    }
+    var pt = apply(Hm, project(I, [0, 0, 0], POLE_TIP)), rt = project(cam.R, cam.t, POLE_TIP);
+    var tipErr = Math.hypot(pt[0] - rt[0], pt[1] - rt[1]);
+    readout.textContent = 'H error on the plane ' + planeErr.toFixed(2) + ' px, on the pole tip ' + tipErr.toFixed(1) + ' px' +
+      (mode === 'rotate' ? ' (pure rotation: H fits every point)' : tipErr > 0.5 ? ' (parallax: the tip is off the plane)' : '');
+  }
+
+  for (var r = 0; r < radios.length; r++) {
+    radios[r].addEventListener('change', function (event) { mode = event.target.value; draw(); });
+  }
+  slider.addEventListener('input', draw);
+  if (window.ResizeObserver) new ResizeObserver(draw).observe(svg);
+  draw();
+})();
+</script>

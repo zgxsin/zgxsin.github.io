@@ -120,7 +120,49 @@ truncate: 300 %} {% endif %}
 
   <script>
     (function () {
-      var toc = document.getElementById('markdown-toc');
+      // Posts without `* TOC {:toc}`, and imported posts with raw <h2> tags, get the
+      // same nested list built from their headings.
+      var buildToc = function () {
+        var article = document.querySelector('.article');
+        if (!article) return null;
+        var headings = Array.prototype.filter.call(article.querySelectorAll('h1, h2, h3, h4'), function (h) {
+          return h.textContent.trim();
+        });
+        if (headings.length < 2) return null;
+
+        var levelOf = function (h) { return Number(h.tagName.charAt(1)); };
+        var top = Math.min.apply(null, headings.map(levelOf));
+        var root = document.createElement('ul');
+        root.id = 'markdown-toc';
+        var stack = [{ level: top, list: root }];
+
+        headings.forEach(function (h) {
+          if (!h.id) {
+            var base = h.textContent.trim().toLowerCase().replace(/[^\w]+/g, '-').replace(/^-+|-+$/g, '') || 'section';
+            var id = base;
+            for (var n = 1; document.getElementById(id); n++) id = base + '-' + n;
+            h.id = id;
+          }
+          var level = levelOf(h);
+          while (stack.length > 1 && level < stack[stack.length - 1].level) stack.pop();
+          var parent = stack[stack.length - 1];
+          if (level > parent.level && parent.list.lastElementChild) {
+            var sub = document.createElement('ul');
+            parent.list.lastElementChild.appendChild(sub);
+            parent = { level: level, list: sub };
+            stack.push(parent);
+          }
+          var item = document.createElement('li');
+          var link = document.createElement('a');
+          link.href = '#' + encodeURIComponent(h.id);
+          link.textContent = h.textContent.trim();
+          item.appendChild(link);
+          parent.list.appendChild(item);
+        });
+        return root;
+      };
+
+      var toc = document.getElementById('markdown-toc') || buildToc();
       if (!toc) return;
 
       var panel = document.createElement('aside');

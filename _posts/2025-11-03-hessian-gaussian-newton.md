@@ -34,7 +34,7 @@ The dot product $\nabla f^T \vec{\delta}$ adds up the change caused by each coor
 
 ### The Jacobian: derivative of a vector-valued function
 
-The gradient handles functions with a single output. For a vector function $\vec{r}: \mathbb{R}^n \rightarrow \mathbb{R}^m$, every output has its own gradient. Stacking the transposed gradients as rows gives the **Jacobian**, the $m \times n$ matrix of all first partial derivatives, $J_{ij} = \frac{\partial r_i}{\partial x_j}$:
+The gradient handles functions with a single output. For a vector function $\vec{r}: \mathbb{R}^n \rightarrow \mathbb{R}^m$, every output has its own gradient. Stacking the transposed gradients as rows gives the **Jacobian**, the $m \times n$ matrix of all first partial derivatives, $$J_{ij} = \frac{\partial r_i}{\partial x_j}$$:
 
 $$
 J = \frac{\partial \vec{r}}{\partial \vec{x}^T} = \begin{bmatrix} \nabla r_1^T \\ \vdots \\ \nabla r_m^T \end{bmatrix} = \begin{bmatrix} \frac{\partial r_1}{\partial x_1} & \cdots & \frac{\partial r_1}{\partial x_n} \\ \vdots & \ddots & \vdots \\ \frac{\partial r_m}{\partial x_1} & \cdots & \frac{\partial r_m}{\partial x_n} \end{bmatrix}, \qquad \vec{r}(\vec{x} + \vec{\delta}) \approx \vec{r}(\vec{x}) + J\vec{\delta}
@@ -74,7 +74,7 @@ $$
 
 This is the vector version of $\frac{d}{dx}(ax) = a$.
 
-**2. Quadratic form: $f = \vec{x}^T A \vec{x}$.** $f = \sum_i \sum_j x_i A_{ij} x_j$. The variable $x_k$ shows up once as $x_i$ (when $i = k$) and once as $x_j$ (when $j = k$):
+**2. Quadratic form: $f = \vec{x}^T A \vec{x}$.** $$f = \sum_i \sum_j x_i A_{ij} x_j$$. The variable $x_k$ shows up once as $x_i$ (when $i = k$) and once as $x_j$ (when $j = k$):
 
 $$
 \frac{\partial f}{\partial x_k} = \sum_j A_{kj} x_j + \sum_i x_i A_{ik} = (A\vec{x})_k + (A^T\vec{x})_k
@@ -84,7 +84,7 @@ $$
 
 If $A$ is symmetric this is $2A\vec{x}$, the vector version of $\frac{d}{dx}(ax^2) = 2ax$.
 
-Toy check with $A = \begin{bmatrix} 1 & 2 \\ 0 & 3 \end{bmatrix}$: $\vec{x}^TA\vec{x} = x_1^2 + 2x_1x_2 + 3x_2^2$. By hand the gradient is $[2x_1 + 2x_2,\ 2x_1 + 6x_2]^T$, and indeed $A + A^T = \begin{bmatrix} 2 & 2 \\ 2 & 6 \end{bmatrix}$.
+Toy check with $$A = \begin{bmatrix} 1 & 2 \\ 0 & 3 \end{bmatrix}$$: $\vec{x}^TA\vec{x} = x_1^2 + 2x_1x_2 + 3x_2^2$. By hand the gradient is $[2x_1 + 2x_2,\ 2x_1 + 6x_2]^T$, and indeed $$A + A^T = \begin{bmatrix} 2 & 2 \\ 2 & 6 \end{bmatrix}$$.
 
 **3. Chain rule: $f = g(\vec{r}(\vec{x}))$.** A step $\vec{\delta}$ changes $\vec{r}$ by $J\vec{\delta}$, which changes $g$ by $\nabla g^T (J\vec{\delta}) = (J^T \nabla g)^T \vec{\delta}$. So
 
@@ -92,17 +92,17 @@ $$
 \nabla f = J^T \nabla g
 $$
 
-The most important case is the squared norm $f = \|\vec{r}(\vec{x})\|^2 = \vec{r}^T\vec{r}$, where $\nabla g = 2\vec{r}$:
+The most important case is the squared norm $$f = \|\vec{r}(\vec{x})\|^2 = \vec{r}^T\vec{r}$$, where $\nabla g = 2\vec{r}$:
 
 $$
 \nabla \|\vec{r}(\vec{x})\|^2 = 2J^T\vec{r}
 $$
 
-For linear least squares, $\vec{r} = A\vec{x} - \vec{b}$ and $J = A$, so $\nabla\|A\vec{x} - \vec{b}\|^2 = 2A^T(A\vec{x} - \vec{b})$. Setting it to zero gives the normal equations $A^TA\vec{x} = A^T\vec{b}$.
+For linear least squares, $\vec{r} = A\vec{x} - \vec{b}$ and $J = A$, so $$\nabla\|A\vec{x} - \vec{b}\|^2 = 2A^T(A\vec{x} - \vec{b})$$. Setting it to zero gives the normal equations $A^TA\vec{x} = A^T\vec{b}$.
 
 ### Aside: the normal equations
 
-When $A$ is tall (more equations than unknowns), $A\vec{x} = \vec{b}$ usually has no exact solution, so we settle for the $\vec{x}$ that minimizes $\|A\vec{x} - \vec{b}\|^2$. The normal equations $A^TA\vec{x} = A^T\vec{b}$ turn that into a square $n \times n$ system, with a unique solution when $A$ has full column rank.
+When $A$ is tall (more equations than unknowns), $A\vec{x} = \vec{b}$ usually has no exact solution, so we settle for the $\vec{x}$ that minimizes $$\|A\vec{x} - \vec{b}\|^2$$. The normal equations $A^TA\vec{x} = A^T\vec{b}$ turn that into a square $n \times n$ system, with a unique solution when $A$ has full column rank.
 
 The name is geometric. Rewrite them as
 
@@ -144,8 +144,8 @@ H(\vec{x}) = \nabla^2 f(\vec{x}) = \frac{\partial}{\partial \vec{x}^T}\left(\fra
 \end{bmatrix}, \qquad H_{ij} = \frac{\partial^2 f}{\partial x_i \partial x_j}
 $$
 
-- The diagonal $H_{ii}$ is the ordinary curvature along axis $x_i$.
-- The off-diagonal $H_{ij}$ says how the slope in $x_i$ changes when you move in $x_j$ (the "twist" of the surface).
+- The diagonal $$H_{ii}$$ is the ordinary curvature along axis $x_i$.
+- The off-diagonal $$H_{ij}$$ says how the slope in $x_i$ changes when you move in $x_j$ (the "twist" of the surface).
 - If the second derivatives are continuous, the order of differentiation does not matter (Schwarz's theorem), so **$H$ is symmetric**.
 
 Just like $f^{\prime}(x)$ gave the linear approximation, the Hessian gives the quadratic one, the vector version of $f(x + \delta) \approx f + f^{\prime}\delta + \frac{1}{2}f^{\prime\prime}\delta^2$:
@@ -174,7 +174,7 @@ $$
 g^{\prime\prime}(0) = \frac{d^2}{dt^2} f(\vec{x} + t\vec{v}) \Big|_{t=0} = \vec{v}^T H \vec{v}
 $$
 
-The direction $\vec{v}$ must have unit length so that $t$ is real distance. Doubling $\vec{v}$ would make you walk twice as fast and multiply the result by 4, so directions would not be comparable. For the bowl below ($H = \begin{bmatrix}2 & 1 \\ 1 & 2\end{bmatrix}$), the curvature is $2$ along $x_1$, $3$ along the diagonal $(1,1)/\sqrt{2}$, and $1$ along the anti-diagonal $(1,-1)/\sqrt{2}$.
+The direction $\vec{v}$ must have unit length so that $t$ is real distance. Doubling $\vec{v}$ would make you walk twice as fast and multiply the result by 4, so directions would not be comparable. For the bowl below ($$H = \begin{bmatrix}2 & 1 \\ 1 & 2\end{bmatrix}$$), the curvature is $2$ along $x_1$, $3$ along the diagonal $(1,1)/\sqrt{2}$, and $1$ along the anti-diagonal $(1,-1)/\sqrt{2}$.
 
 Since $H$ is symmetric, it has an orthonormal eigenbasis, $H = Q\Lambda Q^T$. Along eigenvector $\vec{q}_i$ the curvature is exactly $\lambda_i$, and the largest and smallest eigenvalues are the strongest and weakest curvatures over all directions. At a critical point ($\nabla f = 0$), this classifies the point:
 
@@ -185,11 +185,11 @@ Since $H$ is symmetric, it has an orthonormal eigenbasis, $H = Q\Lambda Q^T$. Al
 | mixed signs (indefinite) | saddle | neither |
 | some $= 0$ (singular) | flat in some direction | test is inconclusive |
 
-**Toy example: a bowl.** $f = x_1^2 + x_1x_2 + x_2^2$ has $\nabla f = [2x_1 + x_2,\ x_1 + 2x_2]^T$, zero only at the origin, and $H = \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix}$ with eigenvalues $3$ (along $[1, 1]^T/\sqrt{2}$) and $1$ (along $[1, -1]^T/\sqrt{2}$). Both positive, so the origin is a minimum. The level sets are ellipses, steepest along the diagonal and flattest along the anti-diagonal.
+**Toy example: a bowl.** $f = x_1^2 + x_1x_2 + x_2^2$ has $\nabla f = [2x_1 + x_2,\ x_1 + 2x_2]^T$, zero only at the origin, and $$H = \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix}$$ with eigenvalues $3$ (along $[1, 1]^T/\sqrt{2}$) and $1$ (along $[1, -1]^T/\sqrt{2}$). Both positive, so the origin is a minimum. The level sets are ellipses, steepest along the diagonal and flattest along the anti-diagonal.
 
-**Toy example: a saddle.** $f = x_1^2 + 3x_1x_2 + 2x_2^2$ has $H = \begin{bmatrix} 2 & 3 \\ 3 & 4 \end{bmatrix}$. Both diagonal entries are positive, so along each axis $f$ curves up, yet $\det H = 8 - 9 = -1 < 0$, so the eigenvalues ($3 \pm \sqrt{10} \approx 6.16, -0.16$) have opposite signs. Along $\vec{v} = [3, -2]^T$: $f(3t, -2t) = 9t^2 - 18t^2 + 8t^2 = -t^2$, which goes down. The origin is a saddle. The strong coupling term $3x_1x_2$ is what creates the downhill direction, and only the off-diagonal entries of the Hessian can show that.
+**Toy example: a saddle.** $f = x_1^2 + 3x_1x_2 + 2x_2^2$ has $$H = \begin{bmatrix} 2 & 3 \\ 3 & 4 \end{bmatrix}$$. Both diagonal entries are positive, so along each axis $f$ curves up, yet $\det H = 8 - 9 = -1 < 0$, so the eigenvalues ($3 \pm \sqrt{10} \approx 6.16, -0.16$) have opposite signs. Along $\vec{v} = [3, -2]^T$: $f(3t, -2t) = 9t^2 - 18t^2 + 8t^2 = -t^2$, which goes down. The origin is a saddle. The strong coupling term $3x_1x_2$ is what creates the downhill direction, and only the off-diagonal entries of the Hessian can show that.
 
-The figure below shows both examples, plus a flat valley $f = \frac{1}{2}(x_1 + x_2)^2$ with eigenvalues $2$ and $0$. On the left, the level sets of $f$ are seen from above, with the two eigenvector directions dashed. On the right is the slice $f(t\vec{v}) = \frac{1}{2}(\vec{v}^TH\vec{v})\,t^2$ through the origin: a parabola whose curvature is $\vec{v}^TH\vec{v}$. Rotate $\vec{v}$ and watch the parabola: it is steepest along one eigenvector ($\lambda_{\max}$), flattest along the other ($\lambda_{\min}$), and never leaves the band between them. For the saddle, the band crosses zero, so some directions curve down. For the valley, one direction has zero curvature: the level sets are parallel lines, and moving along them does not change $f$ at all.
+The figure below shows both examples, plus a flat valley $f = \frac{1}{2}(x_1 + x_2)^2$ with eigenvalues $2$ and $0$. On the left, the level sets of $f$ are seen from above, with the two eigenvector directions dashed. On the right is the slice $f(t\vec{v}) = \frac{1}{2}(\vec{v}^TH\vec{v})\,t^2$ through the origin: a parabola whose curvature is $\vec{v}^TH\vec{v}$. Rotate $\vec{v}$ and watch the parabola: it is steepest along one eigenvector ($$\lambda_{\max}$$), flattest along the other ($$\lambda_{\min}$$), and never leaves the band between them. For the saddle, the band crosses zero, so some directions curve down. For the valley, one direction has zero curvature: the level sets are parallel lines, and moving along them does not change $f$ at all.
 
 {% include figures/hessian-curvature.html %}
 
@@ -203,7 +203,7 @@ $$
 
 This is **Newton's method**: jump to the bottom of the local bowl, then repeat. Gradient descent only knows the slope and must guess a step size. Newton also knows the curvature, so it takes big steps in flat directions and small steps in steep ones. For a quadratic $f = \frac{1}{2}\vec{x}^TA\vec{x} - \vec{b}^T\vec{x}$ with symmetric positive definite $A$, we have $\nabla f = A\vec{x} - \vec{b}$ and $H = A$, so a single Newton step from any $\vec{x}$ lands at $\vec{x} - A^{-1}(A\vec{x} - \vec{b}) = A^{-1}\vec{b}$, the exact minimum.
 
-The catch: computing all $n^2$ second derivatives is expensive, and away from a minimum $H$ may not be positive definite, so $\vec{\delta}$ can even point uphill. For least squares, $f = \|\vec{r}(\vec{x})\|^2$, differentiating $\nabla f = 2J^T\vec{r}$ once more gives
+The catch: computing all $n^2$ second derivatives is expensive, and away from a minimum $H$ may not be positive definite, so $\vec{\delta}$ can even point uphill. For least squares, $$f = \|\vec{r}(\vec{x})\|^2$$, differentiating $\nabla f = 2J^T\vec{r}$ once more gives
 
 $$
 H = 2J^TJ + 2\sum_{i=1}^m r_i \nabla^2 r_i
@@ -363,7 +363,7 @@ jacobian = lambda x: (x - P) / np.linalg.norm(x - P, axis=1)[:, None]
 print(gauss_newton(residual, jacobian, np.array([1.0, 1.0])))  # [3. 4.]
 ```
 
-A practical note: forming $J^TJ$ squares the condition number of $J$. For badly conditioned problems, solve the linear least-squares problem $\min\|\vec{r} + J\vec{\delta}\|$ directly with QR (`np.linalg.lstsq`) instead. For small, well-conditioned problems like ICP, the normal equations with a Cholesky solve are standard and fast.
+A practical note: forming $J^TJ$ squares the condition number of $J$. For badly conditioned problems, solve the linear least-squares problem $$\min\|\vec{r} + J\vec{\delta}\|$$ directly with QR (`np.linalg.lstsq`) instead. For small, well-conditioned problems like ICP, the normal equations with a Cholesky solve are standard and fast.
 
 ### Weighted least squares
 
@@ -373,7 +373,7 @@ $$
 J^TWJ\,\vec{\delta} = -J^TW\vec{r}
 $$
 
-Here $\Sigma$ is the $m \times m$ covariance of the measurement noise: $\Sigma_{ii} = \sigma_i^2$ is the variance of measurement $i$, and the off-diagonal entries say whether the noise on two measurements is correlated. Its inverse turns uncertainty into confidence. For independent measurements, $\Sigma$ is diagonal and $\Sigma^{-1} = \text{diag}(1/\sigma_1^2, \dots, 1/\sigma_m^2)$, so the cost becomes $\frac{1}{2}\sum_i r_i^2/\sigma_i^2$. Each residual is measured in units of its own standard deviation: a 1 cm miss on a sensor with $\sigma = 1$ cm costs as much as a 1 m miss on a sensor with $\sigma = 1$ m. With correlations, $\vec{r}^T\Sigma^{-1}\vec{r}$ is the squared Mahalanobis distance, which automatically counts correlated (partly redundant) measurements less than independent ones.
+Here $\Sigma$ is the $m \times m$ covariance of the measurement noise: $$\Sigma_{ii} = \sigma_i^2$$ is the variance of measurement $i$, and the off-diagonal entries say whether the noise on two measurements is correlated. Its inverse turns uncertainty into confidence. For independent measurements, $\Sigma$ is diagonal and $\Sigma^{-1} = \text{diag}(1/\sigma_1^2, \dots, 1/\sigma_m^2)$, so the cost becomes $\frac{1}{2}\sum_i r_i^2/\sigma_i^2$. Each residual is measured in units of its own standard deviation: a 1 cm miss on a sensor with $\sigma = 1$ cm costs as much as a 1 m miss on a sensor with $\sigma = 1$ m. With correlations, $\vec{r}^T\Sigma^{-1}\vec{r}$ is the squared Mahalanobis distance, which automatically counts correlated (partly redundant) measurements less than independent ones.
 
 $J^TWJ$ is the **information matrix** of the estimate: near the solution, its inverse is the covariance of $\vec{x}$ (derived in the next section). Robust kernels (Huber, Cauchy) are implemented as weights that are recomputed every iteration from the current residuals, giving large residuals (outliers) a small weight. This is called iteratively reweighted least squares.
 
@@ -459,7 +459,7 @@ $$
 - $\lambda \rightarrow 0$: this is the Gauss-Newton step.
 - $\lambda$ large: $\vec{\delta} \approx -\frac{1}{\lambda}J^T\vec{r} = -\frac{1}{\lambda}\nabla F$, a short gradient-descent step.
 
-So $\lambda$ blends smoothly between "fast near the solution" and "safe far from it". It also makes the matrix positive definite even when $J^TJ$ is singular. It is equivalent to solving the linearized problem with a penalty on step length, $\min \frac{1}{2}\|\vec{r} + J\vec{\delta}\|^2 + \frac{\lambda}{2}\|\vec{\delta}\|^2$, i.e. a **trust region**: only trust the linearization near the current point.
+So $\lambda$ blends smoothly between "fast near the solution" and "safe far from it". It also makes the matrix positive definite even when $J^TJ$ is singular. It is equivalent to solving the linearized problem with a penalty on step length, $$\min \frac{1}{2}\|\vec{r} + J\vec{\delta}\|^2 + \frac{\lambda}{2}\|\vec{\delta}\|^2$$, i.e. a **trust region**: only trust the linearization near the current point.
 
 $\lambda$ is adapted automatically:
 
@@ -502,7 +502,7 @@ The only design choice is what "fit better" means in step 2.
 
 ### Point-to-point vs point-to-plane
 
-**Point-to-point** minimizes $\sum_i \|R\vec{p}_i + \vec{t} - \vec{q}_i\|^2$. This has a closed-form solution via the SVD of the cross-covariance of the matched pairs (the Kabsch/Umeyama method, see the SVD post). But it penalizes the full 3D distance to one particular target point. A LiDAR never samples the same spot twice, so even at the perfect alignment, the nearest neighbor of $\vec{p}_i$ is some neighboring sample, not "the same" point. Point-to-point keeps pulling the source toward the sample positions, and it converges slowly.
+**Point-to-point** minimizes $$\sum_i \|R\vec{p}_i + \vec{t} - \vec{q}_i\|^2$$. This has a closed-form solution via the SVD of the cross-covariance of the matched pairs (the Kabsch/Umeyama method, see the SVD post). But it penalizes the full 3D distance to one particular target point. A LiDAR never samples the same spot twice, so even at the perfect alignment, the nearest neighbor of $\vec{p}_i$ is some neighboring sample, not "the same" point. Point-to-point keeps pulling the source toward the sample positions, and it converges slowly.
 
 **Point-to-plane** only penalizes the distance *along the normal*, i.e. the distance to the local tangent plane of the target surface:
 
@@ -547,6 +547,84 @@ $$
 
 Note that we never needed the Hessian of $r_i$ with respect to the rotation. Gauss-Newton only asks for the Jacobian of the residual, which is why it is the workhorse of ICP, bundle adjustment and pose graph optimization.
 
+### Flagging the degenerate axes
+
+ICP flags a degenerate axis from the eigendecomposition of the same matrix that builds the Gauss-Newton step. Factor
+
+$$
+J^TJ = V\Lambda V^T, \qquad \lambda_1 \le \cdots \le \lambda_6
+$$
+
+Column $\vec{v}_k$ of $V$ is a direction in $(\vec{\omega}, \vec{\tau})$. To see what $\lambda_k$ measures, go back to the linearization: a correction $\vec{\delta}$ changes the residuals to first order as $\vec{r}(\vec{\delta}) \approx \vec{r} + J\vec{\delta}$. Entry $i$ of $J\vec{\delta}$ is how far point $i$ moves toward or away from its plane. Take a step of length $s$ along the eigenvector, $\vec{\delta} = s\,\vec{v}_k$. The residuals change by $\Delta\vec{r} = s\,J\vec{v}_k$, and the size of that change over all points is
+
+$$
+\|\Delta\vec{r}\|^2 = s^2\,\vec{v}_k^TJ^TJ\,\vec{v}_k = s^2\,\lambda_k
+$$
+
+So $\lambda_k$ is how strongly the residuals react to motion along $\vec{v}_k$. It is also the curvature $\vec{v}^T H \vec{v}$ from [What the Hessian tells you: curvature](#what-the-hessian-tells-you-curvature), with $H$ replaced by the Gauss-Newton approximation $J^TJ$.
+
+A tiny $\lambda_k$ means a pose step along $\vec{v}_k$ leaves the residuals almost unchanged: the scan cannot see that motion, and $\vec{v}_k$ is a degenerate axis. Flag every eigenvalue that is negligible next to the strongest one,
+
+$$
+\mathcal{D} = \{ k : \lambda_k \le \epsilon\, \lambda_{\max} \}
+$$
+
+with $\epsilon$ around $10^{-3}$ after the scaling below. The flagged axes are the columns $\vec{v}_k$ for $k \in \mathcal{D}$. One symmetric eigendecomposition of a $6 \times 6$ matrix is the whole test, and it is redone every iteration because the correspondences change.
+
+**One scale for rotation and translation.** Stacking the rows $J_i$ of all $m$ correspondences gives
+
+$$
+J = \begin{bmatrix} J_{\omega} & J_{\tau} \end{bmatrix} = \begin{bmatrix} (\vec{p}_1 \times \vec{n}_1)^T & \vec{n}_1^T \\ (\vec{p}_2 \times \vec{n}_2)^T & \vec{n}_2^T \\ \vdots & \vdots \\ (\vec{p}_m \times \vec{n}_m)^T & \vec{n}_m^T \end{bmatrix} \in \mathbb{R}^{m \times 6}, \qquad J_{\omega},\ J_{\tau} \in \mathbb{R}^{m \times 3}
+$$
+
+The first three columns $J_{\omega}$ multiply the rotation $\vec{\omega}$, and the last three $J_{\tau}$ multiply the translation $\vec{\tau}$. Each row of $J_{\tau}$ is a unit normal, so it is dimensionless. Each row of $J_{\omega}$ is a lever arm $$\vec{p}_i \times \vec{n}_i$$ in meters, so it grows with the cloud, and its eigenvalues grow with length squared.
+
+The reason is how far a rotation moves a point. A small rotation $\vec{\omega}$ moves $$\vec{p}_i$$ by $$\vec{\omega} \times \vec{p}_i$$, which is proportional to the point's distance from the rotation axis: $1^\circ$ moves a point 1 m away by about $1.7\,\text{cm}$, and a point 10 m away by about $17\,\text{cm}$. The residual changes by $$\vec{n}_i^T(\vec{\omega} \times \vec{p}_i) = (\vec{p}_i \times \vec{n}_i)^T\vec{\omega}$$, so a row of $$J_{\omega}$$ grows with the point's distance from the origin.
+
+The origin is the origin of the frame the points are written in, here the target (map) frame. Each iteration first moves the source with the current estimate, and the correction $\Delta R$ is applied on the left, so it rotates everything about that origin and $\vec{\omega}$ is an axis through it. Strictly, the displacement $$\|\vec{\omega} \times \vec{p}_i\|$$ depends on the distance to that axis, and the distance to the origin $$\|\vec{p}_i\|$$ is an upper bound on it. Where the origin sits therefore matters. In the sensor frame, $$\|\vec{p}_i\|$$ is the measured range. In a map frame whose origin is 1 km away, every lever arm is about 1 km, and the rotation eigenvalues are huge even for a small room. Implementations usually express the points relative to the sensor or the scan's centroid before building $J$. That does not change which motions the scan can see; it only changes how rotation and translation mix inside $J$, which keeps the numbers well conditioned.
+
+In the figure, the same angle $\theta$ sweeps each point along its own circle, and the arc it travels has length $r\theta$. Doubling the distance doubles the displacement: the plot on the right is a straight line through the origin with slope $\theta$. A translation, the dashed line, moves every point by the same amount.
+
+{% include figures/rotation-lever-arm.html %}
+
+The two diagonal blocks of $J^TJ$ are sums of squares of the rows:
+
+$$
+J_{\omega}^TJ_{\omega} = \sum_{i=1}^m (\vec{p}_i \times \vec{n}_i)(\vec{p}_i \times \vec{n}_i)^T, \qquad J_{\tau}^TJ_{\tau} = \sum_{i=1}^m \vec{n}_i\vec{n}_i^T
+$$
+
+Scale the cloud by a factor $c$, $$\vec{p}_i \to c\,\vec{p}_i$$. Every row of $J_{\omega}$ is multiplied by $c$, the rotation block by $c^2$, and so are its eigenvalues. The translation block holds only unit normals and does not change.
+
+The same follows from $$\lambda_k = \|J\vec{v}_k\|^2$$, one direction at a time:
+
+- **A pure rotation**, $\vec{v} = [\hat{\omega};\ \vec{0}]$ with $\|\hat{\omega}\| = 1$. Point $i$'s residual changes by $$(\vec{p}_i \times \vec{n}_i)^T\hat{\omega}$$ per radian. After scaling it changes by $$(c\,\vec{p}_i \times \vec{n}_i)^T\hat{\omega}$$, which is $c$ times as much, for every point. So $J\vec{v}$ becomes $cJ\vec{v}$, and $$\|J\vec{v}\|^2$$ becomes $$c^2\|J\vec{v}\|^2$$.
+- **A pure translation**, $\vec{v} = [\vec{0};\ \hat{\tau}]$. Point $i$'s residual changes by $$\vec{n}_i^T\hat{\tau}$$, which does not involve $$\vec{p}_i$$, so $$\|J\vec{v}\|^2$$ is the same for any $c$.
+
+With $c = 10$, a $1^\circ$ rotation that moved a point at 1 m by $1.7\,\text{cm}$ now moves the same point, at 10 m, by $17\,\text{cm}$. Each residual change is 10 times larger and the sum of their squares is 100 times larger, while a $1.7\,\text{cm}$ translation still changes every residual by the same amount as before.
+
+The cutoff $\epsilon\,\lambda_{\max}$ compares rotation eigenvalues with translation eigenvalues, so without a fix, which axes look weak would depend on the size of the scene and not on its shape.
+
+The fix is to divide $J_{\omega}$ by a length $L$ (1 m, or the mean range) before forming $J^TJ$. The unknowns are the two halves of the Gauss-Newton step $\vec{\delta} = [\vec{\omega};\ \vec{\tau}]$: the rotation $\vec{\omega}$ in radians and the translation $\vec{\tau}$ in meters. Moving the factor $L$ from the matrix onto the rotation leaves the predicted residual change $J\vec{\delta}$ unchanged:
+
+$$
+J\vec{\delta} = J_{\omega}\vec{\omega} + J_{\tau}\vec{\tau} = \frac{J_{\omega}}{L}\,(L\vec{\omega}) + J_{\tau}\vec{\tau} = \tilde{J}\tilde{\vec{\delta}}, \qquad
+\tilde{J} = \begin{bmatrix} \dfrac{J_{\omega}}{L} & J_{\tau} \end{bmatrix}, \quad
+\tilde{\vec{\delta}} = \begin{bmatrix} L\vec{\omega} \\ \vec{\tau} \end{bmatrix}
+$$
+
+The new unknown $\tilde{\vec{\delta}}$ has the arc length $L\vec{\omega}$ in place of the angle, so all six of its entries are in meters, and both blocks of $\tilde{J}$ are dimensionless. Solve for $\tilde{\vec{\delta}}$ and run the eigenvalue test on $\tilde{J}^T\tilde{J}$, and the same $\epsilon$ applies to a rotation and a translation. Divide the first three entries of the solved $\tilde{\vec{\delta}}$ by $L$ to get $\vec{\omega}$ back in radians. The scenes in this post are about a meter across, so $L = 1$ and the raw matrix is already on that scale. The original LOAM mapping code skips the scaling and uses one absolute cutoff on all six raw eigenvalues, 100, chosen for that program's ranges and voxel size. Forks of the same code use 10 or 1.
+
+**The step, with the flagged axes frozen.** The component of the update along each flagged eigenvector is set to zero, and those pose coordinates stay where the iteration was linearized: the previous pose, or the IMU or wheel prediction. Invert only the healthy eigenvalues (the pseudoinverse of $\Lambda$):
+
+$$
+\vec{\delta} = -V\Lambda^{+} V^T J^T\vec{r}, \qquad
+\Lambda^{+}_{kk} = \begin{cases} 1/\lambda_k & k \notin \mathcal{D} \\ 0 & k \in \mathcal{D} \end{cases}
+$$
+
+Here $J$, $V$, $\Lambda$ and $\vec{\delta}$ are the scaled $\tilde{J}$, its eigendecomposition, and the scaled step $\tilde{\vec{\delta}}$, so the first three entries of the solution are $L\vec{\omega}$. Divide them by $L$ before the exponential map. When $J^TJ$ is singular, $J^TJ\vec{\delta} = -J^T\vec{r}$ has no unique solution; $\Lambda^{+}$ still returns one, with the flagged components equal to zero. When every $\lambda_k$ is merely small, the same map is the projection $P = VSV^T$ applied to a full solve, where $S$ is diagonal with $1$ on the healthy eigenvalues and $0$ on $\mathcal{D}$. LOAM multiplies its solved update by this $P$. It is the solution remapping of Zhang, Kaess and Singh (ICRA 2016): the part of the optimized pose in the well-constrained subspace is kept, and the degenerate subspace is put back on the prior. Assembling $\vec{\delta}$ from $\Lambda^{+}$ is the version that stays defined at $\lambda_k = 0$.
+
+The eigenvalues you zeroed are also what you hand to the next estimator. Along $\vec{v}_k$ the variance is $1/\lambda_k$, from the covariance section: a flagged axis carries no information from this scan. Publish $V\tilde{\Lambda}V^T$ with those eigenvalues set to zero, and the IMU or wheel prior is what informs them. Levenberg-Marquardt lifts every eigenvalue, $\lambda_k \mapsto \lambda_k + \lambda$, and the step along $\vec{v}_k$ shrinks to $-(\vec{v}_k^T J^T\vec{r})/(\lambda_k + \lambda)$. The iteration survives a singular $J^TJ$. The eigenvectors are the axes you report.
+
 ### Toy example: why one plane is not enough
 
 Suppose every point lies on a flat floor, $z = 0$, so $\vec{n}_i = (0, 0, 1)$ for all $i$. For $\vec{p}_i = (x_i, y_i, 0)$:
@@ -561,12 +639,102 @@ $$
 \text{eig}(J^TJ) = (0,\ 0,\ 0,\ 158,\ 163,\ 501)
 $$
 
-This is the Hessian-eigenvalue story from the first section, seen through the Gauss-Newton approximation $J^TJ$. Zero curvature in a direction means the cost is flat there: the problem is **degenerate**, and $J^TJ\vec{\delta} = -J^T\vec{r}$ has no unique solution. The same happens in a long featureless corridor (translation along the corridor is unobservable). In practice:
+Read $$\lambda_k = \|J\vec{v}_k\|^2$$ from [Flagging the degenerate axes](#flagging-the-degenerate-axes) on this floor. Two directions show the extremes:
 
-- check the eigenvalues of $J^TJ$ and only update along the well-constrained eigenvectors (a common trick in LiDAR odometry), or
-- add damping as in Levenberg-Marquardt, or a prior from odometry/IMU, so the unobservable directions stay put.
+- **A step up, along $t_z$**, $\vec{v} = (0, 0, 0, 0, 0, 1)$. $J\vec{v}$ is the last column of $J$, all ones. Every point's distance to the floor changes by $s$, and with 500 points $\lambda = 500$. The scan sees this motion clearly.
+- **A step in yaw**, $\vec{v} = (0, 0, 1, 0, 0, 0)$. $J\vec{v}$ is the third column, all zeros. The floor spins within its own plane, no point moves toward or away from it, and $\lambda = 0$.
+
+When the residuals do not change, the cost cannot change either: the data fits equally well at any yaw, so it says nothing about yaw.
+
+Because the yaw, $t_x$ and $t_y$ columns are zero, the null space of $J^TJ$ is spanned by
+
+$$
+\vec{v}_{\text{yaw}} = \begin{bmatrix} 0 \\ 0 \\ 1 \\ 0 \\ 0 \\ 0 \end{bmatrix}, \quad
+\vec{v}_{t_x} = \begin{bmatrix} 0 \\ 0 \\ 0 \\ 1 \\ 0 \\ 0 \end{bmatrix}, \quad
+\vec{v}_{t_y} = \begin{bmatrix} 0 \\ 0 \\ 0 \\ 0 \\ 1 \\ 0 \end{bmatrix}
+$$
+
+and those are the axes the eigenvalue test flags. The three positive eigenvalues belong to roll, pitch and $t_z$.
+
+This is the Hessian-eigenvalue story from [What the Hessian tells you: curvature](#what-the-hessian-tells-you-curvature), seen through the Gauss-Newton approximation $J^TJ$. Zero curvature in a direction means the cost is flat there: the problem is **degenerate**, and $J^TJ\vec{\delta} = -J^T\vec{r}$ has no unique solution. A long featureless corridor is the same situation: translation along the corridor leaves every point-to-plane residual unchanged.
 
 Add two walls, $x = 0$ with normal $(1, 0, 0)$ and $y = 0$ with normal $(0, 1, 0)$. For a point $(0, y, z)$ on the first wall, $J_i = [0,\ z,\ -y,\ 1,\ 0,\ 0]$. For a point $(x, 0, z)$ on the second wall, $J_i = [-z,\ 0,\ x,\ 0,\ 1,\ 0]$. Together with the floor, every column now has non-zero entries, and all six degrees of freedom are constrained.
+
+**A corridor at an angle.** Let the corridor run along $\hat{u} = (\cos\theta, \sin\theta, 0)$, with floor normal $(0, 0, 1)$ and one wall normal $\vec{w} = (-\sin\theta, \cos\theta, 0)$. Translation along the corridor is tangent to both planes, so every row of $J$ annihilates
+
+$$
+\vec{v} = \begin{bmatrix} 0 \\ 0 \\ 0 \\ \cos\theta \\ \sin\theta \\ 0 \end{bmatrix}
+$$
+
+and $\lambda = 0$ for that axis. At $\theta = 30^\circ$ the flagged direction is $(0,\ 0,\ 0,\ \sqrt{3}/2,\ 1/2,\ 0)$: a horizontal translation at $30^\circ$, which is the corridor heading itself.
+
+The diagonal entries are a different reading of the same matrix. $$(J^TJ)_{t_x t_x} = \sum_i n_{i,x}^2$$. Floor normals have $n_x = 0$, so they add nothing to that sum. Each wall normal contributes $\sin^2\theta$, and $N$ wall points give $N\sin^2\theta$. At $\theta = 30^\circ$ and $N = 400$,
+
+$$
+(J^TJ)_{t_x t_x} = 400 \cdot \frac{1}{4} = 100, \qquad (J^TJ)_{t_y t_y} = 400 \cdot \frac{3}{4} = 300
+$$
+
+Both entries are ordinary positive numbers. The zero-eigenvalue direction is the mix $\cos\theta\, t_x + \sin\theta\, t_y$, and that mix is what the eigenvector records.
+
+**Noise on a weak axis.** Tilt every floor normal by an independent $0.5^\circ$ and add $1\,\text{cm}$ of noise to the source, with no true motion. The three weak eigenvalues come out near $0.03$, under $10^{-4}$ of $$\lambda_{\max} \approx 504$$, and $$10^{-3}\lambda_{\max}$$ still separates them cleanly from the next eigenvalue at $149$. The eigenvectors are yaw, $t_x$ and $t_y$, each with a small extra component because the normals are tilted. Ordinary Gauss-Newton divides by those eigenvalues and answers with $2.55^\circ$ of yaw and a horizontal slide of $7.4\,\text{mm}$ in $x$ and $2.1\,\text{mm}$ in $y$. Zeroing the three flagged eigenvalues removes all three. Pitch stays at $-0.02^\circ$ and $t_z$ at $-0.2\,\text{mm}$, which is as much motion as this floor can support.
+
+```python
+import numpy as np
+
+def gauss_newton_degenerate(points, normals, residual, length=1.0, eps_ratio=1e-3):
+    # Rotation columns are lever arms in meters. Divide by `length` so one
+    # eigenvalue cutoff covers rotation and translation. delta[:3] comes back in radians.
+    J = np.hstack([np.cross(points, normals) / length, normals])
+    evals, V = np.linalg.eigh(J.T @ J)          # columns of V, eigenvalues ascending
+    healthy = evals > eps_ratio * evals[-1]
+    inv = np.zeros_like(evals)
+    inv[healthy] = 1.0 / evals[healthy]
+    delta = -V @ (inv * (V.T @ (J.T @ residual)))
+    delta[:3] /= length
+    return delta, evals, V, healthy
+
+# A floor, but the normals are tilted by 0.5 deg and the source has 1 cm of
+# noise. There is no true motion: a correct update is about zero.
+rng = np.random.default_rng(0)
+xy = rng.uniform(-1, 1, (500, 2))
+pts = np.column_stack([xy, np.zeros(500)])
+nrm = np.column_stack([rng.normal(0, np.deg2rad(0.5), (500, 2)), np.ones(500)])
+nrm /= np.linalg.norm(nrm, axis=1)[:, None]
+src = pts + rng.normal(0, 0.01, pts.shape)
+residual = np.sum((src - pts) * nrm, axis=1)
+
+delta, evals, V, healthy = gauss_newton_degenerate(src, nrm, residual)
+J = np.hstack([np.cross(src, nrm), nrm])
+full = np.linalg.solve(J.T @ J, -J.T @ residual)   # ordinary Gauss-Newton, for comparison
+
+names = ["wx", "wy", "wz", "tx", "ty", "tz"]
+for i in range(6):
+    v = V[:, i].copy()
+    if v[np.argmax(np.abs(v))] < 0:
+        v = -v
+    tag = "keep" if healthy[i] else "flag"
+    bits = "  ".join(f"{names[k]}={v[k]:+.2f}" for k in range(6) if abs(v[k]) >= 0.2)
+    print(f"{tag}  lam={evals[i]:8.3f}  {bits}")
+
+def show(tag, d):
+    print(f"{tag:8s} yaw {np.rad2deg(d[2]):+7.2f} deg"
+          f"   pitch {np.rad2deg(d[1]):+7.3f} deg"
+          f"   t [mm] {1e3 * d[3]:+7.2f} {1e3 * d[4]:+7.2f} {1e3 * d[5]:+7.2f}")
+
+show("full", full)
+show("flagged", delta)
+```
+
+```
+flag  lam=   0.025  wz=+0.95  ty=-0.28
+flag  lam=   0.038  tx=+0.99
+flag  lam=   0.043  wz=+0.30  ty=+0.95
+keep  lam= 148.786  wx=+0.72  wy=-0.69
+keep  lam= 172.457  wx=+0.69  wy=+0.72
+keep  lam= 503.690  tz=+0.99
+full     yaw   +2.55 deg   pitch  -0.025 deg   t [mm]   -7.42   +2.09   -0.17
+flagged  yaw   +0.00 deg   pitch  -0.024 deg   t [mm]   +0.00   -0.00   -0.19
+```
 
 ### Putting it together
 

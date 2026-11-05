@@ -1,0 +1,156 @@
+<figure id="rotation-lever-arm" class="rl">
+  <div class="rl-panels">
+    <div class="rl-panel">
+      <div class="rl-title">Top view, rotation axis out of the page</div>
+      <svg class="rl-view" role="img" aria-label="Points at 1, 2, 3 and 4 meters from the rotation axis, each swept along its own arc by the same rotation angle"></svg>
+    </div>
+    <div class="rl-panel">
+      <div class="rl-title">How far each point moves</div>
+      <svg class="rl-plot" role="img" aria-label="Displacement against distance from the axis: a straight line through the origin whose slope is the rotation angle"></svg>
+    </div>
+  </div>
+  <label class="rl-control">
+    <span>Rotation angle θ:</span>
+    <output class="rl-readout"></output>
+    <input class="rl-angle" type="range" min="0" max="20" step="0.5" value="8">
+  </label>
+</figure>
+<style>
+  .rl { margin: 1.5rem 0; }
+  .rl-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .rl-title { font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
+  .rl-view, .rl-plot { width: 100%; display: block; overflow: visible; }
+  .rl-view { border: 1px solid #e1e4e8; border-radius: 4px; overflow: hidden; }
+  .rl-view text, .rl-plot text { font-size: 12px; fill: #586069; }
+  .rl-control { display: block; margin-top: 10px; font-size: 0.875rem; color: #586069; }
+  .rl-readout { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
+  .rl-angle { display: block; width: 100%; margin-top: 6px; }
+  @media (max-width: 560px) { .rl-panels { grid-template-columns: minmax(0, 1fr); } }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('rotation-lever-arm');
+  var view = root.querySelector('.rl-view');
+  var plot = root.querySelector('.rl-plot');
+  var slider = root.querySelector('.rl-angle');
+  var readout = root.querySelector('.rl-readout');
+  var NS = 'http://www.w3.org/2000/svg';
+  var RADII = [1, 2, 3, 4];
+  var COLORS = ['#0366d6', '#28a745', '#e36209', '#6f42c1'];
+  var BASE = 10 * Math.PI / 180;
+  var MAX_THETA = 20 * Math.PI / 180;
+
+  function el(svg, name, attrs, text) {
+    var node = document.createElementNS(NS, name);
+    for (var k in attrs) node.setAttribute(k, attrs[k]);
+    if (text !== undefined) node.textContent = text;
+    svg.appendChild(node);
+    return node;
+  }
+
+  function clear(svg) { while (svg.firstChild) svg.removeChild(svg.firstChild); }
+
+  function arrowHead(svg, x0, y0, x1, y1, color) {
+    var ang = Math.atan2(y1 - y0, x1 - x0), L = 7;
+    el(svg, 'path', {
+      d: 'M' + x1 + ',' + y1 +
+         'L' + (x1 - L * Math.cos(ang - 0.45)) + ',' + (y1 - L * Math.sin(ang - 0.45)) +
+         'L' + (x1 - L * Math.cos(ang + 0.45)) + ',' + (y1 - L * Math.sin(ang + 0.45)) + 'Z',
+      fill: color
+    });
+  }
+
+  function drawView(theta) {
+    clear(view);
+    var W = view.getBoundingClientRect().width || 340;
+    var x0 = -0.5, x1 = 4.7, y0 = -0.75, y1 = 2.6;
+    var s = W / (x1 - x0);
+    var H = Math.round((y1 - y0) * s);
+    view.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    function P(x, y) { return [(x - x0) * s, H - (y - y0) * s]; }
+
+    var o = P(0, 0);
+    RADII.forEach(function (r) {
+      el(view, 'circle', { cx: o[0], cy: o[1], r: r * s, fill: 'none', stroke: '#eaecef', 'stroke-dasharray': '3 3' });
+    });
+    var ray = P(4.5 * Math.cos(BASE), 4.5 * Math.sin(BASE));
+    el(view, 'line', { x1: o[0], y1: o[1], x2: ray[0], y2: ray[1], stroke: '#d0d7de' });
+    if (theta > 0) {
+      var ray2 = P(4.5 * Math.cos(BASE + theta), 4.5 * Math.sin(BASE + theta));
+      el(view, 'line', { x1: o[0], y1: o[1], x2: ray2[0], y2: ray2[1], stroke: '#d0d7de', 'stroke-dasharray': '4 3' });
+      var ra = 0.55, a0 = P(ra * Math.cos(BASE), ra * Math.sin(BASE)), a1 = P(ra * Math.cos(BASE + theta), ra * Math.sin(BASE + theta));
+      el(view, 'path', { d: 'M' + a0[0] + ',' + a0[1] + 'A' + ra * s + ',' + ra * s + ' 0 0 0 ' + a1[0] + ',' + a1[1], fill: 'none', stroke: '#586069' });
+      var lt = P(0.8 * Math.cos(BASE + theta / 2), 0.8 * Math.sin(BASE + theta / 2));
+      el(view, 'text', { x: lt[0], y: lt[1] + 4, 'text-anchor': 'middle' }, 'θ');
+    }
+
+    RADII.forEach(function (r, k) {
+      var c = COLORS[k];
+      var p0 = P(r * Math.cos(BASE), r * Math.sin(BASE));
+      var p1 = P(r * Math.cos(BASE + theta), r * Math.sin(BASE + theta));
+      if (theta > 0) {
+        el(view, 'path', { d: 'M' + p0[0] + ',' + p0[1] + 'A' + r * s + ',' + r * s + ' 0 0 0 ' + p1[0] + ',' + p1[1], fill: 'none', stroke: c, 'stroke-width': 2.5 });
+        if (Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) > 9) {
+          var tang = BASE + theta;
+          arrowHead(view, p1[0] + Math.sin(tang) * 5, p1[1] + Math.cos(tang) * 5, p1[0], p1[1], c);
+        }
+      }
+      el(view, 'circle', { cx: p0[0], cy: p0[1], r: 4, fill: '#fff', stroke: c, 'stroke-width': 1.5 });
+      el(view, 'circle', { cx: p1[0], cy: p1[1], r: 4, fill: c });
+      var lbl = P((r + 0.05) * Math.cos(BASE) , (r + 0.05) * Math.sin(BASE) - 0.32);
+      el(view, 'text', { x: lbl[0], y: lbl[1], 'text-anchor': 'middle' }, r + ' m');
+    });
+
+    el(view, 'circle', { cx: o[0], cy: o[1], r: 6, fill: '#fff', stroke: '#24292e', 'stroke-width': 1.5 });
+    el(view, 'circle', { cx: o[0], cy: o[1], r: 1.8, fill: '#24292e' });
+    el(view, 'text', { x: o[0] + 10, y: o[1] + 18 }, 'axis');
+  }
+
+  function drawPlot(theta) {
+    clear(plot);
+    var W = plot.getBoundingClientRect().width || 340;
+    var H = Math.round(W * 0.65);
+    plot.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    var padL = 40, padR = 12, padT = 12, padB = 34;
+    var rMax = 4.5, dMax = 4.5 * MAX_THETA * 100;
+    function X(r) { return padL + r / rMax * (W - padL - padR); }
+    function Y(d) { return padT + (1 - d / dMax) * (H - padT - padB); }
+
+    el(plot, 'line', { x1: X(0), y1: Y(0), x2: X(rMax), y2: Y(0), stroke: '#d0d7de' });
+    el(plot, 'line', { x1: X(0), y1: Y(0), x2: X(0), y2: Y(dMax), stroke: '#d0d7de' });
+    [0, 1, 2, 3, 4].forEach(function (r) {
+      el(plot, 'text', { x: X(r), y: Y(0) + 16, 'text-anchor': 'middle' }, String(r));
+    });
+    [0, 50, 100, 150].forEach(function (d) {
+      el(plot, 'text', { x: X(0) - 6, y: Y(d) + 4, 'text-anchor': 'end' }, String(d));
+    });
+    el(plot, 'text', { x: X(rMax), y: Y(0) + 30, 'text-anchor': 'end' }, 'distance from axis r [m]');
+    el(plot, 'text', { x: X(0) + 6, y: Y(dMax) + 4 }, 'displacement [cm]');
+
+    var tr = 1 * theta * 100;
+    el(plot, 'line', { x1: X(0), y1: Y(tr), x2: X(rMax), y2: Y(tr), stroke: '#959da5', 'stroke-dasharray': '4 3' });
+    el(plot, 'text', { x: X(rMax), y: Y(tr) - 6, 'text-anchor': 'end' }, 'translation: same for every point');
+
+    el(plot, 'line', { x1: X(0), y1: Y(0), x2: X(rMax), y2: Y(rMax * theta * 100), stroke: '#24292e', 'stroke-width': 2 });
+    var end = [X(rMax), Y(rMax * theta * 100)];
+    el(plot, 'text', { x: end[0] - 4, y: end[1] - 8, 'text-anchor': 'end' }, 'rotation: r θ');
+
+    RADII.forEach(function (r, k) {
+      el(plot, 'circle', { cx: X(r), cy: Y(r * theta * 100), r: 4.5, fill: COLORS[k] });
+    });
+  }
+
+  function update() {
+    var deg = parseFloat(slider.value);
+    var theta = deg * Math.PI / 180;
+    var moves = RADII.map(function (r) { return (r * theta * 100).toFixed(1); });
+    readout.textContent = deg.toFixed(1) + '°  →  the points move ' + moves.join(', ') + ' cm';
+    drawView(theta);
+    drawPlot(theta);
+  }
+
+  slider.addEventListener('input', update);
+  if (window.ResizeObserver) new ResizeObserver(update).observe(view);
+  update();
+})();
+</script>

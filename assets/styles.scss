@@ -262,6 +262,8 @@ img {
 /*
   Table of contents: kramdown renders `* TOC {:toc}` as ul#markdown-toc, and
   post.html moves it into this panel. Without JavaScript it stays inline.
+  Posts without the marker get the same ul#markdown-toc built from their
+  headings, so they have no table of contents without JavaScript.
 */
 $toc-width: 260px;
 $toc-accent: #0366d6;

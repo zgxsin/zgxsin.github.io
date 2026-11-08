@@ -8,7 +8,7 @@ author: zgxsin
 * TOC
 {:toc}
 
-## From a notebook to a robot
+## From a good benchmark score to a working robot
 
 Training a detector that reaches a good mean average precision (mAP) on a benchmark takes an afternoon. Getting the same detector to run on a robot, at a fixed rate, inside a power budget, on images from cameras and places it has never seen, and to keep it working as the fleet grows, is most of the work. **Machine Learning Operations (MLOps)** is the name for that work: the data, tooling and processes that take a model from training to production and keep it healthy there.
 

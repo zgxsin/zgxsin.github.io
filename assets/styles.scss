@@ -1,8 +1,12 @@
 ---
 ---
 
+@use "variables" as *;
+@use "highlight-syntax";
+// Post figures, images and Mermaid diagrams.
+@use "figures";
+
 @import url("https://unpkg.com/primer/build/build.css");
-@import "highlight-syntax";
 
 // If a user adds a custom font, this component will stop it from bleeding into GitHub components:
 .github-component {
@@ -61,12 +65,7 @@
 
 // Added by GZ
 // Site layout: one centered content column shared by every page.
-$content-width: 960px;
-$reading-width: 760px;
-$gutter: 16px;
-$text: #24292e;
-$muted: #586069;
-$border: #e1e4e8;
+// Layout variables are in _sass/_variables.scss.
 
 body {
   color: $text;
@@ -453,6 +452,3 @@ body:not(.toc-hidden) .toc-show {
     height: 250px;
   }
 }
-
-// Post figures, images and Mermaid diagrams: see _sass/_figures.scss.
-@import "figures";

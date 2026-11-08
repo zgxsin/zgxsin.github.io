@@ -6,6 +6,8 @@
   with its short class (for example .mll-). Everything below is shared.
 */
 
+@use "variables" as *;
+
 :root {
   /* Palette: GitHub Primer colors, so figures match the rest of the site. */
   --fig-text: #24292e;
@@ -134,6 +136,7 @@ $fig-min-width: 560px;
 }
 
 /* Mermaid diagrams (```mermaid blocks), rendered client-side in post.html. */
+.article pre.mermaid,
 pre.mermaid {
   margin: 1.5rem 0;
   padding: 0;

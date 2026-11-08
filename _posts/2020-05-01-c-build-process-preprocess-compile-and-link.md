@@ -3,7 +3,7 @@ title: C++ Build Process -- Preprocess, Compile and Link
 # C++ Build Process: Preprocess, Compile and Link. : cannot be recognised in this case.
 published: true
 date: 2020-05-01 10:39
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [C++]
 ---

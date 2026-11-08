@@ -2,7 +2,7 @@
 title: The concept of thread, process and cores
 published: true
 date: 2022-05-29
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 ---
 
 # Introduction

@@ -2,7 +2,7 @@
 title: GNU Make in Detail for Beginners
 published: true
 date: 2020-03-29 15:52
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [Technical]
 ---

@@ -2,7 +2,7 @@
 title: Sudo in Ubuntu
 published: true
 date: 2020-04-05 13:35
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [Linux and Ubuntu, Technical]
 ---

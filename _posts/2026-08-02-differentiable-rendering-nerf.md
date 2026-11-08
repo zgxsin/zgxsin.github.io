@@ -2,7 +2,7 @@
 title: "Differentiable Rendering: From Volume Rendering to NeRF"
 published: false
 date: 2026-08-02
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 ---
 
 * TOC

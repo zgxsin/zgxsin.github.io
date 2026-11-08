@@ -2,7 +2,7 @@
 title: Machine Learning Ops in Robotics
 published: true
 date: 2026-11-08
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 ---
 
 * TOC

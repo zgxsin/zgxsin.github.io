@@ -2,7 +2,7 @@
 title: Python Project Develop Template
 published: true
 date: 2020-04-19 00:42
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [Technical]
 ---

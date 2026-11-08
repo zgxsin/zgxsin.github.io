@@ -2,7 +2,7 @@
 title: Ego Motion Estimation
 published: true
 date: 2023-06-30
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 ---
 
 * TOC

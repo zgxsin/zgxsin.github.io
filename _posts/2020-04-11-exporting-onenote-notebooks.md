@@ -2,7 +2,7 @@
 title: Exporting OneNote Notebooks
 published: true
 date: 2020-04-11 13:02
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [Tips]
 ---

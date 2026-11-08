@@ -2,7 +2,7 @@
 title: Set a SSH Server in a Home Laptop
 published: true
 date: 2020-04-18 15:32
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [Technical]
 ---

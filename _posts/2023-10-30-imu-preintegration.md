@@ -2,7 +2,7 @@
 title: IMU Preintegration
 published: true
 date: 2023-10-30
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 ---
 
 * TOC

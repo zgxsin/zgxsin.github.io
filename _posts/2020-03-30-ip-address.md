@@ -2,7 +2,7 @@
 title: IP Address
 published: true
 date: 2020-03-30 18:32
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [Miscellaneous]
 ---

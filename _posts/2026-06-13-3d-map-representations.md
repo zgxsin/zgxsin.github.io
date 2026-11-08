@@ -2,7 +2,7 @@
 title: "3D Map Representations for Robots: Point Clouds, Voxels and Distance Fields"
 published: false
 date: 2026-06-13
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 ---
 
 * TOC

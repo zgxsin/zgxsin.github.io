@@ -2,7 +2,7 @@
 title: SSH Forwarding
 published: true
 date: 2020-04-17 22:08
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [Miscellaneous]
 ---

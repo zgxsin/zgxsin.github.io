@@ -2,7 +2,7 @@
 title: "Nonlinear Least Squares for Robotics: Gauss-Newton, Levenberg-Marquardt and ICP"
 published: true
 date: 2025-11-03
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 ---
 
 * TOC

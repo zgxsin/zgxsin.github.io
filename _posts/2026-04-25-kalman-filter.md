@@ -2,7 +2,7 @@
 title: Kalman Filter and Extended Kalman Filter
 published: true
 date: 2026-04-25
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 ---
 
 * TOC

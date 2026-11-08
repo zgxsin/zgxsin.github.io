@@ -2,7 +2,7 @@
 title: Search Commands Summary in Linux
 published: true
 date: 2020-03-30 14:18
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [Linux and Ubuntu]
 ---

@@ -2,7 +2,7 @@
 title: IP地址，子网掩码，网络地址 和主机地址
 published: true
 date: 2020-04-19 02:04
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [Technical]
 ---

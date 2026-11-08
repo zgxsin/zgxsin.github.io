@@ -2,7 +2,7 @@
 title: "3D Gaussian Splatting: Real-Time Radiance Fields"
 published: false
 date: 2026-09-21
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 ---
 
 * TOC

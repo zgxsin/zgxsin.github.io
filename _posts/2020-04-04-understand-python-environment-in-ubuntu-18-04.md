@@ -2,7 +2,7 @@
 title: Understand Python Environment in Ubuntu 18.04
 published: true
 date: 2020-04-04 17:44
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [Miscellaneous]
 ---

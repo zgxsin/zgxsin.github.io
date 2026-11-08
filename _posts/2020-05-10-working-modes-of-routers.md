@@ -2,7 +2,7 @@
 title: Working Modes of Routers
 published: true
 date: 2020-05-10 21:44
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [Technical]
 ---

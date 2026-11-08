@@ -2,7 +2,7 @@
 title: Dependencies in CMakeLists.txt and package.xml in Catkin ROS Package
 published: true
 date: 2020-04-24 18:50
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [C++, cakin, Robotics, ros]
 ---

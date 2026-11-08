@@ -2,7 +2,7 @@
 title: Set Custom Domain for Github Pages
 published: true
 date: 2021-08-02
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 ---
 
 ## Check the Domain Name Severs (DNS)

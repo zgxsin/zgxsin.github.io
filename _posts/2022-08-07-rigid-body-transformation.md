@@ -2,7 +2,7 @@
 title: About Shifted Rigid Body Transformation
 published: true
 date: 2022-08-07
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 ---
 
 ## Introduction

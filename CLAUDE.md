@@ -17,7 +17,7 @@ and served at https://www.guoxiang-zhou.xyz.
 
 - File: `_posts/YYYY-MM-DD-slug.md`. The URL is `/YYYY/MM/DD/slug/`; changing the date or
   slug breaks existing links, so do not rename published posts.
-- Front matter: `title`, `date`, `author: zgxsin`, `published: true`. Optional
+- Front matter: `title`, `date`, `author: "Guoxiang (Shawn) Zhou"`, `published: true`. Optional
   `image: /assets/images/posts/<slug>/cover.png` sets the social preview image.
 - Start with `* TOC` + `{:toc}` on the next line; the layout turns it into the side panel.
 - Math: `$...$` inline and `$$...$$` display (MathJax 4, client-side). Escape `_` and `*`

@@ -2,7 +2,7 @@
 title: 如何成为一个合格的机器人工程师
 published: true
 date: 2020-03-29 14:20
-author: zgxsin
+author: "Guoxiang (Shawn) Zhou"
 comments: true
 categories: [Robotics]
 ---

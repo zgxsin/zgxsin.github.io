@@ -198,6 +198,50 @@ def to_msg(image_msg, boxes, scores, class_ids, class_names):
     return out
 ```
 
+### Non-maximum suppression
+
+A detector does not output one box per object. It scores thousands of candidate boxes (one per anchor or grid cell), and every cell near an object predicts a slightly shifted box around it with a high score. Without post-processing, one person becomes five overlapping detections. NMS keeps the best box of each cluster, that is, of each object, and drops the rest:
+
+1. Discard boxes below the confidence threshold.
+2. Sort the remaining boxes by score, highest first.
+3. Take the top box and move it to the output.
+4. Remove every remaining box whose IoU with it exceeds the **NMS IoU threshold** (typically 0.45 to 0.7).
+5. Repeat from step 3 until no boxes remain.
+
+The assumption is that two boxes overlapping that much describe the same object, so the lower-scored one is a duplicate. Boxes on other objects barely overlap the kept box and survive step 4; the loop exists for them. Each pass keeps the best box of one object, so the result is one box per object, not one box per image. NMS runs per class (class-aware), so a person standing in front of a pallet does not suppress the pallet.
+
+```python
+import numpy as np
+
+def nms(boxes, scores, iou_thresh=0.5):
+    """@brief Greedy non-maximum suppression for one class.
+    @param boxes (N, 4) array of [x1, y1, x2, y2].
+    @param scores (N,) array of confidences.
+    @param iou_thresh Boxes overlapping a kept box by more than this are removed.
+    @return Indices of the kept boxes, highest score first.
+    """
+    x1, y1, x2, y2 = boxes.T
+    area = (x2 - x1) * (y2 - y1)
+    order = scores.argsort()[::-1]
+    keep = []
+    while order.size > 0:
+        i, rest = order[0], order[1:]
+        keep.append(i)
+        w = np.clip(np.minimum(x2[i], x2[rest]) - np.maximum(x1[i], x1[rest]), 0, None)
+        h = np.clip(np.minimum(y2[i], y2[rest]) - np.maximum(y1[i], y1[rest]), 0, None)
+        iou = w * h / (area[i] + area[rest] - w * h)
+        order = rest[iou <= iou_thresh]
+    return keep
+```
+
+The IoU threshold is a trade-off with the same shape as the confidence threshold. Too high, and duplicates survive: each extra box is a false positive, and a tracker may spawn two tracks for one person. Too low, and genuinely separate objects that overlap in the image, such as people walking side by side, are merged into one, which is a false negative that no later stage can recover. Crowded scenes are where greedy NMS fails; **Soft-NMS** decays the scores of overlapping boxes instead of deleting them, which helps there at a small cost.
+
+Practical consequences for deployment:
+
+- **NMS is part of the model.** mAP is computed after NMS, so the evaluation and the robot must use the same IoU threshold, confidence threshold and implementation. A Python NMS in evaluation and a different one in the C++ decoder is the same class of bug as a preprocessing mismatch.
+- **Run it on the GPU.** On the CPU, NMS over thousands of candidates can take longer than the network itself. TensorRT provides an NMS plugin (`EfficientNMS_TRT`) that can be appended to the engine during export, so the engine outputs final boxes.
+- **NMS-free detectors exist.** DETR-style transformers and YOLOv10 are trained to output one box per object and need no NMS, which removes a tuning parameter and a latency step.
+
 ### From a 2D box to a 3D obstacle
 
 A planner needs positions in the map, not pixels. With a depth image aligned to the color image and the pinhole intrinsics $(f_x, f_y, c_x, c_y)$ from `camera_info`, a pixel $(u, v)$ with depth $Z$ back-projects to the camera frame as

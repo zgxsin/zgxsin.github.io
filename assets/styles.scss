@@ -452,3 +452,59 @@ body:not(.toc-hidden) .toc-show {
     height: 250px;
   }
 }
+
+/* Blog index: list of posts grouped by year (_includes/thoughts.html). */
+.blogs {
+  max-width: $reading-width;
+}
+
+.post-year {
+  margin-top: 2rem;
+}
+
+.post-year-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid $border;
+}
+
+.post-year-count {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: $muted;
+}
+
+.post-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.post-list-item {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f2f4;
+}
+
+.post-list-date {
+  flex: 0 0 4rem;
+  color: $muted;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.post-list-title {
+  color: $text;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.post-list-title:hover {
+  color: #0366d6;
+}

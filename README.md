@@ -50,7 +50,7 @@ bundle install
 5. Build the site and make it available on a local server
 
 ```
-bundle exec jekyll serve
+bundle exec jekyll serve --livereload --future --unpublished
 ```
 
 You should see something like:

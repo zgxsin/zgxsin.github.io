@@ -1,7 +1,15 @@
-<div class="d-sm-flex flex-wrap gutter-condensed mb-4">
-  {% for post in site.posts %}
-    <div class="col-sm-6 col-md-12 col-lg-6 col-xl-4 mb-3">
-      {% include post-card.html %}
-    </div>
-  {% endfor %}
-</div>
+{%- comment -%} Blog index: posts as a list, newest first, grouped by year. {%- endcomment -%}
+{% assign posts_by_year = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+{% for year in posts_by_year %}
+  <section class="post-year">
+    <h2 class="post-year-title">{{ year.name }} <span class="post-year-count">{{ year.items | size }}</span></h2>
+    <ul class="post-list">
+      {% for post in year.items %}
+        <li class="post-list-item">
+          <time class="post-list-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %d" }}</time>
+          <a class="post-list-title" href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endfor %}

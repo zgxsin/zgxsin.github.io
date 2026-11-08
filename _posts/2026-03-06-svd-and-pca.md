@@ -1,7 +1,7 @@
 ---
 title: Singular Value Decomposition and PCA analysis
 published: true
-date: 2026-10-30
+date: 2026-03-06
 author: zgxsin
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: "Differentiable Rendering: From Volume Rendering to NeRF"
 published: false
-date: 2026-11-07
+date: 2026-08-02
 author: zgxsin
 ---
 
@@ -18,7 +18,7 @@ Every method in this post answers three questions:
 2. **How is the representation turned into an image?** This is the renderer, also called the forward map.
 3. **How is the representation fitted to the photos?** Classically by triangulating matched features, today mostly by gradient descent through a differentiable renderer.
 
-This post builds up the answer that made the field take off: represent the scene as a **radiance field**, render it with **volume rendering**, and fit it by gradient descent. That is **NeRF** (2020). Its successor, [3D Gaussian splatting](/2026/11/08/gaussian-splatting/), keeps the same rendering equation with a different representation. For geometric maps built from range sensors (occupancy, TSDF, ESDF), see [3D map representations](/2026/11/06/3d-map-representations/).
+This post builds up the answer that made the field take off: represent the scene as a **radiance field**, render it with **volume rendering**, and fit it by gradient descent. That is **NeRF** (2020). Its successor, [3D Gaussian splatting](/2026/09/21/gaussian-splatting/), keeps the same rendering equation with a different representation. For geometric maps built from range sensors (occupancy, TSDF, ESDF), see [3D map representations](/2026/06/13/3d-map-representations/).
 
 ### The classical pipeline: SfM and MVS
 
@@ -58,7 +58,7 @@ Point clouds and meshes describe the surface. A **field** instead assigns a valu
 | Truncated SDF (TSDF) | SDF clipped to a band around the surface | Zero crossing |
 | Radiance field | Volume density $\sigma \geq 0$ and color $\mathbf{c}$ | No hard surface; high density |
 
-The field says *what* is stored. A separate choice is *how* the field is stored: in a discrete grid (voxels, see [3D map representations](/2026/11/06/3d-map-representations/#voxel-grids)), in a neural network, or in a mix of both. The next section covers the last two.
+The field says *what* is stored. A separate choice is *how* the field is stored: in a discrete grid (voxels, see [3D map representations](/2026/06/13/3d-map-representations/#voxel-grids)), in a neural network, or in a mix of both. The next section covers the last two.
 
 ## Neural fields
 
@@ -91,7 +91,7 @@ where $\mathbf{K}\_{ij} = k(\mathbf{x}\_i, \mathbf{x}\_j)$ over the training poi
 
 **Hybrid representations** store features in a grid and use a small network to decode them. To query $\mathbf{x}$, interpolate the feature vectors at the surrounding grid vertices, then pass the result through a tiny MLP. The grid gives locality and fast lookups, the network "super-resolves" the grid and acts as a learned interpolation kernel. It trades memory against compute, and gets the best of both: fast and continuous.
 
-- **Instant-NGP** (2022) uses a multiresolution hash grid: feature tables at many resolutions, indexed by hashing the vertex coordinates, the same idea as [voxel hashing](/2026/11/06/3d-map-representations/#sparse-voxel-data-structures). It brought NeRF training from days to minutes.
+- **Instant-NGP** (2022) uses a multiresolution hash grid: feature tables at many resolutions, indexed by hashing the vertex coordinates, the same idea as [voxel hashing](/2026/06/13/3d-map-representations/#sparse-voxel-data-structures). It brought NeRF training from days to minutes.
 - **Plenoxels** (2022) drops the network entirely: a sparse voxel grid stores density and spherical-harmonic color coefficients directly, and still matches NeRF quality. The network was never the essential part; the differentiable volume rendering was.
 - **TensoRF** (2022) factorizes the feature grid into products of low-rank vectors and matrices to save memory.
 
@@ -174,7 +174,7 @@ $$
 \boxed{\ C \approx \sum_{i=1}^{n} T_i\, \alpha_i\, \mathbf{c}_i, \qquad T_i = \prod_{j=1}^{i-1} (1 - \alpha_j), \qquad \alpha_i = 1 - e^{-\sigma_i \delta_i}\ }
 $$
 
-Each sample contributes its color with weight $w_i = T_i \alpha_i$: it must be opaque itself ($\alpha_i$), and not hidden by what is in front of it ($T_i$). This is exactly **front-to-back alpha compositing**, the "over" operator graphics has used since the 1980s, which is why the same formula shows up again in [Gaussian splatting](/2026/11/08/gaussian-splatting/). The same weights give the **expected depth** of the pixel, $D = \sum_i w_i t_i$, and their sum $\sum_i w_i = 1 - T_{n+1}$ is how opaque the pixel is.
+Each sample contributes its color with weight $w_i = T_i \alpha_i$: it must be opaque itself ($\alpha_i$), and not hidden by what is in front of it ($T_i$). This is exactly **front-to-back alpha compositing**, the "over" operator graphics has used since the 1980s, which is why the same formula shows up again in [Gaussian splatting](/2026/09/21/gaussian-splatting/). The same weights give the **expected depth** of the pixel, $D = \sum_i w_i t_i$, and their sum $\sum_i w_i = 1 - T_{n+1}$ is how opaque the pixel is.
 
 In the figure below, the blue cloud is semi-transparent and the red object behind it is nearly solid. Raise the density of the cloud: the transmittance drops earlier, the cloud's samples take more weight, and the red object fades from the pixel. With few samples, the pixel color is a coarse approximation; with more it converges.
 
@@ -182,7 +182,7 @@ In the figure below, the blue cloud is semi-transparent and the red object behin
 
 Why volume rendering is so good for optimization: every sample along the ray receives a gradient, in proportion to its weight. There is no hard visibility decision. If the color is wrong, the optimizer can add density in front, remove density behind, or change the colors, all smoothly.
 
-Note the link to [occupancy mapping](/2026/11/06/3d-map-representations/#occupancy-mapping): a range sensor's ray also passes through free space and ends at a hit, and the occupancy update is the discrete, probabilistic version of the same ray model. Depth supervision from LiDAR or a depth camera plugs directly into the expected depth $D$ above.
+Note the link to [occupancy mapping](/2026/06/13/3d-map-representations/#occupancy-mapping): a range sensor's ray also passes through free space and ends at a hit, and the occupancy update is the discrete, probabilistic version of the same ray model. Depth supervision from LiDAR or a depth camera plugs directly into the expected depth $D$ above.
 
 ### What volume rendering leaves out
 
@@ -296,7 +296,7 @@ A large body of follow-up work addresses these:
 
 ## What comes next
 
-NeRF showed that differentiable volume rendering of a radiance field reconstructs scenes with remarkable quality. Its weakness is the dense parameterization: every pixel needs hundreds of network evaluations, and the network has no locality. [3D Gaussian splatting](/2026/11/08/gaussian-splatting/) keeps the volume rendering equation but parameterizes the radiance field sparsely with explicit Gaussians, which brings rendering to real time.
+NeRF showed that differentiable volume rendering of a radiance field reconstructs scenes with remarkable quality. Its weakness is the dense parameterization: every pixel needs hundreds of network evaluations, and the network has no locality. [3D Gaussian splatting](/2026/09/21/gaussian-splatting/) keeps the volume rendering equation but parameterizes the radiance field sparsely with explicit Gaussians, which brings rendering to real time.
 
 ## References
 

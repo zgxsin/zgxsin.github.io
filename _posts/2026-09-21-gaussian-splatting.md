@@ -1,7 +1,7 @@
 ---
 title: "3D Gaussian Splatting: Real-Time Radiance Fields"
 published: false
-date: 2026-11-08
+date: 2026-09-21
 author: zgxsin
 ---
 
@@ -10,7 +10,7 @@ author: zgxsin
 
 3D Gaussian Splatting (3DGS, Kerbl et al., SIGGRAPH 2023) reconstructs a scene from photos with known camera poses and renders it from new viewpoints in real time, at a quality equal to or better than the best NeRFs, after tens of minutes of training.
 
-It builds on two ideas covered in my post on [differentiable rendering and NeRF](/2026/11/07/differentiable-rendering-nerf/): fit a scene representation to images by gradient descent through a differentiable renderer, and render a **radiance field** (density and view-dependent color at every point) with **volume rendering**. The one equation to keep in mind is the discrete volume rendering formula, which composites the samples along a camera ray front to back:
+It builds on two ideas covered in my post on [differentiable rendering and NeRF](/2026/08/02/differentiable-rendering-nerf/): fit a scene representation to images by gradient descent through a differentiable renderer, and render a **radiance field** (density and view-dependent color at every point) with **volume rendering**. The one equation to keep in mind is the discrete volume rendering formula, which composites the samples along a camera ray front to back:
 
 $$
 C = \sum_{i} T_i\, \alpha_i\, \mathbf{c}_i, \qquad T_i = \prod_{j=1}^{i-1} (1 - \alpha_j)
@@ -84,7 +84,7 @@ $$
 C = \sum_{i} \mathbf{c}_i\, \alpha_i \prod_{j=1}^{i-1} (1 - \alpha_j)
 $$
 
-**This is the same formula as [NeRF's volume rendering](/2026/11/07/differentiable-rendering-nerf/#volume-rendering).** The only difference is where $\alpha_i$ comes from: in NeRF it is the density of a sampled point integrated over a ray segment, in Gaussian splatting it is read off a closed-form 2D Gaussian. The volume rendering integral is computed without ever sampling a single 3D point in space.
+**This is the same formula as [NeRF's volume rendering](/2026/08/02/differentiable-rendering-nerf/#volume-rendering).** The only difference is where $\alpha_i$ comes from: in NeRF it is the density of a sampled point integrated over a ray segment, in Gaussian splatting it is read off a closed-form 2D Gaussian. The volume rendering integral is computed without ever sampling a single 3D point in space.
 
 One approximation is hidden in the sort: each Gaussian gets a single depth, that of its center. When two Gaussians overlap in depth, their order can flip as the camera moves, which can cause "popping". Later work (StopThePop, 3D Gaussian ray tracing) sorts per pixel or traces rays to remove it.
 
@@ -184,7 +184,7 @@ Gaussian splatting matches the best NeRF in quality, renders more than 2000 time
 
 A robot needs two different kinds of maps:
 
-- **Maps for the robot** to localize, plan and avoid collisions need metric, reliable geometry and fast queries ("is this voxel free?"). Point clouds, occupancy grids, TSDF or ESDF voxel maps (voxblox, nvblox) and elevation maps remain the right tools, see [3D map representations](/2026/11/06/3d-map-representations/). Their appearance does not matter.
+- **Maps for the robot** to localize, plan and avoid collisions need metric, reliable geometry and fast queries ("is this voxel free?"). Point clouds, occupancy grids, TSDF or ESDF voxel maps (voxblox, nvblox) and elevation maps remain the right tools, see [3D map representations](/2026/06/13/3d-map-representations/). Their appearance does not matter.
 - **Maps for people**, such as an operator who inspects a site, places waypoints and inspection points, or reviews a change over time, benefit from photorealism. Here Gaussian splatting is very attractive: it renders in real time, even in a browser, and shows gauges, labels and thin structures that a coarse mesh loses. A practical setup runs a high-fidelity mapping process in parallel with SLAM: SLAM provides localization, and its poses feed the photorealistic reconstruction.
 
 ### Gaussian splatting in SLAM, and open problems

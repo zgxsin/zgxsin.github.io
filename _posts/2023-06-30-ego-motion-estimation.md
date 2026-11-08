@@ -191,7 +191,7 @@ $$
 \begin{bmatrix} u_2 u_1 & u_2 v_1 & u_2 & v_2 u_1 & v_2 v_1 & v_2 & u_1 & v_1 & 1 \end{bmatrix} \mathbf{e} = 0
 $$
 
-Eight correspondences give a system $A\,\mathbf{e} = \mathbf{0}$ with $A \in \mathbb{R}^{8 \times 9}$, which pins down $\mathbf{e}$ up to scale. With more points and noise, take the least-squares solution: the right singular vector of $A$ with the smallest singular value (see the [SVD and PCA post]({% post_url 2026-10-30-svd-and-pca %})). The result is generally not a valid essential matrix, so project it onto the closest one by fixing its singular values:
+Eight correspondences give a system $A\,\mathbf{e} = \mathbf{0}$ with $A \in \mathbb{R}^{8 \times 9}$, which pins down $\mathbf{e}$ up to scale. With more points and noise, take the least-squares solution: the right singular vector of $A$ with the smallest singular value (see the [SVD and PCA post]({% post_url 2026-03-06-svd-and-pca %})). The result is generally not a valid essential matrix, so project it onto the closest one by fixing its singular values:
 
 $$
 E \approx U \operatorname{diag}(\sigma_1, \sigma_2, \sigma_3) V^T \quad\longrightarrow\quad E = U \operatorname{diag}(1, 1, 0) V^T

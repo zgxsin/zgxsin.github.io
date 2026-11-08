@@ -1,7 +1,7 @@
 ---
 title: Linear Algebra Essentials
 published: true
-date: 2026-10-30
+date: 2026-01-15
 author: zgxsin
 ---
 

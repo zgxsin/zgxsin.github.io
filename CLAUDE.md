@@ -25,7 +25,7 @@ and served at https://www.guoxiang-zhou.xyz.
   (`\mathbf{p}\_1`). Use `\lbrace \rbrace` instead of `\{ \}`.
 - Never write `{{` or `{%` in prose or code blocks; Liquid evaluates them. Wrap such code in
   `{% raw %}...{% endraw %}`.
-- Link other posts by URL path, e.g. `[Kalman filter](/2026/11/04/kalman-filter/)`.
+- Link other posts by URL path, e.g. `[Kalman filter](/2026/04/25/kalman-filter/)`.
 - Style: direct, technical, no em dashes, no emoji.
 
 ## Visuals

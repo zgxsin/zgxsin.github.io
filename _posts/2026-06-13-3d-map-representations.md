@@ -20,7 +20,7 @@ A 3D map is a data structure that stores what a robot has learned about its envi
 
 No single representation is good at all five, which is why real systems usually run several in parallel. A typical robot localizes against a point cloud map, plans on a voxel or elevation map, and shows the operator a mesh or a photorealistic reconstruction, all built from the same sensor data and the same poses from SLAM.
 
-This post covers the geometric maps built from range sensors (LiDAR, depth cameras) with known poses: point clouds, elevation maps, occupancy grids, signed distance fields and meshes. These answer the first three questions. Photorealistic maps fitted to images are covered in two companion posts, on [differentiable rendering and NeRF](/2026/08/02/differentiable-rendering-nerf/) and on [3D Gaussian splatting](/2026/09/21/gaussian-splatting/).
+This post covers the geometric maps built from range sensors (LiDAR, depth cameras) with known poses: point clouds, elevation maps, occupancy grids, signed distance fields and meshes. These answer the first three questions. Photorealistic maps fitted to images are covered in two companion posts, on [differentiable rendering](/2026/08/02/differentiable-rendering/) and on [NeRF and 3D Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/).
 
 ### Axes for comparing representations
 
@@ -51,7 +51,7 @@ That makes point clouds the standard for **localization** maps and a poor choice
 
 ### Normal distributions transform (NDT)
 
-NDT (Biber and Straßer, 2003; Magnusson's 3D-NDT) replaces the points in each voxel by a Gaussian: the mean and covariance of the points that fall in it. The map becomes a piecewise smooth probability density, which makes scan registration a smooth optimization problem with analytic derivatives instead of a nearest-neighbor search. It is also far more compact than raw points. A voxel with a flat covariance is a small planar patch, a voxel with an elongated one is an edge: NDT is an early, non-rendered relative of [Gaussian splatting](/2026/09/21/gaussian-splatting/).
+NDT (Biber and Straßer, 2003; Magnusson's 3D-NDT) replaces the points in each voxel by a Gaussian: the mean and covariance of the points that fall in it. The map becomes a piecewise smooth probability density, which makes scan registration a smooth optimization problem with analytic derivatives instead of a nearest-neighbor search. It is also far more compact than raw points. A voxel with a flat covariance is a small planar patch, a voxel with an elongated one is an edge: NDT is an early, non-rendered relative of [Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/#gaussian-splatting).
 
 ### Surfels
 
@@ -83,7 +83,7 @@ Points, surfels and meshes describe the surface. A **field** instead assigns a v
 | Truncated SDF (TSDF) | SDF clipped to a band around the surface | Zero crossing |
 | Radiance field | Volume density $\sigma \geq 0$ and color $\mathbf{c}$ | No hard surface; high density |
 
-The field says *what* is stored. A separate choice is *how* the field is stored: in a discrete grid (this post), in a neural network or a hybrid of both ([differentiable rendering](/2026/08/02/differentiable-rendering-nerf/#neural-fields)), or as a sum of Gaussians ([Gaussian splatting](/2026/09/21/gaussian-splatting/)).
+The field says *what* is stored. A separate choice is *how* the field is stored: in a discrete grid (this post), in a neural network or a hybrid of both ([differentiable rendering](/2026/08/02/differentiable-rendering/#neural-fields)), or as a sum of Gaussians ([Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/#gaussian-splatting)).
 
 ## Voxel grids
 
@@ -132,7 +132,7 @@ $$
 h(x, y, z) = (x \cdot p_1 \oplus y \cdot p_2 \oplus z \cdot p_3) \bmod n
 $$
 
-with large primes $p_1 = 73856093$, $p_2 = 19349663$, $p_3 = 83492791$. A lookup is one hash plus an array index, independent of the size of the scene, and blocks can be allocated, freed or streamed to disk independently. The structure is flat, not hierarchical: there is no octree and no adaptive resolution. Voxblox and nvblox use voxel hashing, and the same idea reappears in [Instant-NGP](/2026/08/02/differentiable-rendering-nerf/#hybrid-representations).
+with large primes $p_1 = 73856093$, $p_2 = 19349663$, $p_3 = 83492791$. A lookup is one hash plus an array index, independent of the size of the scene, and blocks can be allocated, freed or streamed to disk independently. The structure is flat, not hierarchical: there is no octree and no adaptive resolution. Voxblox and nvblox use voxel hashing, and the same idea reappears in [Instant-NGP](/2026/08/02/differentiable-rendering/#hybrid-representations).
 
 **OpenVDB.** VDB (Museth, 2013), developed for film visual effects, is a shallow tree with very wide nodes. The default configuration has a hash map at the root, two levels of internal nodes with $32^3$ and $16^3$ children, and leaf nodes of $8^3$ voxels. Only four levels cover a practically unbounded index space, each internal node uses bit masks to mark which children exist, and sequential or locally coherent access is fast thanks to caching of the last visited path. It combines the adaptivity of an octree with fast random access. VDBFusion builds a TSDF on OpenVDB, and the format comes with mature tools for meshing, filtering and level set operations.
 
@@ -224,8 +224,8 @@ Meshes are hard to update incrementally (changing the topology is messy) and hav
 
 The representations above are built for the robot: they store geometry, and some of them free space. None of them looks like the scene. **Radiance fields** fill that gap: they are fitted to camera images by differentiable rendering and reproduce what the scene looks like from any viewpoint.
 
-- **NeRF** stores the radiance field in a neural network. It is compact and continuous, but slow to render and hard to update locally. See [differentiable rendering and NeRF](/2026/08/02/differentiable-rendering-nerf/).
-- **3D Gaussian splatting** stores it as millions of explicit Gaussians, renders in real time, and can be initialized from a LiDAR or SfM point cloud. See [3D Gaussian splatting](/2026/09/21/gaussian-splatting/).
+- **NeRF** stores the radiance field in a neural network. It is compact and continuous, but slow to render and hard to update locally. See [NeRF and 3D Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/#nerf-neural-radiance-fields).
+- **3D Gaussian splatting** stores it as millions of explicit Gaussians, renders in real time, and can be initialized from a LiDAR or SfM point cloud. See [NeRF and 3D Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/#gaussian-splatting).
 
 Neither stores free space, so they complement the maps above rather than replace them.
 
@@ -259,7 +259,7 @@ All the representations above describe geometry and appearance. A robot that is 
 A robot needs two different kinds of maps:
 
 - **Maps for the robot** to localize, plan and avoid collisions need metric, reliable geometry and fast queries ("is this voxel free?"). Point clouds, occupancy grids, TSDF or ESDF voxel maps (voxblox, nvblox) and elevation maps remain the right tools. Their appearance does not matter.
-- **Maps for people**, such as an operator who inspects a site, places waypoints and inspection points, or reviews a change over time, benefit from photorealism. Here [Gaussian splatting](/2026/09/21/gaussian-splatting/) is very attractive: it renders in real time, even in a browser, and shows gauges, labels and thin structures that a coarse mesh loses. A practical setup runs a high-fidelity mapping process in parallel with SLAM: SLAM provides localization, and its poses feed the photorealistic reconstruction.
+- **Maps for people**, such as an operator who inspects a site, places waypoints and inspection points, or reviews a change over time, benefit from photorealism. Here [Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/#gaussian-splatting) is very attractive: it renders in real time, even in a browser, and shows gauges, labels and thin structures that a coarse mesh loses. A practical setup runs a high-fidelity mapping process in parallel with SLAM: SLAM provides localization, and its poses feed the photorealistic reconstruction.
 
 ### Guidelines
 

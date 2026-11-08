@@ -1,5 +1,5 @@
 ---
-title: "Differentiable Rendering: From Volume Rendering to NeRF"
+title: "Differentiable Rendering: Neural Fields and Volume Rendering"
 published: false
 date: 2026-08-02
 author: "Guoxiang (Shawn) Zhou"
@@ -18,7 +18,7 @@ Every method in this post answers three questions:
 2. **How is the representation turned into an image?** This is the renderer, also called the forward map.
 3. **How is the representation fitted to the photos?** Classically by triangulating matched features, today mostly by gradient descent through a differentiable renderer.
 
-This post builds up the answer that made the field take off: represent the scene as a **radiance field**, render it with **volume rendering**, and fit it by gradient descent. That is **NeRF** (2020). Its successor, [3D Gaussian splatting](/2026/09/21/gaussian-splatting/), keeps the same rendering equation with a different representation. For geometric maps built from range sensors (occupancy, TSDF, ESDF), see [3D map representations](/2026/06/13/3d-map-representations/).
+This post builds up the toolkit behind modern photorealistic reconstruction: describe the scene as a **field**, store it in a grid, a neural network or both, and render it with **volume rendering**, so that the error in every pixel flows back into the scene by gradient descent. [NeRF and 3D Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/) are built on exactly this toolkit. For geometric maps built from range sensors (occupancy, TSDF, ESDF), see [3D map representations](/2026/06/13/3d-map-representations/).
 
 ### The classical pipeline: SfM and MVS
 
@@ -66,7 +66,7 @@ A **neural field** stores a field in the weights of a neural network, usually a 
 
 - **Occupancy networks and DeepSDF** (2019) learn occupancy or signed distance, and learned priors fill in unobserved parts of objects.
 - **iSDF** and **NICE-SLAM / Co-SLAM** learn an SDF online from depth images, so a neural map can replace the TSDF in a SLAM system.
-- **NeRF** learns density and view-dependent color, for photorealistic view synthesis ([below](#nerf-neural-radiance-fields)).
+- **NeRF** learns density and view-dependent color, for photorealistic view synthesis (see [NeRF and 3D Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/#nerf-neural-radiance-fields)).
 
 Its properties are the opposite of a voxel grid's:
 
@@ -85,7 +85,7 @@ f(\mathbf{x}) = \sum_{i=1}^{n} \left(\mathbf{K}^{-1}\mathbf{y}\right)_i\, k(\mat
 k_{\text{NTK}}(\mathbf{x}_1, \mathbf{x}_2) = \big\langle \nabla_\theta f_{\theta_0}(\mathbf{x}_1),\, \nabla_\theta f_{\theta_0}(\mathbf{x}_2) \big\rangle
 $$
 
-where $\mathbf{K}\_{ij} = k(\mathbf{x}\_i, \mathbf{x}\_j)$ over the training points and $\mathbf{y}$ holds their target values. In other words, a neural field interpolates its training samples according to a fixed, fairly simple rule. It is about as "smart" as a voxel grid with a clever interpolation kernel. This view also explains a known weakness: the NTK of a plain MLP on raw coordinates is a smooth, low-pass kernel, so the network struggles to fit high-frequency detail. NeRF's positional encoding, covered below, fixes exactly that.
+where $\mathbf{K}\_{ij} = k(\mathbf{x}\_i, \mathbf{x}\_j)$ over the training points and $\mathbf{y}$ holds their target values. In other words, a neural field interpolates its training samples according to a fixed, fairly simple rule. It is about as "smart" as a voxel grid with a clever interpolation kernel. This view also explains a known weakness: the NTK of a plain MLP on raw coordinates is a smooth, low-pass kernel, so the network struggles to fit high-frequency detail. NeRF's [positional encoding](/2026/09/21/nerf-and-gaussian-splatting/#positional-encoding) fixes exactly that.
 
 ### Hybrid representations
 
@@ -174,7 +174,7 @@ $$
 \boxed{\ C \approx \sum_{i=1}^{n} T_i\, \alpha_i\, \mathbf{c}_i, \qquad T_i = \prod_{j=1}^{i-1} (1 - \alpha_j), \qquad \alpha_i = 1 - e^{-\sigma_i \delta_i}\ }
 $$
 
-Each sample contributes its color with weight $w_i = T_i \alpha_i$: it must be opaque itself ($\alpha_i$), and not hidden by what is in front of it ($T_i$). This is exactly **front-to-back alpha compositing**, the "over" operator graphics has used since the 1980s, which is why the same formula shows up again in [Gaussian splatting](/2026/09/21/gaussian-splatting/). The same weights give the **expected depth** of the pixel, $D = \sum_i w_i t_i$, and their sum $\sum_i w_i = 1 - T_{n+1}$ is how opaque the pixel is.
+Each sample contributes its color with weight $w_i = T_i \alpha_i$: it must be opaque itself ($\alpha_i$), and not hidden by what is in front of it ($T_i$). This is exactly **front-to-back alpha compositing**, the "over" operator graphics has used since the 1980s, which is why the same formula shows up again in [Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/#gaussian-splatting). The same weights give the **expected depth** of the pixel, $D = \sum_i w_i t_i$, and their sum $\sum_i w_i = 1 - T_{n+1}$ is how opaque the pixel is.
 
 In the figure below, the blue cloud is semi-transparent and the red object behind it is nearly solid. Raise the density of the cloud: the transmittance drops earlier, the cloud's samples take more weight, and the red object fades from the pixel. With few samples, the pixel color is a coarse approximation; with more it converges.
 
@@ -194,115 +194,14 @@ $$
 
 where $f_r$ is the material's reflectance function (the BRDF) and $\mathbf{n}$ the surface normal. A radiance field with color $\mathbf{c}(\mathbf{x})$ throws away the integral and keeps only emission, $L_o = L_e(\mathbf{x})$: every particle glows with its own fixed color. So there are no true reflections, no inter-reflections, no materials, and no relighting. The usual halfway fix, used by NeRF and Gaussian splatting, is to let the color depend on the viewing direction, $\mathbf{c}(\mathbf{x}, \mathbf{d})$, while keeping the density $\sigma(\mathbf{x})$ independent of it. That reproduces specular highlights and reflections as seen from the training views, but they are baked in: you cannot move the light.
 
-## NeRF: neural radiance fields
-
-NeRF (Mildenhall et al., ECCV 2020) parameterizes the radiance field **densely**, at every point in space, with an MLP, and renders it with volume rendering.
-
-### Model
-
-The network maps a position and a viewing direction to a density and a color:
-
-$$
-F_\theta: (\mathbf{x}, \mathbf{d}) \mapsto (\sigma, \mathbf{c})
-$$
-
-The architecture enforces the halfway fix above. The position goes through 8 fully connected layers of 256 channels (with a skip connection that re-injects the input at the fifth layer), which output the density $\sigma$ and a feature vector. Only then is the viewing direction concatenated, and one more layer of 128 channels outputs the color. So the density, which is the geometry, cannot depend on the viewing direction, which forces the geometry to be consistent across views, while the color can.
-
-### Positional encoding
-
-Fed raw coordinates, an MLP produces blurry results. Neural networks have a **spectral bias** towards smooth, low-frequency functions, which is the NTK observation from above. NeRF fixes this by mapping each coordinate to sines and cosines of increasing frequency before the network:
-
-$$
-\gamma(p) = \big(\sin(2^0 \pi p), \cos(2^0 \pi p), \dots, \sin(2^{L-1} \pi p), \cos(2^{L-1} \pi p)\big)
-$$
-
-with $L = 10$ frequencies for the position and $L = 4$ for the direction. Nearby points that were almost identical as inputs now differ strongly in the high-frequency components, so the network can represent sharp edges and fine texture. Tancik et al. (2020) later explained this as changing the NTK from a low-pass kernel into one with a tunable bandwidth.
-
-### Training
-
-NeRF is fitted to **one scene at a time**; there is no pretraining and no generalization to other scenes. Each training step:
-
-1. Sample a batch of pixels (4096 rays) at random from all training images, and build each pixel's ray from the camera pose.
-2. Render each ray with the volume rendering quadrature.
-3. Compare with the true pixel colors and backpropagate the squared error into the network weights:
-
-$$
-\mathcal{L} = \sum_{\mathbf{r}} \big\lVert \hat{C}(\mathbf{r}) - C(\mathbf{r}) \big\rVert^2
-$$
-
-The original NeRF uses no depth at all; depth supervision from LiDAR or depth cameras is an optional extra that speeds up training and improves geometry. The samples along each ray are **stratified**: the range $[t_n, t_f]$ is split into $N$ equal bins and one point is drawn uniformly inside each bin. Since the sample positions change every iteration, the network sees the whole continuous ray over training rather than a fixed set of points.
-
-```python
-import torch
-
-def render_rays(field, rays_o, rays_d, near, far, n_samples=64):
-    """Volume-render a batch of rays. rays_o, rays_d: (B, 3), rays_d of unit length."""
-    bins = torch.linspace(near, far, n_samples + 1)
-    lower, upper = bins[:-1], bins[1:]
-    t = lower + (upper - lower) * torch.rand(rays_o.shape[0], n_samples)  # stratified, (B, N)
-
-    pts = rays_o[:, None, :] + t[..., None] * rays_d[:, None, :]          # (B, N, 3)
-    sigma, rgb = field(pts, rays_d[:, None, :].expand_as(pts))            # (B, N), (B, N, 3)
-
-    delta = torch.diff(t, dim=-1)
-    delta = torch.cat([delta, torch.full_like(delta[:, :1], 1e10)], dim=-1)
-    alpha = 1.0 - torch.exp(-sigma * delta)
-    # T_i = prod_{j<i} (1 - alpha_j), an exclusive cumulative product.
-    ones = torch.ones_like(alpha[:, :1])
-    trans = torch.cumprod(torch.cat([ones, 1.0 - alpha + 1e-10], dim=-1), dim=-1)[:, :-1]
-    weights = trans * alpha
-
-    color = (weights[..., None] * rgb).sum(dim=1)
-    depth = (weights * t).sum(dim=1)
-    return color, depth, weights
-
-for step in range(n_steps):
-    rays_o, rays_d, target = sample_random_rays(images, poses, batch_size=4096)
-    color, _, _ = render_rays(nerf, rays_o, rays_d, near, far)
-    loss = ((color - target) ** 2).mean()
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-```
-
-### Hierarchical sampling
-
-Most samples along a ray land in empty space or behind the first surface, where they contribute nothing. NeRF trains two networks at once to spend samples where they matter:
-
-1. A **coarse** network is evaluated at $N_c = 64$ stratified samples.
-2. Its weights $w_i = T_i \alpha_i$, normalized to sum to one, form a piecewise-constant probability density along the ray that peaks where the surface is.
-3. $N_f = 128$ more samples are drawn from that density by inverse transform sampling, and the **fine** network is evaluated at all $64 + 128$ points to produce the final color.
-
-Both networks are trained with the photometric loss. This is importance sampling: the integral is estimated with samples concentrated where the integrand is large.
-
-### Limitations and follow-ups
-
-The original NeRF produced a breakthrough in quality, with only about 5 MB of weights per scene, but it has clear limitations:
-
-- **Slow.** Training takes one to two days on a single GPU, and rendering one image takes tens of seconds, because every pixel needs about 200 network evaluations.
-- **One static scene per model.** Nothing moving, no generalization.
-- **Needs accurate poses**, usually from COLMAP.
-- **Artifacts:** "floaters" of spurious density in poorly observed space, aliasing when the rendering resolution differs from training, and trouble with unbounded outdoor scenes.
-- **Implicit:** you cannot select or edit part of the scene, and extracting a surface (threshold the density, then marching cubes) gives noisy meshes. Geometry is often worse than the images suggest, and there is no explicit free space.
-
-A large body of follow-up work addresses these:
-
-- **Mip-NeRF** and **Mip-NeRF 360** render cones instead of rays to fix aliasing, and handle unbounded scenes by contracting far-away space. **Zip-NeRF** combines this with hash grids.
-- **Instant-NGP** and **Plenoxels** (see [hybrid representations](#hybrid-representations)) make training take minutes.
-- **NeRF in the Wild** handles photo collections with varying lighting and transient objects by giving each image a learned appearance embedding.
-- **BARF** refines inaccurate camera poses jointly with the scene.
-- **NeuS** and **VolSDF** volume-render an SDF instead of a free density, which gives clean surfaces.
-- **Light field networks** skip volume rendering altogether and map a ray directly to its color, one network evaluation per pixel, at the cost of no built-in 3D consistency.
-
 ## What comes next
 
-NeRF showed that differentiable volume rendering of a radiance field reconstructs scenes with remarkable quality. Its weakness is the dense parameterization: every pixel needs hundreds of network evaluations, and the network has no locality. [3D Gaussian splatting](/2026/09/21/gaussian-splatting/) keeps the volume rendering equation but parameterizes the radiance field sparsely with explicit Gaussians, which brings rendering to real time.
+Volume rendering of a radiance field, fitted by gradient descent, is the core of the two methods that made photorealistic reconstruction from photos practical. [NeRF and 3D Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/) covers both: NeRF stores the field densely in a neural network, Gaussian splatting sparsely in millions of explicit Gaussians, and both render it with the equation derived above.
 
 ## References
 
 1. [Machine Learning for Inverse Graphics (MIT 6.S980)](https://www.scenerepresentations.org/courses/2023/fall/inverse-graphics/), Vincent Sitzmann
 2. [NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis](https://arxiv.org/abs/2003.08934), Mildenhall et al., ECCV 2020
-3. [Fourier Features Let Networks Learn High Frequency Functions in Low Dimensional Domains](https://arxiv.org/abs/2006.10739), Tancik et al., 2020
-4. [Neural Tangent Kernel: Convergence and Generalization in Neural Networks](https://arxiv.org/abs/1806.07572), Jacot et al., 2018
-5. [Instant Neural Graphics Primitives with a Multiresolution Hash Encoding](https://nvlabs.github.io/instant-ngp/), Müller et al., 2022
-6. [Plenoxels: Radiance Fields without Neural Networks](https://alexyu.net/plenoxels/), Fridovich-Keil et al., 2022
+3. [Neural Tangent Kernel: Convergence and Generalization in Neural Networks](https://arxiv.org/abs/1806.07572), Jacot et al., 2018
+4. [Instant Neural Graphics Primitives with a Multiresolution Hash Encoding](https://nvlabs.github.io/instant-ngp/), Müller et al., 2022
+5. [Plenoxels: Radiance Fields without Neural Networks](https://alexyu.net/plenoxels/), Fridovich-Keil et al., 2022

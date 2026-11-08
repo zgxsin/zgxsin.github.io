@@ -39,6 +39,9 @@ jekyll-spaceship:
     - emoji-processor
     - element-processor
 
+# Used by jekyll-github-metadata (site.github); CI has no git remote to infer it from.
+repository: zgxsin/zgxsin.github.io
+
 permalink: /:year/:month/:day/:title/
 
 exclude:

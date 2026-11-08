@@ -1,31 +1,28 @@
-<figure id="gaussian-covariance" class="gcv">
-  <div class="gcv-legend">
+<figure id="gaussian-covariance" class="fig gcv">
+  <div class="fig-legend gcv-legend">
     <span><i class="gcv-swatch gcv-red"></i>first axis, length s<sub>1</sub></span>
     <span><i class="gcv-swatch gcv-green"></i>second axis, length s<sub>2</sub></span>
     <span>dashed: one-sigma ellipse</span>
   </div>
   <div class="gcv-body">
-    <svg class="gcv-svg" viewBox="0 0 300 300" role="img" aria-label="A 2D Gaussian drawn as a blurred ellipse. Its two axes are set by a rotation angle and two scales, and the resulting covariance matrix is shown next to it."></svg>
+    <svg class="fig-svg gcv-svg" viewBox="0 0 300 300" role="img" aria-label="A 2D Gaussian drawn as a blurred ellipse. Its two axes are set by a rotation angle and two scales, and the resulting covariance matrix is shown next to it."></svg>
     <div class="gcv-math"></div>
   </div>
-  <label class="gcv-control"><span>Scale s<sub>1</sub>:</span><output class="gcv-s1-out"></output><input class="gcv-s1" type="range" min="0.15" max="1.6" step="0.01" value="1.2"></label>
-  <label class="gcv-control"><span>Scale s<sub>2</sub>:</span><output class="gcv-s2-out"></output><input class="gcv-s2" type="range" min="0.15" max="1.6" step="0.01" value="0.4"></label>
-  <label class="gcv-control"><span>Rotation θ:</span><output class="gcv-th-out"></output><input class="gcv-th" type="range" min="0" max="180" step="1" value="30"></label>
+  <label class="fig-control gcv-control"><span>Scale s<sub>1</sub>:</span><output class="gcv-s1-out"></output><input class="gcv-s1" type="range" min="0.15" max="1.6" step="0.01" value="1.2"></label>
+  <label class="fig-control gcv-control"><span>Scale s<sub>2</sub>:</span><output class="gcv-s2-out"></output><input class="gcv-s2" type="range" min="0.15" max="1.6" step="0.01" value="0.4"></label>
+  <label class="fig-control gcv-control"><span>Rotation θ:</span><output class="gcv-th-out"></output><input class="gcv-th" type="range" min="0" max="180" step="1" value="30"></label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .gcv { margin: 1.5rem 0; }
-  .gcv-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
   .gcv-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
   .gcv-red { background: #d73a49; }
   .gcv-green { background: #28a745; }
   .gcv-body { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
   .gcv-svg { width: 100%; max-width: 300px; display: block; }
-  .gcv-svg text { font-size: 13px; fill: #24292e; }
   .gcv-math { font-size: 0.9375rem; color: #24292e; font-variant-numeric: tabular-nums; line-height: 1.4; }
   .gcv-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; flex-wrap: wrap; }
   .gcv-mat { display: inline-grid; grid-template-columns: auto auto; gap: 0 14px; padding: 2px 8px; border-left: 1.5px solid #24292e; border-right: 1.5px solid #24292e; border-radius: 4px; text-align: right; }
   .gcv-note { font-size: 0.875rem; color: #586069; max-width: 360px; }
-  .gcv-control { display: block; margin-top: 8px; font-size: 0.875rem; color: #586069; }
   .gcv-control output { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
   .gcv-control input { display: block; width: 100%; margin-top: 6px; }
 </style>

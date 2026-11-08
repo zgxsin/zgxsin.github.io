@@ -453,3 +453,6 @@ body:not(.toc-hidden) .toc-show {
     height: 250px;
   }
 }
+
+// Post figures, images and Mermaid diagrams: see _sass/_figures.scss.
+@import "figures";

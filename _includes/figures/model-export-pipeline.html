@@ -1,5 +1,5 @@
-<figure id="model-export-pipeline" class="mep">
-  <svg class="mep-svg" viewBox="0 0 760 250" role="img" aria-label="Model export pipeline. A PyTorch checkpoint, trained on any GPU, is exported to ONNX, a portable graph with a fixed input shape. ONNX is then built into a TensorRT engine on the target Jetson, where layers are fused, kernels are tuned and precision is reduced to FP16 or INT8 using a calibration set. The engine is specific to the GPU and TensorRT version.">
+<figure id="model-export-pipeline" class="fig mep">
+  <svg class="fig-svg fig-svg-wide mep-svg" viewBox="0 0 760 250" role="img" aria-label="Model export pipeline. A PyTorch checkpoint, trained on any GPU, is exported to ONNX, a portable graph with a fixed input shape. ONNX is then built into a TensorRT engine on the target Jetson, where layers are fused, kernels are tuned and precision is reduced to FP16 or INT8 using a calibration set. The engine is specific to the GPU and TensorRT version.">
     <defs>
       <marker id="mep-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
         <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
@@ -47,11 +47,9 @@
       <text x="0" y="54" class="mep-s">a silent preprocessing mismatch is the usual bug</text>
     </g>
   </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .mep { margin: 1.5rem 0; }
-  .mep-svg { width: 100%; display: block; overflow: visible; }
-  .mep-svg text { font-size: 13px; fill: #24292e; }
   .mep-zone { font-weight: 600; fill: #586069 !important; }
   .mep-node rect { fill: #fff; stroke: #24292e; stroke-width: 1.2; }
   .mep-node text { text-anchor: middle; }

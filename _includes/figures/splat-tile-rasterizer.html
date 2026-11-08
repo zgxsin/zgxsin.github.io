@@ -1,19 +1,17 @@
-<figure id="splat-tile-rasterizer" class="str">
-  <div class="str-legend">
+<figure id="splat-tile-rasterizer" class="fig str">
+  <div class="fig-legend str-legend">
     <span>grid: 16 × 16 pixel tiles of the image</span>
     <span>dashed square: 3σ bounding box of a projected Gaussian</span>
     <span>number in a tile: how many Gaussians it must blend</span>
   </div>
-  <svg class="str-svg" role="img" aria-label="An image divided into tiles with four projected Gaussians. Each Gaussian is assigned to every tile its bounding box overlaps. Clicking a tile lists its Gaussians sorted front to back."></svg>
+  <svg class="fig-svg str-svg" role="img" aria-label="An image divided into tiles with four projected Gaussians. Each Gaussian is assigned to every tile its bounding box overlaps. Clicking a tile lists its Gaussians sorted front to back."></svg>
   <p class="str-readout"></p>
   <p class="str-hint">Click a tile to see its sorted list.</p>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .str { margin: 1.5rem 0; }
-  .str-svg { width: 100%; display: block; overflow: visible; }
   .str-svg text { font-size: 12px; fill: #586069; }
   .str-svg rect.str-tile { cursor: pointer; }
-  .str-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
   .str-readout { font-size: 0.875rem; color: #24292e; margin: 8px 0 0; }
   .str-hint { font-size: 0.8125rem; color: #586069; margin: 2px 0 0; }
 </style>

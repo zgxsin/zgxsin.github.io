@@ -1,5 +1,5 @@
-<figure id="ros2-detection-graph" class="rdg">
-  <svg class="rdg-svg" viewBox="0 0 760 285" role="img" aria-label="ROS 2 node graph for detection. The camera driver publishes sensor_msgs/Image to a three-stage inference pipeline: 1 encoder (resize, letterbox, normalize to tensor), 2 inference (TensorRT engine), 3 decoder (boxes, scores, threshold and NMS). With Isaac ROS the images stay on the GPU via NITROS. The decoder publishes vision_msgs/Detection2DArray to a 3D lift node, which also receives a depth image registered to the color image, and uses the intrinsics and TF to publish vision_msgs/Detection3DArray to the costmap, tracker and safety logic.">
+<figure id="ros2-detection-graph" class="fig rdg">
+  <svg class="fig-svg fig-svg-wide rdg-svg" viewBox="0 0 760 285" role="img" aria-label="ROS 2 node graph for detection. The camera driver publishes sensor_msgs/Image to a three-stage inference pipeline: 1 encoder (resize, letterbox, normalize to tensor), 2 inference (TensorRT engine), 3 decoder (boxes, scores, threshold and NMS). With Isaac ROS the images stay on the GPU via NITROS. The decoder publishes vision_msgs/Detection2DArray to a 3D lift node, which also receives a depth image registered to the color image, and uses the intrinsics and TF to publish vision_msgs/Detection3DArray to the costmap, tracker and safety logic.">
     <defs>
       <marker id="rdg-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
         <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
@@ -66,11 +66,9 @@
     <text x="530" y="215" text-anchor="middle" class="rdg-m">vision_msgs/</text>
     <text x="530" y="228" text-anchor="middle" class="rdg-m">Detection3DArray</text>
   </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .rdg { margin: 1.5rem 0; }
-  .rdg-svg { width: 100%; display: block; overflow: visible; }
-  .rdg-svg text { font-size: 13px; fill: #24292e; }
   .rdg-zone { font-weight: 600; fill: #586069 !important; }
   .rdg-node rect { fill: #fff; stroke: #24292e; stroke-width: 1.2; }
   .rdg-out rect { fill: #f1f8ff; stroke: #0366d6; }

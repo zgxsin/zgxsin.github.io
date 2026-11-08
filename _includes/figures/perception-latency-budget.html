@@ -1,6 +1,6 @@
-<figure id="perception-latency-budget" class="plb">
-  <div class="plb-legend">Illustrative budget for one camera frame at 10 Hz. Measure your own numbers on the target.</div>
-  <svg class="plb-svg" viewBox="0 0 760 175" role="img" aria-label="Latency budget of one camera frame as a stacked bar. Exposure and driver 15 ms, transport 3 ms, preprocessing 3 ms, inference 14 ms, decode and NMS 2 ms, 3D lift and TF 3 ms, total 40 ms from photon to Detection3DArray, well inside the 100 ms frame period at 10 Hz. Inference is only about a third of the total.">
+<figure id="perception-latency-budget" class="fig plb">
+  <div class="fig-legend plb-legend">Illustrative budget for one camera frame at 10 Hz. Measure your own numbers on the target.</div>
+  <svg class="fig-svg fig-svg-wide plb-svg" viewBox="0 0 760 175" role="img" aria-label="Latency budget of one camera frame as a stacked bar. Exposure and driver 15 ms, transport 3 ms, preprocessing 3 ms, inference 14 ms, decode and NMS 2 ms, 3D lift and TF 3 ms, total 40 ms from photon to Detection3DArray, well inside the 100 ms frame period at 10 Hz. Inference is only about a third of the total.">
     <g transform="translate(20 40)">
       <rect x="0" y="0" width="150" height="44" fill="#959da5"></rect>
       <rect x="150" y="0" width="30" height="44" fill="#d1d5da"></rect>
@@ -27,11 +27,9 @@
       <text x="360" y="152" text-anchor="middle">100 ms frame period (10 Hz)</text>
     </g>
   </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .plb { margin: 1.5rem 0; }
-  .plb-svg { width: 100%; display: block; overflow: visible; }
-  .plb-svg text { font-size: 13px; fill: #24292e; }
   .plb-svg .plb-in { fill: #fff; font-weight: 600; }
   .plb-svg .plb-idle { fill: #586069; }
   .plb-lab line { stroke: #586069; }

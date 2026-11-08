@@ -1,4 +1,4 @@
-<figure id="hessian-curvature" class="hc">
+<figure id="hessian-curvature" class="fig hc">
   <div class="hc-cases" role="group" aria-label="Choose a function">
     <button type="button" data-case="bowl" aria-pressed="true">Bowl</button>
     <button type="button" data-case="saddle" aria-pressed="false">Saddle</button>
@@ -16,14 +16,14 @@
       <svg class="hc-slice" role="img" aria-label="The parabola f along direction v, between the steepest and flattest eigen-directions"></svg>
     </div>
   </div>
-  <label class="hc-control">
+  <label class="fig-control hc-control">
     <span>Rotate the direction v:</span>
     <output class="hc-readout"></output>
     <input class="hc-angle" type="range" min="0" max="179" step="1" value="20">
   </label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .hc { margin: 1.5rem 0; }
   .hc-cases { display: flex; gap: 8px; margin-bottom: 8px; }
   .hc-cases button { font: inherit; font-size: 0.875rem; padding: 4px 12px; border: 1px solid #d0d7de; border-radius: 6px; background: #fff; color: #24292e; cursor: pointer; }
   .hc-cases button[aria-pressed="true"] { border-color: #0366d6; background: #f1f8ff; color: #0366d6; }

@@ -1,5 +1,5 @@
-<figure id="epipolar-figure" class="epg">
-  <div class="epg-legend">
+<figure id="epipolar-figure" class="fig epg">
+  <div class="fig-legend epg-legend">
     <span><i class="epg-swatch epg-blue"></i>camera 1, ray of x₁</span>
     <span><i class="epg-swatch epg-purple"></i>camera 2, ray to X</span>
     <span><i class="epg-swatch epg-red"></i>epipolar lines and epipoles</span>
@@ -9,18 +9,15 @@
     <label><input type="radio" name="epg-mode" value="converging" checked> Converging cameras</label>
     <label><input type="radio" name="epg-mode" value="rectified"> Rectified (parallel) cameras</label>
   </div>
-  <svg class="epg-svg" role="img" aria-label="Two cameras observe a 3D point X. The ray through x1 in image 1 projects to the epipolar line in image 2, and x2 always lies on that line."></svg>
-  <label class="epg-control">
+  <svg class="fig-svg epg-svg" role="img" aria-label="Two cameras observe a 3D point X. The ray through x1 in image 1 projects to the epipolar line in image 2, and x2 always lies on that line."></svg>
+  <label class="fig-control epg-control">
     <span>Slide X along the ray of x₁ (its unknown depth):</span>
     <output class="epg-readout"></output>
     <input class="epg-slider" type="range" step="0.01">
   </label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .epg { margin: 1.5rem 0; }
-  .epg-svg { width: 100%; display: block; overflow: visible; }
-  .epg-svg text { font-size: 13px; fill: #24292e; }
-  .epg-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
   .epg-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
   .epg-blue { background: #0366d6; }
   .epg-purple { background: #6f42c1; }
@@ -28,7 +25,6 @@
   .epg-plane { background: #c8e1ff; }
   .epg-modes { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #24292e; margin-bottom: 4px; }
   .epg-modes input { margin-right: 4px; }
-  .epg-control { display: block; margin-top: 8px; font-size: 0.875rem; color: #586069; }
   .epg-readout { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
   .epg-slider { display: block; width: 100%; margin-top: 6px; }
 </style>

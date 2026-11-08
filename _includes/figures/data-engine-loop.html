@@ -1,0 +1,72 @@
+<figure id="data-engine-loop" class="fig del">
+  <svg class="fig-svg fig-svg-wide del-svg" viewBox="0 0 760 290" role="img" aria-label="The data engine loop. On the robot: the fleet runs model N, on-robot triggers fire on low confidence, disagreement or operator intervention, and short clips around the event are uploaded. Offline: clips are labeled with priority, the training set and the regression set grow, and model N+1 is trained, evaluated, exported and validated. It is then rolled out to the fleet, which closes the loop.">
+    <defs>
+      <marker id="del-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+    </defs>
+
+    <rect x="5" y="32" width="750" height="92" rx="10" fill="#f0fff4" stroke="#bef5cb"></rect>
+    <text x="15" y="24" class="del-zone">On the robot</text>
+    <rect x="5" y="167" width="750" height="92" rx="10" fill="#f1f8ff" stroke="#c8e1ff"></rect>
+    <text x="15" y="277" class="del-zone">Offline</text>
+
+    <g class="del-node">
+      <rect x="20" y="40" width="200" height="75" rx="8"></rect>
+      <text x="120" y="66" class="del-t">Fleet runs model N</text>
+      <text x="120" y="86" class="del-s">every robot, every site</text>
+    </g>
+    <g class="del-node">
+      <rect x="280" y="40" width="200" height="75" rx="8"></rect>
+      <text x="380" y="62" class="del-t">On-robot triggers</text>
+      <text x="380" y="81" class="del-s">low confidence, disagreement,</text>
+      <text x="380" y="97" class="del-s">operator intervention</text>
+    </g>
+    <g class="del-node">
+      <rect x="540" y="40" width="200" height="75" rx="8"></rect>
+      <text x="640" y="62" class="del-t">Upload short clips</text>
+      <text x="640" y="81" class="del-s">seconds around the event,</text>
+      <text x="640" y="97" class="del-s">not whole recordings</text>
+    </g>
+
+    <g class="del-node">
+      <rect x="540" y="175" width="200" height="75" rx="8"></rect>
+      <text x="640" y="201" class="del-t">Label with priority</text>
+      <text x="640" y="221" class="del-s">hardest cases first</text>
+    </g>
+    <g class="del-node">
+      <rect x="280" y="175" width="200" height="75" rx="8"></rect>
+      <text x="380" y="197" class="del-t">Datasets grow</text>
+      <text x="380" y="216" class="del-s">training set +</text>
+      <text x="380" y="232" class="del-s">regression set of hard cases</text>
+    </g>
+    <g class="del-node">
+      <rect x="20" y="175" width="200" height="75" rx="8"></rect>
+      <text x="120" y="197" class="del-t">Train model N+1</text>
+      <text x="120" y="216" class="del-s">evaluate, export, validate</text>
+      <text x="120" y="232" class="del-s">(Steps 4 to 8)</text>
+    </g>
+
+    <line x1="220" y1="77" x2="278" y2="77" class="del-l" marker-end="url(#del-arrow)"></line>
+    <line x1="480" y1="77" x2="538" y2="77" class="del-l" marker-end="url(#del-arrow)"></line>
+    <line x1="640" y1="115" x2="640" y2="173" class="del-l" marker-end="url(#del-arrow)"></line>
+    <line x1="540" y1="212" x2="482" y2="212" class="del-l" marker-end="url(#del-arrow)"></line>
+    <line x1="280" y1="212" x2="222" y2="212" class="del-l" marker-end="url(#del-arrow)"></line>
+    <line x1="120" y1="175" x2="120" y2="117" class="del-l del-back" marker-end="url(#del-arrow)"></line>
+    <text x="128" y="150" class="del-g">staged rollout (Step 9)</text>
+
+    <text x="380" y="150" text-anchor="middle" class="del-c">each lap, the model meets harder cases</text>
+  </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .del-zone { font-weight: 600; fill: #586069 !important; }
+  .del-node rect { fill: #fff; stroke: #24292e; stroke-width: 1.2; }
+  .del-node text { text-anchor: middle; }
+  .del-svg .del-t { font-weight: 700; font-size: 14px; }
+  .del-svg .del-s { font-size: 12px; fill: #586069; }
+  .del-svg .del-g { font-size: 11px; fill: #22863a; }
+  .del-svg .del-c { font-size: 13px; font-style: italic; fill: #586069; }
+  .del-l { stroke: #24292e; stroke-width: 1.5; fill: none; }
+  .del-back { stroke: #22863a; stroke-width: 2; }
+</style>

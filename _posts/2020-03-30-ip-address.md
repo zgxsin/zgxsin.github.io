@@ -46,7 +46,7 @@ https://www.youtube.com/watch?v=8zEVA-Bxs-0
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":914,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-23-1024x572.png" alt="" class="wp-image-914"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-23-1024x572.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading {"level":3} -->
@@ -98,7 +98,7 @@ https://www.youtube.com/watch?v=8zEVA-Bxs-0
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":956,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-26.png" alt="" class="wp-image-956"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-26.png -->
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->

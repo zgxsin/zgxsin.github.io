@@ -1,0 +1,148 @@
+/*
+  Shared styles for post figures: interactive SVG figures in _includes/figures/,
+  images from _includes/image.html, and Mermaid diagrams. See CLAUDE.md for usage.
+
+  A figure include keeps only its figure-specific rules in its own <style>, prefixed
+  with its short class (for example .mll-). Everything below is shared.
+*/
+
+:root {
+  /* Palette: GitHub Primer colors, so figures match the rest of the site. */
+  --fig-text: #24292e;
+  --fig-muted: #586069;
+  --fig-faint: #959da5;
+  --fig-border: #d0d7de;
+  --fig-surface: #f6f8fa;
+  --fig-blue: #0366d6;
+  --fig-blue-light: #79b8ff;
+  --fig-blue-bg: #f1f8ff;
+  --fig-green: #22863a;
+  --fig-green-bg: #f0fff4;
+  --fig-red: #d73a49;
+  --fig-purple: #6f42c1;
+  --fig-orange: #e36209;
+  --fig-yellow: #dbab09;
+}
+
+$fig-min-width: 560px;
+
+.fig {
+  margin: 1.5rem 0;
+}
+
+.fig-svg {
+  width: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.fig-svg text {
+  font-size: 13px;
+  fill: var(--fig-text);
+}
+
+.fig-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 0.875rem;
+  color: var(--fig-muted);
+  margin-bottom: 4px;
+}
+
+.fig-control {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: var(--fig-muted);
+}
+
+.fig-control input[type="range"] {
+  vertical-align: middle;
+}
+
+.fig-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.fig-buttons button {
+  font: inherit;
+  font-size: 0.875rem;
+  padding: 3px 12px;
+  border: 1px solid var(--fig-border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--fig-text);
+  cursor: pointer;
+}
+
+.fig-buttons button:hover,
+.fig-buttons button[aria-pressed="true"] {
+  border-color: var(--fig-blue);
+  color: var(--fig-blue);
+  background: var(--fig-blue-bg);
+}
+
+.fig img {
+  display: block;
+  margin: 0 auto;
+  border-radius: 6px;
+}
+
+.fig figcaption {
+  margin-top: 8px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--fig-muted);
+  text-align: center;
+}
+
+/* Breaks out of the 760px reading column, up to the 960px page width. */
+.fig-wide {
+  width: min(#{$content-width - 2 * $gutter}, calc(100vw - #{2 * $gutter}));
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/*
+  Phones: a wide SVG (viewBox wider than 600) shrunk to a 360px screen has unreadable
+  text. Keep it at a readable minimum width and let the figure scroll sideways.
+*/
+@media screen and (max-width: #{$fig-min-width + 2 * $gutter}) {
+  .fig:has(.fig-svg-wide) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  .fig-svg-wide {
+    min-width: $fig-min-width;
+  }
+
+  .fig:has(.fig-svg-wide)::after {
+    content: "Scroll sideways to see the whole figure";
+    position: sticky;
+    left: 0;
+    display: block;
+    font-size: 0.75rem;
+    color: var(--fig-faint);
+  }
+}
+
+/* Mermaid diagrams (```mermaid blocks), rendered client-side in post.html. */
+pre.mermaid {
+  margin: 1.5rem 0;
+  padding: 0;
+  background: none;
+  text-align: center;
+  overflow-x: auto;
+}
+
+pre.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}

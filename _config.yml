@@ -26,11 +26,11 @@ plugins:
   - jekyll-sitemap
   - jekyll-feed
   - jekyll-seo-tag
-  - github-pages
 
-# GitHub Pages does not run jekyll-spaceship. Its mathjax and table processors rewrite
-# math and any line containing "|" before kramdown, so local math would render
-# differently from the live site. Mermaid is rendered client-side in _layouts/post.html.
+# The site is built by .github/workflows/pages.yml with the Gemfile, so every plugin
+# here runs both locally and live. jekyll-spaceship's mathjax and table processors stay
+# off: they rewrite math and any line containing "|" before kramdown. MathJax and
+# Mermaid are rendered client-side in _layouts/post.html.
 jekyll-spaceship:
   processors:
     - plantuml-processor
@@ -40,6 +40,14 @@ jekyll-spaceship:
     - element-processor
 
 permalink: /:year/:month/:day/:title/
+
+exclude:
+  - README.md
+  - CLAUDE.md
+  - LICENSE.txt
+  - Gemfile
+  - Gemfile.lock
+  - vendor
 
 defaults:
   - scope:

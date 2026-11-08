@@ -1,16 +1,13 @@
-<figure id="essential-four-solutions" class="efs">
-  <div class="efs-legend">
+<figure id="essential-four-solutions" class="fig efs">
+  <div class="fig-legend efs-legend">
     <span><i class="efs-swatch efs-blue"></i>camera 1</span>
     <span><i class="efs-swatch efs-purple"></i>camera 2</span>
     <span>solid ray: point in front of the camera, dashed ray: point behind it</span>
   </div>
-  <svg class="efs-svg" role="img" aria-label="Top-down view of the four camera configurations that one essential matrix allows. Only one of them puts the triangulated point in front of both cameras."></svg>
+  <svg class="fig-svg efs-svg" role="img" aria-label="Top-down view of the four camera configurations that one essential matrix allows. Only one of them puts the triangulated point in front of both cameras."></svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .efs { margin: 1.5rem 0; }
-  .efs-svg { width: 100%; display: block; overflow: visible; }
-  .efs-svg text { font-size: 13px; fill: #24292e; }
-  .efs-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
   .efs-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
   .efs-blue { background: #0366d6; }
   .efs-purple { background: #6f42c1; }

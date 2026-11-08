@@ -48,7 +48,7 @@ categories: [Technical]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":442,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-10-1024x576.png" alt="" class="wp-image-442"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-10-1024x576.png -->
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -151,7 +151,7 @@ chown -R www-data:www-data /var/www/html/wp-content/uploads
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":409,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-4.png" alt="" class="wp-image-409"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-4.png -->
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -174,7 +174,7 @@ cp wordpress/.htacccess .</code></pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":412,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-7.png" alt="" class="wp-image-412"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-7.png -->
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -182,7 +182,7 @@ cp wordpress/.htacccess .</code></pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":410,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-5.png" alt="" class="wp-image-410"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-5.png -->
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -237,7 +237,7 @@ cp wordpress/.htacccess .</code></pre>
 <!-- /wp:list -->
 
 <!-- wp:image {"id":413,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-8.png" alt="" class="wp-image-413"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-8.png -->
 <!-- /wp:image -->
 
 <!-- wp:list -->
@@ -245,7 +245,7 @@ cp wordpress/.htacccess .</code></pre>
 <!-- /wp:list -->
 
 <!-- wp:image {"id":415,"width":597,"height":391,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large is-resized"><img src="https://localhost/wp-content/uploads/2020/03/image-9.png" alt="" class="wp-image-415" width="597" height="391"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-9.png -->
 <!-- /wp:image -->
 
 <!-- wp:list -->

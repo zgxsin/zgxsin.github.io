@@ -1,4 +1,4 @@
-<figure id="rotation-lever-arm" class="rl">
+<figure id="rotation-lever-arm" class="fig rl">
   <div class="rl-panels">
     <div class="rl-panel">
       <div class="rl-title">Top view, rotation axis out of the page</div>
@@ -9,14 +9,14 @@
       <svg class="rl-plot" role="img" aria-label="Displacement against distance from the axis: a straight line through the origin whose slope is the rotation angle"></svg>
     </div>
   </div>
-  <label class="rl-control">
+  <label class="fig-control rl-control">
     <span>Rotation angle θ:</span>
     <output class="rl-readout"></output>
     <input class="rl-angle" type="range" min="0" max="20" step="0.5" value="8">
   </label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .rl { margin: 1.5rem 0; }
   .rl-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
   .rl-title { font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
   .rl-view, .rl-plot { width: 100%; display: block; overflow: visible; }

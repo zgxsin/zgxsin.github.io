@@ -49,7 +49,7 @@ locate tmp_test.txt</pre>
 <!-- /wp:syntaxhighlighter/code -->
 
 <!-- wp:image {"id":739,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-13.png" alt="" class="wp-image-739"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-13.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -78,7 +78,7 @@ $ export PATH="$PATH:/path/to/dir"</pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":704,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-11.png" alt="" class="wp-image-704"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-11.png -->
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -86,7 +86,7 @@ $ export PATH="$PATH:/path/to/dir"</pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":705,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-12.png" alt="" class="wp-image-705"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-12.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -158,7 +158,7 @@ For more details see whereis(1).
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":747,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-14.png" alt="" class="wp-image-747"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-14.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading {"level":3} -->
@@ -172,7 +172,7 @@ find . -name sample.txt</pre>
 <!-- /wp:syntaxhighlighter/code -->
 
 <!-- wp:image {"id":749,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-16.png" alt="" class="wp-image-749"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-16.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading {"level":3} -->
@@ -187,7 +187,7 @@ find . -name "*.txt"</pre>
 <!-- /wp:syntaxhighlighter/code -->
 
 <!-- wp:image {"id":771,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-17.png" alt="" class="wp-image-771"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-17.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading {"level":3} -->
@@ -200,7 +200,7 @@ find . -empty</pre>
 <!-- /wp:syntaxhighlighter/code -->
 
 <!-- wp:image {"id":772,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-18.png" alt="" class="wp-image-772"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-18.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading {"level":3} -->
@@ -212,7 +212,7 @@ find . -empty</pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":773,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-19.png" alt="" class="wp-image-773"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-19.png -->
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -229,7 +229,7 @@ find . -perm 755</pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":774,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-20.png" alt="" class="wp-image-774"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-20.png -->
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -246,7 +246,7 @@ find . -type f -perm 755</pre>
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":775,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-21.png" alt="" class="wp-image-775"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-21.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -258,7 +258,7 @@ find . -type f -perm 755</pre>
 <!-- /wp:syntaxhighlighter/code -->
 
 <!-- wp:image {"id":776,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/03/image-22.png" alt="" class="wp-image-776"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/03/image-22.png -->
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->

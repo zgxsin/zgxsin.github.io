@@ -1,16 +1,13 @@
-<figure id="nerf-vs-splat-ray" class="nvs">
-  <div class="nvs-legend">
+<figure id="nerf-vs-splat-ray" class="fig nvs">
+  <div class="fig-legend nvs-legend">
     <span><i class="nvs-dot nvs-hit"></i>sample inside an object: useful</span>
     <span><i class="nvs-dot nvs-miss"></i>sample in empty space: wasted network query</span>
     <span>thick segment: part of the ray covered by a Gaussian</span>
   </div>
-  <svg class="nvs-svg" viewBox="0 0 760 270" role="img" aria-label="Left: NeRF marches along a ray and queries the network at every sample, most of which fall in empty space. Right: Gaussian splatting only blends the few Gaussians that the ray overlaps, and a Gaussian off the ray costs nothing for this pixel."></svg>
+  <svg class="fig-svg fig-svg-wide nvs-svg" viewBox="0 0 760 270" role="img" aria-label="Left: NeRF marches along a ray and queries the network at every sample, most of which fall in empty space. Right: Gaussian splatting only blends the few Gaussians that the ray overlaps, and a Gaussian off the ray costs nothing for this pixel."></svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .nvs { margin: 1.5rem 0; }
-  .nvs-svg { width: 100%; display: block; overflow: visible; }
-  .nvs-svg text { font-size: 13px; fill: #24292e; }
-  .nvs-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
   .nvs-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
   .nvs-hit { background: #e36209; }
   .nvs-miss { background: #fff; border: 1.5px solid #959da5; }

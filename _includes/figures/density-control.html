@@ -1,9 +1,9 @@
-<figure id="density-control" class="dcf">
-  <div class="dcf-legend">
+<figure id="density-control" class="fig dcf">
+  <div class="fig-legend dcf-legend">
     <span>outline: true shape to reconstruct</span>
     <span><i class="dcf-swatch"></i>Gaussians, before and after one densification step</span>
   </div>
-  <svg class="dcf-svg" viewBox="0 0 760 215" role="img" aria-label="Three densification cases. A small Gaussian in an under-reconstructed region is cloned. A large Gaussian that covers too much is split into two smaller ones. A nearly transparent Gaussian is pruned.">
+  <svg class="fig-svg fig-svg-wide dcf-svg" viewBox="0 0 760 215" role="img" aria-label="Three densification cases. A small Gaussian in an under-reconstructed region is cloned. A large Gaussian that covers too much is split into two smaller ones. A nearly transparent Gaussian is pruned.">
     <defs>
       <radialGradient id="dcf-grad">
         <stop offset="0" stop-color="#22863a" stop-opacity="0.85"></stop>
@@ -61,11 +61,8 @@
     <text x="634" y="177" text-anchor="middle">or far too large in world space:</text>
     <text x="634" y="194" text-anchor="middle">delete it</text>
   </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .dcf { margin: 1.5rem 0; }
-  .dcf-svg { width: 100%; display: block; overflow: visible; }
-  .dcf-svg text { font-size: 13px; fill: #24292e; }
-  .dcf-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
   .dcf-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; background: #22863a; opacity: 0.7; }
 </style>

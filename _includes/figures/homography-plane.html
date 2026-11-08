@@ -1,5 +1,5 @@
-<figure id="homography-plane" class="hgp">
-  <div class="hgp-legend">
+<figure id="homography-plane" class="fig hgp">
+  <div class="fig-legend hgp-legend">
     <span><i class="hgp-swatch hgp-board"></i>checkerboard on the plane</span>
     <span><i class="hgp-swatch hgp-purple"></i>pole sticking out of the plane</span>
     <span><i class="hgp-ring"></i>H applied to image-1 points</span>
@@ -9,18 +9,15 @@
     <label><input type="radio" name="hgp-mode" value="translate" checked> Camera translates (and turns)</label>
     <label><input type="radio" name="hgp-mode" value="rotate"> Camera only rotates</label>
   </div>
-  <svg class="hgp-svg" role="img" aria-label="Two images of a planar checkerboard and a pole. The homography computed from the plane predicts the checkerboard in image 2 exactly, but misses the tip of the pole unless the camera only rotates."></svg>
-  <label class="hgp-control">
+  <svg class="fig-svg hgp-svg" role="img" aria-label="Two images of a planar checkerboard and a pole. The homography computed from the plane predicts the checkerboard in image 2 exactly, but misses the tip of the pole unless the camera only rotates."></svg>
+  <label class="fig-control hgp-control">
     <span>Move camera 2:</span>
     <output class="hgp-readout"></output>
     <input class="hgp-slider" type="range" min="-1" max="1" step="0.01" value="0.6">
   </label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .hgp { margin: 1.5rem 0; }
-  .hgp-svg { width: 100%; display: block; overflow: visible; }
-  .hgp-svg text { font-size: 13px; fill: #24292e; }
-  .hgp-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
   .hgp-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
   .hgp-board { background: #959da5; }
   .hgp-purple { background: #6f42c1; }
@@ -28,7 +25,6 @@
   .hgp-ring { display: inline-block; width: 8px; height: 8px; border-radius: 50%; border: 2px solid #f66a0a; margin-right: 6px; vertical-align: -1px; }
   .hgp-modes { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #24292e; margin-bottom: 4px; }
   .hgp-modes input { margin-right: 4px; }
-  .hgp-control { display: block; margin-top: 8px; font-size: 0.875rem; color: #586069; }
   .hgp-readout { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
   .hgp-slider { display: block; width: 100%; margin-top: 6px; }
 </style>

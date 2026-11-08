@@ -46,7 +46,7 @@ ssh user_name@ssh_connected_ip_address -L  local_port_number:forwarded_host:forw
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":3374,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-13.png" alt="" class="wp-image-3374"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/04/image-13.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -84,7 +84,7 @@ ssh user_name@ssh_connected_ip_address -R  remote_port_number:forwarded_host:for
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":3375,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-14.png" alt="" class="wp-image-3375"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/04/image-14.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -149,7 +149,7 @@ Open the browser in the local machine and visit localhost:8443
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":3378,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-15-1024x582.png" alt="" class="wp-image-3378"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/04/image-15-1024x582.png -->
 <!-- /wp:image --></div></div>
 <!-- /wp:group -->
 

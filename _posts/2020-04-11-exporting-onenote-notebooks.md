@@ -20,7 +20,7 @@ categories: [Tips]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":2543,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-11-1024x638.png" alt="" class="wp-image-2543"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/04/image-11-1024x638.png -->
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -28,7 +28,7 @@ categories: [Tips]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":2544,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-12-1024x640.png" alt="" class="wp-image-2544"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/04/image-12-1024x640.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -40,7 +40,7 @@ categories: [Tips]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":2500,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-7-1024x576.png" alt="" class="wp-image-2500"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/04/image-7-1024x576.png -->
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -48,7 +48,7 @@ categories: [Tips]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":2538,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-8-1024x576.png" alt="" class="wp-image-2538"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/04/image-8-1024x576.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -60,7 +60,7 @@ categories: [Tips]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":2540,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-9-1024x576.png" alt="" class="wp-image-2540"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/04/image-9-1024x576.png -->
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -68,7 +68,7 @@ categories: [Tips]
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":2541,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/04/image-10-1024x576.png" alt="" class="wp-image-2541"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/04/image-10-1024x576.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading -->

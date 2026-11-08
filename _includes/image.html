@@ -1,0 +1,14 @@
+{%- comment -%}
+  Image with an optional caption, lazy loaded.
+  {% include image.html src="/assets/images/posts/<post-slug>/name.svg" alt="What it shows" caption="Markdown *allowed*." %}
+  Optional: width="480px" (max display width), wide=true (break out to page width).
+  `src` may be an absolute URL; site paths go through relative_url.
+{%- endcomment -%}
+{%- assign src = include.src -%}
+{%- unless src contains '://' -%}{%- assign src = src | relative_url -%}{%- endunless -%}
+<figure class="fig{% if include.wide %} fig-wide{% endif %}">
+  <img src="{{ src }}" alt="{{ include.alt | default: include.caption | strip_html | escape }}" loading="lazy" decoding="async"{% if include.width %} style="max-width: {{ include.width }}; width: 100%"{% endif %}>
+  {%- if include.caption %}
+  <figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>
+  {%- endif %}
+</figure>

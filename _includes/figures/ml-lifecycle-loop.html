@@ -1,5 +1,5 @@
-<figure id="ml-lifecycle-loop" class="mll">
-  <svg class="mll-svg" viewBox="0 0 760 330" role="img" aria-label="The machine learning lifecycle for a robot perception model, drawn as a loop. Offline on the workstation and cluster: define the task, collect data, label, train, evaluate. Then optimize and export, integrate into ROS 2, validate on the robot, deploy to the fleet, monitor. Monitoring feeds hard examples back to data collection.">
+<figure id="ml-lifecycle-loop" class="fig mll">
+  <svg class="fig-svg fig-svg-wide mll-svg" viewBox="0 0 760 330" role="img" aria-label="The machine learning lifecycle for a robot perception model, drawn as a loop. Offline on the workstation and cluster: define the task, collect data, label, train, evaluate. Then optimize and export, integrate into ROS 2, validate on the robot, deploy to the fleet, monitor. Monitoring feeds hard examples back to data collection.">
     <defs>
       <marker id="mll-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
         <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
@@ -72,11 +72,9 @@
     <path d="M620,110 C600,150 540,150 520,112" fill="none" stroke="#d73a49" stroke-width="1.5" stroke-dasharray="3 3" marker-end="url(#mll-arrow)"></path>
     <text x="570" y="160" class="mll-back" text-anchor="middle">not good enough</text>
   </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .mll { margin: 1.5rem 0; }
-  .mll-svg { width: 100%; display: block; overflow: visible; }
-  .mll-svg text { font-size: 13px; fill: #24292e; }
   .mll-zone-off { fill: #f1f8ff; stroke: #c8e1ff; }
   .mll-zone-on { fill: #f0fff4; stroke: #bef5cb; }
   .mll-zone-label { font-weight: 600; fill: #586069 !important; }

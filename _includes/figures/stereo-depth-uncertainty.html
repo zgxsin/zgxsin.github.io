@@ -1,24 +1,20 @@
-<figure id="stereo-depth-uncertainty" class="sdu">
-  <div class="sdu-legend">
+<figure id="stereo-depth-uncertainty" class="fig sdu">
+  <div class="fig-legend sdu-legend">
     <span><i class="sdu-swatch sdu-blue"></i>left and right rays, with ± pixel noise</span>
     <span><i class="sdu-swatch sdu-red"></i>where the triangulated point can be</span>
   </div>
-  <svg class="sdu-svg" role="img" aria-label="Top-down view of a stereo pair triangulating a point. The region of possible positions is short across the line of sight and long along it, and it gets much longer as the point moves away."></svg>
-  <label class="sdu-control">
+  <svg class="fig-svg sdu-svg" role="img" aria-label="Top-down view of a stereo pair triangulating a point. The region of possible positions is short across the line of sight and long along it, and it gets much longer as the point moves away."></svg>
+  <label class="fig-control sdu-control">
     <span>Move the point away from the stereo pair:</span>
     <output class="sdu-readout"></output>
     <input class="sdu-slider" type="range" min="1.5" max="5" step="0.05" value="2.5">
   </label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .sdu { margin: 1.5rem 0; }
-  .sdu-svg { width: 100%; display: block; overflow: visible; }
-  .sdu-svg text { font-size: 13px; fill: #24292e; }
-  .sdu-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
   .sdu-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
   .sdu-blue { background: #0366d6; }
   .sdu-red { background: #d73a49; }
-  .sdu-control { display: block; margin-top: 8px; font-size: 0.875rem; color: #586069; }
   .sdu-readout { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
   .sdu-slider { display: block; width: 100%; margin-top: 6px; }
 </style>

@@ -1,32 +1,29 @@
-<figure id="volume-rendering-ray" class="vrr">
-  <div class="vrr-legend">
+<figure id="volume-rendering-ray" class="fig vrr">
+  <div class="fig-legend vrr-legend">
     <span><i class="vrr-swatch vrr-blue"></i>density of a thin blue cloud</span>
     <span><i class="vrr-swatch vrr-red"></i>density of a solid red object</span>
     <span><i class="vrr-swatch vrr-dark"></i>transmittance T(t)</span>
     <span>bars: sample weights T<sub>i</sub>α<sub>i</sub>, colored by c<sub>i</sub></span>
   </div>
-  <svg class="vrr-svg" role="img" aria-label="Volume rendering along one camera ray. The top plot shows the density of a blue cloud and a red object behind it. The bottom plot shows the transmittance, which drops as the ray passes through each object, and the weight of each sample, which is large where the density is high and the transmittance is still high."></svg>
+  <svg class="fig-svg vrr-svg" role="img" aria-label="Volume rendering along one camera ray. The top plot shows the density of a blue cloud and a red object behind it. The bottom plot shows the transmittance, which drops as the ray passes through each object, and the weight of each sample, which is large where the density is high and the transmittance is still high."></svg>
   <div class="vrr-pixels">
     <span>Pixel color from <output class="vrr-n-label"></output> samples <i class="vrr-pixel vrr-pixel-n"></i></span>
     <span>converged value <i class="vrr-pixel vrr-pixel-exact"></i></span>
     <span class="vrr-readout"></span>
   </div>
-  <label class="vrr-control">
+  <label class="fig-control vrr-control">
     <span>Density of the blue cloud:</span>
     <output class="vrr-density-out"></output>
     <input class="vrr-density" type="range" min="0" max="5" step="0.05" value="0.8">
   </label>
-  <label class="vrr-control">
+  <label class="fig-control vrr-control">
     <span>Number of samples along the ray:</span>
     <output class="vrr-n-out"></output>
     <input class="vrr-n" type="range" min="2" max="64" step="1" value="12">
   </label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .vrr { margin: 1.5rem 0; }
-  .vrr-svg { width: 100%; display: block; overflow: visible; }
-  .vrr-svg text { font-size: 13px; fill: #24292e; }
-  .vrr-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
   .vrr-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
   .vrr-blue { background: #0366d6; }
   .vrr-red { background: #d73a49; }
@@ -34,7 +31,6 @@
   .vrr-pixels { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px; font-size: 0.875rem; color: #586069; margin-top: 8px; }
   .vrr-pixel { display: inline-block; width: 22px; height: 22px; border: 1px solid #d0d7de; border-radius: 3px; vertical-align: middle; margin-left: 6px; }
   .vrr-readout { color: #24292e; font-variant-numeric: tabular-nums; }
-  .vrr-control { display: block; margin-top: 8px; font-size: 0.875rem; color: #586069; }
   .vrr-control output { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
   .vrr-control input { display: block; width: 100%; margin-top: 6px; }
 </style>

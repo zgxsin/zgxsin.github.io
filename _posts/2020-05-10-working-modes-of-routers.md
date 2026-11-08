@@ -28,7 +28,7 @@ categories: [Technical]
 <!-- /wp:image -->
 
 <!-- wp:image {"id":5039,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/05/1.png" alt="" class="wp-image-5039"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/05/1.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -44,7 +44,7 @@ categories: [Technical]
 <!-- /wp:image -->
 
 <!-- wp:image {"id":5040,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/05/2.png" alt="" class="wp-image-5040"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/05/2.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -60,7 +60,7 @@ categories: [Technical]
 <!-- /wp:image -->
 
 <!-- wp:image {"id":5041,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/05/3.png" alt="" class="wp-image-5041"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/05/3.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -76,7 +76,7 @@ categories: [Technical]
 <!-- /wp:image -->
 
 <!-- wp:image {"id":5042,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/05/4.png" alt="" class="wp-image-5042"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/05/4.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -92,7 +92,7 @@ categories: [Technical]
 <!-- /wp:image -->
 
 <!-- wp:image {"id":5043,"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="https://localhost/wp-content/uploads/2020/05/5.png" alt="" class="wp-image-5043"/></figure>
+<!-- Image lost in the WordPress migration: uploads/2020/05/5.png -->
 <!-- /wp:image -->
 
 <!-- wp:heading -->

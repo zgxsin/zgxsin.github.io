@@ -242,14 +242,7 @@ Embed the model version in the output, for example in a diagnostics topic, so ev
 
 ### Roll out in stages
 
-```mermaid
-flowchart LR
-  A["Candidate model<br/>passed Step 5 and 8"] --> B["Shadow mode<br/>runs beside production,<br/>outputs logged only"]
-  B -->|"agrees or better"| C["Canary<br/>one or a few robots<br/>drive with it"]
-  C -->|"key metrics hold"| D["Fleet rollout<br/>in waves"]
-  C -->|"regression"| R["Rollback<br/>previous version<br/>kept on device"]
-  D -->|"regression"| R
-```
+{% include figures/staged-rollout.html %}
 
 - **Shadow mode.** The new model runs next to the production model on real robots, but only its outputs are logged; it does not influence the robot. Disagreements between the two are exactly the frames worth looking at. For safety-relevant perception this is the right first step, because it has no actuation risk.
 - **Canary.** A few robots use the new model for real, ideally at sites the team can watch. The evaluation window must be long enough to see rare events: a robot that sees a forklift ten times a day needs days, not hours.
@@ -265,15 +258,7 @@ Once deployed, the model's input distribution keeps changing: new sites, new sea
 
 These signals become **triggers** that save a short clip of sensor data around the event, since uploading everything is not possible. The saved clips go back to Step 2: they are labeled with priority, added to the training set and, the important part, to a growing **regression set** of known hard cases. This is **hard example mining**, and selecting frames where the model was uncertain is **active learning**. Tesla called the same loop its data engine: cases where the network performed poorly are sourced from the fleet, labeled and added to training, and each new model then meets harder cases.
 
-```mermaid
-flowchart LR
-  F["Fleet runs model N"] --> T["On-robot triggers<br/>low confidence, disagreement,<br/>operator intervention"]
-  T --> U["Upload short clips"]
-  U --> L["Label with priority"]
-  L --> S["Training set +<br/>regression set grow"]
-  S --> M["Train model N+1<br/>evaluate, export, validate"]
-  M --> F
-```
+{% include figures/data-engine-loop.html %}
 
 ## Summary: the tool chain
 

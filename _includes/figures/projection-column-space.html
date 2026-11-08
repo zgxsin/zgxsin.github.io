@@ -1,26 +1,22 @@
-<figure id="proj-col-space" class="pcs">
-  <div class="pcs-legend">
+<figure id="proj-col-space" class="fig pcs">
+  <div class="fig-legend pcs-legend">
     <span><i class="pcs-swatch pcs-blue"></i>b, the data</span>
     <span><i class="pcs-swatch pcs-purple"></i>A x̂, the projection</span>
     <span><i class="pcs-swatch pcs-gray"></i>another A x</span>
   </div>
-  <svg class="pcs-svg" role="img" aria-label="The plane of reachable vectors A x, with b above it and the projection A x-hat directly below b"></svg>
-  <label class="pcs-control">
+  <svg class="fig-svg pcs-svg" role="img" aria-label="The plane of reachable vectors A x, with b above it and the projection A x-hat directly below b"></svg>
+  <label class="fig-control pcs-control">
     <span>Move another A x along the plane:</span>
     <output class="pcs-readout"></output>
     <input class="pcs-slider" type="range" min="-1.5" max="0.5" step="0.01" value="-0.9">
   </label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .pcs { margin: 1.5rem 0; }
-  .pcs-svg { width: 100%; display: block; overflow: visible; }
-  .pcs-svg text { font-size: 13px; fill: #24292e; }
-  .pcs-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
   .pcs-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
   .pcs-blue { background: #0366d6; }
   .pcs-purple { background: #6f42c1; }
   .pcs-gray { background: #959da5; }
-  .pcs-control { display: block; margin-top: 8px; font-size: 0.875rem; color: #586069; }
   .pcs-readout { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
   .pcs-slider { display: block; width: 100%; margin-top: 6px; }
 </style>

@@ -1,0 +1,83 @@
+<figure id="staged-rollout" class="fig sro">
+  <svg class="fig-svg fig-svg-wide sro-svg" viewBox="0 0 760 250" role="img" aria-label="Staged rollout. A candidate model that passed evaluation and validation goes to shadow mode, where it runs beside production and its outputs are only logged. If it agrees or is better, it goes to a canary of one or a few robots that drive with it. If the key metrics hold, it is rolled out to the fleet in waves. A regression in the canary or in the fleet rollout triggers a rollback to the previous version, which is kept on the device.">
+    <defs>
+      <marker id="sro-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+      <marker id="sro-arrow-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0,0 L10,5 L0,10 z" fill="#d73a49"></path>
+      </marker>
+    </defs>
+
+    <text x="182" y="24" class="sro-zone" text-anchor="middle">drives no robot</text>
+    <text x="482" y="24" class="sro-zone" text-anchor="middle">drives a few robots</text>
+    <text x="677" y="24" class="sro-zone" text-anchor="middle">drives the whole fleet</text>
+
+    <g class="sro-node">
+      <rect x="10" y="40" width="145" height="80" rx="8"></rect>
+      <text x="82" y="65" class="sro-t">Candidate</text>
+      <text x="82" y="84" class="sro-s">passed evaluation</text>
+      <text x="82" y="100" class="sro-s">and validation</text>
+    </g>
+    <g class="sro-node sro-shadow">
+      <rect x="210" y="40" width="145" height="80" rx="8"></rect>
+      <text x="282" y="65" class="sro-t">Shadow mode</text>
+      <text x="282" y="84" class="sro-s">runs beside production,</text>
+      <text x="282" y="100" class="sro-s">outputs logged only</text>
+    </g>
+    <g class="sro-node sro-canary">
+      <rect x="410" y="40" width="145" height="80" rx="8"></rect>
+      <text x="482" y="65" class="sro-t">Canary</text>
+      <text x="482" y="84" class="sro-s">one or a few robots</text>
+      <text x="482" y="100" class="sro-s">drive with it</text>
+    </g>
+    <g class="sro-node sro-fleet">
+      <rect x="605" y="40" width="145" height="80" rx="8"></rect>
+      <text x="677" y="65" class="sro-t">Fleet rollout</text>
+      <text x="677" y="84" class="sro-s">in waves,</text>
+      <text x="677" y="100" class="sro-s">until 100%</text>
+    </g>
+
+    <line x1="155" y1="80" x2="208" y2="80" class="sro-l" marker-end="url(#sro-arrow)"></line>
+    <line x1="355" y1="80" x2="408" y2="80" class="sro-l" marker-end="url(#sro-arrow)"></line>
+    <text x="382" y="62" text-anchor="middle" class="sro-g">agrees</text>
+    <text x="382" y="74" text-anchor="middle" class="sro-g">or better</text>
+    <line x1="555" y1="80" x2="603" y2="80" class="sro-l" marker-end="url(#sro-arrow)"></line>
+    <text x="580" y="62" text-anchor="middle" class="sro-g">metrics</text>
+    <text x="580" y="74" text-anchor="middle" class="sro-g">hold</text>
+
+    <line x1="482" y1="120" x2="482" y2="173" class="sro-l sro-bad" marker-end="url(#sro-arrow-r)"></line>
+    <text x="474" y="150" text-anchor="end" class="sro-r">regression</text>
+    <line x1="677" y1="120" x2="677" y2="173" class="sro-l sro-bad" marker-end="url(#sro-arrow-r)"></line>
+    <text x="685" y="150" class="sro-r">regression</text>
+
+    <g class="sro-node sro-rollback">
+      <rect x="440" y="175" width="280" height="60" rx="8"></rect>
+      <text x="580" y="199" class="sro-t">Rollback</text>
+      <text x="580" y="218" class="sro-s">switch to the previous version, kept on the device</text>
+    </g>
+
+    <g transform="translate(10 180)">
+      <text x="0" y="0" font-weight="600">Each arrow is a gate</text>
+      <text x="0" y="20" class="sro-s">a decision on measured results,</text>
+      <text x="0" y="37" class="sro-s">over a window long enough</text>
+      <text x="0" y="54" class="sro-s">to see the rare events</text>
+    </g>
+  </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .sro-svg .sro-zone { font-size: 12px; font-weight: 600; fill: #586069; }
+  .sro-node rect { fill: #fff; stroke: #24292e; stroke-width: 1.2; }
+  .sro-shadow rect { fill: #f1f8ff; }
+  .sro-canary rect { fill: #fffbdd; }
+  .sro-fleet rect { fill: #f0fff4; }
+  .sro-rollback rect { fill: #ffeef0; stroke: #d73a49; }
+  .sro-node text { text-anchor: middle; }
+  .sro-svg .sro-t { font-weight: 700; font-size: 14px; }
+  .sro-svg .sro-s { font-size: 12px; fill: #586069; }
+  .sro-svg .sro-g { font-size: 11px; fill: #22863a; }
+  .sro-svg .sro-r { font-size: 11px; fill: #d73a49; }
+  .sro-l { stroke: #24292e; stroke-width: 1.5; fill: none; }
+  .sro-bad { stroke: #d73a49; stroke-dasharray: 5 3; }
+</style>

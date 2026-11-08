@@ -12,7 +12,7 @@ truncate: 300 %} {% endif %}
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta property="og:image" content="{{ user.avatar_url }}" />
+  {% unless page.image %}<meta property="og:image" content="{{ user.avatar_url }}" />{% endunless %}
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="{{ "/assets/styles.css" | relative_url }}?v={{ site.time | date: "%s" }}" rel="stylesheet"
   type="text/css">
@@ -261,7 +261,24 @@ truncate: 300 %} {% endif %}
         target.replaceWith(diagram);
       });
       const { default: mermaid } = await import('https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs');
-      mermaid.initialize({ startOnLoad: false, theme: 'default' });
+      // Match the figure palette in _sass/_figures.scss.
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        themeVariables: {
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif',
+          fontSize: '14px',
+          primaryColor: '#f1f8ff',
+          primaryBorderColor: '#0366d6',
+          primaryTextColor: '#24292e',
+          secondaryColor: '#f0fff4',
+          tertiaryColor: '#f6f8fa',
+          lineColor: '#586069',
+          clusterBkg: '#f6f8fa',
+          clusterBorder: '#d0d7de',
+          edgeLabelBackground: '#ffffff'
+        }
+      });
       await mermaid.run({ querySelector: 'pre.mermaid' });
     }
   </script>

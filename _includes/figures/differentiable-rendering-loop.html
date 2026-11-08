@@ -1,9 +1,9 @@
-<figure id="differentiable-rendering-loop" class="drl">
-  <div class="drl-legend">
+<figure id="differentiable-rendering-loop" class="fig drl">
+  <div class="fig-legend drl-legend">
     <span><i class="drl-swatch drl-dark"></i>forward pass: render an image</span>
     <span><i class="drl-swatch drl-orange"></i>backward pass: gradients update the scene</span>
   </div>
-  <svg class="drl-svg" viewBox="0 0 760 210" role="img" aria-label="Differentiable rendering loop. A scene representation is rendered from the camera pose of a captured view, the rendered image is compared with the captured image, and the gradient of the photometric loss flows back through the renderer to update the scene representation.">
+  <svg class="fig-svg fig-svg-wide drl-svg" viewBox="0 0 760 210" role="img" aria-label="Differentiable rendering loop. A scene representation is rendered from the camera pose of a captured view, the rendered image is compared with the captured image, and the gradient of the photometric loss flows back through the renderer to update the scene representation.">
     <defs>
       <marker id="drl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
         <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
@@ -44,14 +44,11 @@
     <path d="M652,138 L652,178 L90,178 L90,141" fill="none" stroke="#e36209" stroke-width="1.75" stroke-dasharray="6 4" marker-end="url(#drl-arrow-g)"></path>
     <text x="371" y="198" text-anchor="middle" class="drl-orange-text">∂L/∂θ flows back through the renderer; repeat for many views and pixels</text>
   </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
 </figure>
 <style>
-  .drl { margin: 1.5rem 0; }
-  .drl-svg { width: 100%; display: block; overflow: visible; }
-  .drl-svg text { font-size: 13px; fill: #24292e; }
   .drl-svg text.drl-muted { fill: #586069; font-size: 12px; }
   .drl-svg text.drl-orange-text { fill: #e36209; }
-  .drl-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
   .drl-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
   .drl-dark { background: #24292e; }
   .drl-orange { background: #e36209; }

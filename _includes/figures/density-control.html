@@ -1,0 +1,71 @@
+<figure id="density-control" class="dcf">
+  <div class="dcf-legend">
+    <span>outline: true shape to reconstruct</span>
+    <span><i class="dcf-swatch"></i>Gaussians, before and after one densification step</span>
+  </div>
+  <svg class="dcf-svg" viewBox="0 0 760 215" role="img" aria-label="Three densification cases. A small Gaussian in an under-reconstructed region is cloned. A large Gaussian that covers too much is split into two smaller ones. A nearly transparent Gaussian is pruned.">
+    <defs>
+      <radialGradient id="dcf-grad">
+        <stop offset="0" stop-color="#22863a" stop-opacity="0.85"></stop>
+        <stop offset="0.25" stop-color="#22863a" stop-opacity="0.75"></stop>
+        <stop offset="0.5" stop-color="#22863a" stop-opacity="0.45"></stop>
+        <stop offset="0.75" stop-color="#22863a" stop-opacity="0.15"></stop>
+        <stop offset="1" stop-color="#22863a" stop-opacity="0"></stop>
+      </radialGradient>
+      <radialGradient id="dcf-grad-faint">
+        <stop offset="0" stop-color="#22863a" stop-opacity="0.18"></stop>
+        <stop offset="0.5" stop-color="#22863a" stop-opacity="0.1"></stop>
+        <stop offset="1" stop-color="#22863a" stop-opacity="0"></stop>
+      </radialGradient>
+      <path id="dcf-shape" d="M -42 12 C -48 -18, -14 -32, 8 -24 C 28 -16, 46 -28, 44 0 C 42 26, 12 32, -10 26 C -26 22, -38 32, -42 12 Z" fill="none" stroke="#24292e" stroke-width="1.5"></path>
+      <marker id="dcf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+    </defs>
+
+    <text x="125" y="20" text-anchor="middle" font-weight="600">Under-reconstruction: clone</text>
+    <use href="#dcf-shape" transform="translate(60 95)"></use>
+    <circle cx="44" cy="102" r="20" fill="url(#dcf-grad)"></circle>
+    <line x1="110" y1="95" x2="140" y2="95" stroke="#24292e" stroke-width="1.5" marker-end="url(#dcf-arrow)"></line>
+    <use href="#dcf-shape" transform="translate(195 95)"></use>
+    <circle cx="179" cy="102" r="20" fill="url(#dcf-grad)"></circle>
+    <circle cx="207" cy="85" r="20" fill="url(#dcf-grad)"></circle>
+    <text x="125" y="160" text-anchor="middle">small Gaussian, large gradient:</text>
+    <text x="125" y="177" text-anchor="middle">copy it and move the copy along</text>
+    <text x="125" y="194" text-anchor="middle">the gradient to cover empty area</text>
+
+    <line x1="252" y1="30" x2="252" y2="200" stroke="#d0d7de" stroke-dasharray="3 3"></line>
+
+    <text x="380" y="20" text-anchor="middle" font-weight="600">Over-reconstruction: split</text>
+    <use href="#dcf-shape" transform="translate(315 95)"></use>
+    <ellipse cx="315" cy="95" rx="62" ry="48" fill="url(#dcf-grad)"></ellipse>
+    <line x1="365" y1="95" x2="395" y2="95" stroke="#24292e" stroke-width="1.5" marker-end="url(#dcf-arrow)"></line>
+    <use href="#dcf-shape" transform="translate(450 95)"></use>
+    <ellipse cx="429" cy="99" rx="38" ry="30" fill="url(#dcf-grad)"></ellipse>
+    <ellipse cx="470" cy="88" rx="38" ry="30" fill="url(#dcf-grad)"></ellipse>
+    <text x="380" y="160" text-anchor="middle">large Gaussian, large gradient:</text>
+    <text x="380" y="177" text-anchor="middle">replace it with two samples from it,</text>
+    <text x="380" y="194" text-anchor="middle">scales divided by 1.6</text>
+
+    <line x1="508" y1="30" x2="508" y2="200" stroke="#d0d7de" stroke-dasharray="3 3"></line>
+
+    <text x="634" y="20" text-anchor="middle" font-weight="600">Transparent: prune</text>
+    <use href="#dcf-shape" transform="translate(570 95)"></use>
+    <circle cx="560" cy="98" r="24" fill="url(#dcf-grad)"></circle>
+    <circle cx="590" cy="60" r="22" fill="url(#dcf-grad-faint)"></circle>
+    <line x1="620" y1="95" x2="650" y2="95" stroke="#24292e" stroke-width="1.5" marker-end="url(#dcf-arrow)"></line>
+    <use href="#dcf-shape" transform="translate(705 95)"></use>
+    <circle cx="695" cy="98" r="24" fill="url(#dcf-grad)"></circle>
+    <path d="M717,52 L733,68 M733,52 L717,68" stroke="#d73a49" stroke-width="2.5"></path>
+    <text x="634" y="160" text-anchor="middle">opacity below a threshold,</text>
+    <text x="634" y="177" text-anchor="middle">or far too large in world space:</text>
+    <text x="634" y="194" text-anchor="middle">delete it</text>
+  </svg>
+</figure>
+<style>
+  .dcf { margin: 1.5rem 0; }
+  .dcf-svg { width: 100%; display: block; overflow: visible; }
+  .dcf-svg text { font-size: 13px; fill: #24292e; }
+  .dcf-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
+  .dcf-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; background: #22863a; opacity: 0.7; }
+</style>

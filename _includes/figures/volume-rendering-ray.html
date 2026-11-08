@@ -1,0 +1,162 @@
+<figure id="volume-rendering-ray" class="vrr">
+  <div class="vrr-legend">
+    <span><i class="vrr-swatch vrr-blue"></i>density of a thin blue cloud</span>
+    <span><i class="vrr-swatch vrr-red"></i>density of a solid red object</span>
+    <span><i class="vrr-swatch vrr-dark"></i>transmittance T(t)</span>
+    <span>bars: sample weights T<sub>i</sub>α<sub>i</sub>, colored by c<sub>i</sub></span>
+  </div>
+  <svg class="vrr-svg" role="img" aria-label="Volume rendering along one camera ray. The top plot shows the density of a blue cloud and a red object behind it. The bottom plot shows the transmittance, which drops as the ray passes through each object, and the weight of each sample, which is large where the density is high and the transmittance is still high."></svg>
+  <div class="vrr-pixels">
+    <span>Pixel color from <output class="vrr-n-label"></output> samples <i class="vrr-pixel vrr-pixel-n"></i></span>
+    <span>converged value <i class="vrr-pixel vrr-pixel-exact"></i></span>
+    <span class="vrr-readout"></span>
+  </div>
+  <label class="vrr-control">
+    <span>Density of the blue cloud:</span>
+    <output class="vrr-density-out"></output>
+    <input class="vrr-density" type="range" min="0" max="5" step="0.05" value="0.8">
+  </label>
+  <label class="vrr-control">
+    <span>Number of samples along the ray:</span>
+    <output class="vrr-n-out"></output>
+    <input class="vrr-n" type="range" min="2" max="64" step="1" value="12">
+  </label>
+</figure>
+<style>
+  .vrr { margin: 1.5rem 0; }
+  .vrr-svg { width: 100%; display: block; overflow: visible; }
+  .vrr-svg text { font-size: 13px; fill: #24292e; }
+  .vrr-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
+  .vrr-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+  .vrr-blue { background: #0366d6; }
+  .vrr-red { background: #d73a49; }
+  .vrr-dark { background: #24292e; }
+  .vrr-pixels { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px; font-size: 0.875rem; color: #586069; margin-top: 8px; }
+  .vrr-pixel { display: inline-block; width: 22px; height: 22px; border: 1px solid #d0d7de; border-radius: 3px; vertical-align: middle; margin-left: 6px; }
+  .vrr-readout { color: #24292e; font-variant-numeric: tabular-nums; }
+  .vrr-control { display: block; margin-top: 8px; font-size: 0.875rem; color: #586069; }
+  .vrr-control output { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
+  .vrr-control input { display: block; width: 100%; margin-top: 6px; }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('volume-rendering-ray');
+  var svg = root.querySelector('.vrr-svg');
+  var density = root.querySelector('.vrr-density');
+  var samples = root.querySelector('.vrr-n');
+  var NS = 'http://www.w3.org/2000/svg';
+  var COLOR = { text: '#24292e', muted: '#586069', border: '#d0d7de', blue: '#0366d6', red: '#d73a49' };
+  var BLUE = [3, 102, 214], RED = [215, 58, 73];
+  var NEAR = 0.5, FAR = 9.5, TMAX = 10, SIGMA_MAX = 5;
+
+  function bump(t, c, w) { return Math.exp(-0.5 * Math.pow((t - c) / w, 2)); }
+  function field(t, a) {
+    var sa = a * bump(t, 3.4, 0.6), sb = 4 * bump(t, 6.8, 0.45), s = sa + sb;
+    var u = s > 1e-9 ? sb / s : 0;
+    return { sa: sa, sb: sb, s: s, c: BLUE.map(function (v, k) { return v + (RED[k] - v) * u; }) };
+  }
+
+  // Piecewise-constant quadrature: alpha_i = 1 - exp(-sigma_i * delta), weight_i = T_i * alpha_i.
+  function render(n, a) {
+    var d = (FAR - NEAR) / n, T = 1, rgb = [0, 0, 0], out = [];
+    for (var i = 0; i < n; i++) {
+      var t = NEAR + (i + 0.5) * d, f = field(t, a);
+      var alpha = 1 - Math.exp(-f.s * d), w = T * alpha;
+      out.push({ t: t, w: w, c: f.c, s: f.s });
+      for (var k = 0; k < 3; k++) rgb[k] += w * f.c[k];
+      T *= 1 - alpha;
+    }
+    for (var j = 0; j < 3; j++) rgb[j] += T * 255;
+    return { samples: out, rgb: rgb, T: T, d: d };
+  }
+  function css(c) { return 'rgb(' + c.map(function (v) { return Math.round(Math.min(255, Math.max(0, v))); }).join(',') + ')'; }
+
+  function el(name, attrs, text) {
+    var node = document.createElementNS(NS, name);
+    for (var key in attrs) node.setAttribute(key, attrs[key]);
+    if (text !== undefined) node.textContent = text;
+    svg.appendChild(node);
+    return node;
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var a = parseFloat(density.value), n = parseInt(samples.value, 10);
+    var W = Math.max(300, svg.getBoundingClientRect().width || 728);
+    var L = 34, R = 10, H = 300;
+    var top1 = 8, h1 = 92, rayY = 128, top2 = 158, h2 = 110;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    function X(t) { return L + (W - L - R) * t / TMAX; }
+    function Y1(s) { return top1 + h1 - h1 * Math.min(s, SIGMA_MAX) / SIGMA_MAX; }
+    function Y2(v) { return top2 + h2 - h2 * v; }
+
+    // Axes and near / far planes.
+    el('line', { x1: L, y1: top1 + h1, x2: W - R, y2: top1 + h1, stroke: COLOR.border });
+    el('line', { x1: L, y1: top2 + h2, x2: W - R, y2: top2 + h2, stroke: COLOR.border });
+    el('line', { x1: L, y1: top2, x2: W - R, y2: top2, stroke: COLOR.border, 'stroke-dasharray': '2 3' });
+    [NEAR, FAR].forEach(function (t, i) {
+      el('line', { x1: X(t), y1: top1, x2: X(t), y2: top2 + h2, stroke: COLOR.muted, 'stroke-dasharray': '4 3' });
+      el('text', { x: X(t), y: top2 + h2 + 30, 'text-anchor': 'middle', fill: COLOR.muted }, i === 0 ? 'near' : 'far');
+    });
+    el('text', { x: 2, y: top1 + 10 }, 'σ(t)');
+    el('text', { x: 2, y: top2 + 4 }, '1');
+    el('text', { x: 2, y: top2 + h2 }, '0');
+    for (var tick = 0; tick <= TMAX; tick += 2) {
+      el('text', { x: X(tick), y: top2 + h2 + 15, 'text-anchor': 'middle', fill: COLOR.muted }, String(tick));
+    }
+    el('text', { x: (L + W - R) / 2, y: top2 + h2 + 30, 'text-anchor': 'middle', fill: COLOR.muted }, 'distance t along the ray');
+
+    // Density curves.
+    var STEPS = 400, pa = [], pb = [];
+    for (var s = 0; s <= STEPS; s++) {
+      var t = TMAX * s / STEPS, f = field(t, a);
+      pa.push(X(t).toFixed(1) + ',' + Y1(f.sa).toFixed(1));
+      pb.push(X(t).toFixed(1) + ',' + Y1(f.sb).toFixed(1));
+    }
+    var base = ' ' + X(TMAX) + ',' + Y1(0) + ' ' + X(0) + ',' + Y1(0);
+    el('polygon', { points: pa.join(' ') + base, fill: COLOR.blue, 'fill-opacity': 0.25, stroke: 'none' });
+    el('polyline', { points: pa.join(' '), fill: 'none', stroke: COLOR.blue, 'stroke-width': 1.5 });
+    el('polygon', { points: pb.join(' ') + base, fill: COLOR.red, 'fill-opacity': 0.25, stroke: 'none' });
+    el('polyline', { points: pb.join(' '), fill: 'none', stroke: COLOR.red, 'stroke-width': 1.5 });
+
+    // The ray with its camera and sample points.
+    el('polygon', { points: [[X(0) - 14, rayY - 8], [X(0) - 14, rayY + 8], [X(0) + 2, rayY]].map(function (p) { return p.join(','); }).join(' '), fill: COLOR.text });
+    el('line', { x1: X(0), y1: rayY, x2: W - R, y2: rayY, stroke: COLOR.text, 'stroke-width': 1.25 });
+    var res = render(n, a);
+    res.samples.forEach(function (p) {
+      el('circle', { cx: X(p.t), cy: rayY, r: 3.5, fill: '#fff', stroke: COLOR.text, 'stroke-width': 1.25 });
+      el('circle', { cx: X(p.t), cy: Y1(p.s), r: 2.5, fill: COLOR.text });
+    });
+    el('text', { x: X(0) + 6, y: rayY - 12, fill: COLOR.muted }, 'ray r(t) = o + t d');
+
+    // Sample weights T_i * alpha_i as bars, one per segment.
+    res.samples.forEach(function (p) {
+      var x0 = X(p.t - res.d / 2), x1 = X(p.t + res.d / 2), gap = Math.min(2, (x1 - x0) * 0.15);
+      el('rect', { x: x0 + gap / 2, y: Y2(p.w), width: Math.max(1, x1 - x0 - gap), height: Y2(0) - Y2(p.w), fill: css(p.c), 'fill-opacity': 0.85 });
+    });
+
+    // Continuous transmittance, computed with a fine quadrature.
+    var Tpts = [], T = 1, dt = TMAX / STEPS;
+    for (var q = 0; q <= STEPS; q++) {
+      var tq = q * dt;
+      Tpts.push(X(tq).toFixed(1) + ',' + Y2(T).toFixed(1));
+      if (tq >= NEAR && tq < FAR) T *= Math.exp(-field(tq + dt / 2, a).s * dt);
+    }
+    el('polyline', { points: Tpts.join(' '), fill: 'none', stroke: COLOR.text, 'stroke-width': 2 });
+
+    var exact = render(2000, a);
+    var wsum = res.samples.reduce(function (acc, p) { return acc + p.w; }, 0);
+    root.querySelector('.vrr-pixel-n').style.background = css(res.rgb);
+    root.querySelector('.vrr-pixel-exact').style.background = css(exact.rgb);
+    root.querySelector('.vrr-n-label').textContent = n;
+    root.querySelector('.vrr-readout').textContent = 'weights sum to ' + wsum.toFixed(2) + ', white background shows through with T(far) = ' + res.T.toFixed(2);
+    root.querySelector('.vrr-density-out').textContent = a.toFixed(2);
+    root.querySelector('.vrr-n-out').textContent = n;
+  }
+
+  density.addEventListener('input', draw);
+  samples.addEventListener('input', draw);
+  if (window.ResizeObserver) new ResizeObserver(draw).observe(svg);
+  draw();
+})();
+</script>

@@ -1,0 +1,56 @@
+<figure id="detection-iou-pr" class="dip">
+  <div class="dip-legend">
+    <span><i class="dip-sw dip-gt"></i>ground truth</span>
+    <span><i class="dip-sw dip-pred"></i>prediction</span>
+    <span>overlap shaded</span>
+  </div>
+  <svg class="dip-svg" viewBox="0 0 760 270" role="img" aria-label="Left: three cases of a predicted box against a ground-truth box. IoU 0.76 is a true positive, IoU 0.22 is a false positive at threshold 0.5, and a missed object is a false negative. Right: a precision-recall curve obtained by sweeping the confidence threshold; average precision is the area under the curve.">
+    <text x="70" y="20" text-anchor="middle" font-weight="600">IoU 0.76: TP</text>
+    <rect x="22" y="45" width="90" height="110" class="dip-gt-r"></rect>
+    <rect x="30" y="52" width="90" height="108" class="dip-pred-r"></rect>
+    <rect x="30" y="52" width="82" height="103" class="dip-ov"></rect>
+
+    <text x="200" y="20" text-anchor="middle" font-weight="600">IoU 0.22: FP</text>
+    <rect x="152" y="45" width="90" height="110" class="dip-gt-r"></rect>
+    <rect x="195" y="80" width="90" height="110" class="dip-pred-r"></rect>
+    <rect x="195" y="80" width="47" height="75" class="dip-ov"></rect>
+    <text x="200" y="215" text-anchor="middle" class="dip-note">below threshold 0.5,</text>
+    <text x="200" y="231" text-anchor="middle" class="dip-note">so it also leaves an FN</text>
+
+    <text x="335" y="20" text-anchor="middle" font-weight="600">No prediction: FN</text>
+    <rect x="290" y="45" width="90" height="110" class="dip-gt-r"></rect>
+    <text x="335" y="215" text-anchor="middle" class="dip-note">missed object</text>
+
+    <text x="70" y="215" text-anchor="middle" class="dip-note">IoU = area(A ∩ B)</text>
+    <text x="70" y="231" text-anchor="middle" class="dip-note">/ area(A ∪ B)</text>
+
+    <line x1="415" y1="25" x2="415" y2="250" stroke="#d0d7de" stroke-dasharray="3 3"></line>
+
+    <g transform="translate(470 30)">
+      <path d="M0,0 L0,190 L260,190" fill="none" stroke="#24292e" stroke-width="1.2"></path>
+      <path d="M0,10 L40,12 L70,18 L95,22 L130,34 L160,48 L190,70 L215,105 L235,150 L250,185 L250,190 L0,190 Z" fill="#0366d6" fill-opacity="0.12"></path>
+      <path d="M0,10 L40,12 L70,18 L95,22 L130,34 L160,48 L190,70 L215,105 L235,150 L250,185" fill="none" stroke="#0366d6" stroke-width="2"></path>
+      <circle cx="40" cy="12" r="4" fill="#24292e"></circle>
+      <text x="48" y="8" class="dip-note">high threshold: precise, misses a lot</text>
+      <circle cx="235" cy="150" r="4" fill="#24292e"></circle>
+      <text x="226" y="172" class="dip-note" text-anchor="end">low threshold: finds most, many FP</text>
+      <text x="80" y="115" class="dip-ap" text-anchor="middle">AP = area</text>
+      <text x="130" y="212" text-anchor="middle">recall = TP / (TP + FN)</text>
+      <text x="-12" y="95" text-anchor="middle" transform="rotate(-90 -12 95)">precision = TP / (TP + FP)</text>
+    </g>
+  </svg>
+</figure>
+<style>
+  .dip { margin: 1.5rem 0; }
+  .dip-svg { width: 100%; display: block; overflow: visible; }
+  .dip-svg text { font-size: 13px; fill: #24292e; }
+  .dip-svg .dip-note { font-size: 12px; fill: #586069; }
+  .dip-svg .dip-ap { fill: #0366d6; font-weight: 600; }
+  .dip-gt-r { fill: none; stroke: #22863a; stroke-width: 2; }
+  .dip-pred-r { fill: none; stroke: #d73a49; stroke-width: 2; stroke-dasharray: 5 3; }
+  .dip-ov { fill: #6f42c1; fill-opacity: 0.18; }
+  .dip-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
+  .dip-sw { display: inline-block; width: 14px; height: 10px; margin-right: 6px; border: 2px solid; }
+  .dip-gt { border-color: #22863a; }
+  .dip-pred { border-color: #d73a49; border-style: dashed; }
+</style>

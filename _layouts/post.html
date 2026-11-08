@@ -245,6 +245,26 @@ truncate: 300 %} {% endif %}
       document.head.appendChild(mathjaxScript);
     }
   </script>
+
+  <!--
+    Render ```mermaid fenced blocks client-side. Kramdown emits them as highlighted
+    code; swap each for a <pre class="mermaid"> and load Mermaid only when needed.
+  -->
+  <script type="module">
+    var blocks = document.querySelectorAll('div.language-mermaid, pre > code.language-mermaid');
+    if (blocks.length) {
+      blocks.forEach(function (block) {
+        var target = block.matches('div') ? block : block.parentElement;
+        var diagram = document.createElement('pre');
+        diagram.className = 'mermaid';
+        diagram.textContent = block.textContent;
+        target.replaceWith(diagram);
+      });
+      const { default: mermaid } = await import('https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs');
+      mermaid.initialize({ startOnLoad: false, theme: 'default' });
+      await mermaid.run({ querySelector: 'pre.mermaid' });
+    }
+  </script>
 </body>
 </html>
 

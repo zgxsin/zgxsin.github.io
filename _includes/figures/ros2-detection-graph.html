@@ -1,0 +1,82 @@
+<figure id="ros2-detection-graph" class="rdg">
+  <svg class="rdg-svg" viewBox="0 0 760 285" role="img" aria-label="ROS 2 node graph for detection. The camera driver publishes sensor_msgs/Image to a three-stage inference pipeline: 1 encoder (resize, letterbox, normalize to tensor), 2 inference (TensorRT engine), 3 decoder (boxes, scores, threshold and NMS). With Isaac ROS the images stay on the GPU via NITROS. The decoder publishes vision_msgs/Detection2DArray to a 3D lift node, which also receives a depth image registered to the color image, and uses the intrinsics and TF to publish vision_msgs/Detection3DArray to the costmap, tracker and safety logic.">
+    <defs>
+      <marker id="rdg-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+    </defs>
+
+    <rect x="160" y="35" width="590" height="105" rx="10" fill="#f0fff4" stroke="#bef5cb"></rect>
+    <text x="170" y="25" class="rdg-zone">Inference pipeline (with Isaac ROS, images stay on the GPU via NITROS)</text>
+
+    <g class="rdg-node">
+      <rect x="10" y="55" width="130" height="70" rx="8"></rect>
+      <text x="75" y="78" class="rdg-t">Camera driver</text>
+      <text x="75" y="97" class="rdg-s">sensor_msgs/Image</text>
+      <text x="75" y="113" class="rdg-s">+ camera_info</text>
+    </g>
+    <g class="rdg-node">
+      <rect x="175" y="55" width="170" height="70" rx="8"></rect>
+      <text x="260" y="78" class="rdg-t">1 Encoder</text>
+      <text x="260" y="97" class="rdg-s">resize, letterbox,</text>
+      <text x="260" y="113" class="rdg-s">normalize to tensor</text>
+    </g>
+    <g class="rdg-node">
+      <rect x="370" y="55" width="170" height="70" rx="8"></rect>
+      <text x="455" y="78" class="rdg-t">2 Inference</text>
+      <text x="455" y="97" class="rdg-s">TensorRT engine</text>
+      <text x="455" y="113" class="rdg-s">(or Triton)</text>
+    </g>
+    <g class="rdg-node">
+      <rect x="565" y="55" width="170" height="70" rx="8"></rect>
+      <text x="650" y="78" class="rdg-t">3 Decoder</text>
+      <text x="650" y="97" class="rdg-s">boxes, scores,</text>
+      <text x="650" y="113" class="rdg-s">threshold + NMS</text>
+    </g>
+
+    <line x1="140" y1="90" x2="173" y2="90" class="rdg-l" marker-end="url(#rdg-arrow)"></line>
+    <line x1="345" y1="90" x2="368" y2="90" class="rdg-l" marker-end="url(#rdg-arrow)"></line>
+    <line x1="540" y1="90" x2="563" y2="90" class="rdg-l" marker-end="url(#rdg-arrow)"></line>
+
+    <path d="M650,125 L650,165 L390,165 L390,198" fill="none" class="rdg-l" marker-end="url(#rdg-arrow)"></path>
+    <text x="520" y="158" text-anchor="middle" class="rdg-m">vision_msgs/Detection2DArray</text>
+
+    <g class="rdg-node">
+      <rect x="10" y="200" width="130" height="70" rx="8"></rect>
+      <text x="75" y="223" class="rdg-t">Depth image</text>
+      <text x="75" y="242" class="rdg-s">registered to</text>
+      <text x="75" y="258" class="rdg-s">the color frame</text>
+    </g>
+    <g class="rdg-node">
+      <rect x="310" y="200" width="160" height="70" rx="8"></rect>
+      <text x="390" y="223" class="rdg-t">3D lift</text>
+      <text x="390" y="242" class="rdg-s">median depth in box,</text>
+      <text x="390" y="258" class="rdg-s">intrinsics + TF to map</text>
+    </g>
+    <g class="rdg-node rdg-out">
+      <rect x="590" y="200" width="160" height="70" rx="8"></rect>
+      <text x="670" y="223" class="rdg-t">Consumers</text>
+      <text x="670" y="242" class="rdg-s">costmap, tracker,</text>
+      <text x="670" y="258" class="rdg-s">safety logic</text>
+    </g>
+
+    <line x1="140" y1="235" x2="308" y2="235" class="rdg-l" marker-end="url(#rdg-arrow)"></line>
+    <text x="224" y="227" text-anchor="middle" class="rdg-m">depth per pixel</text>
+    <line x1="470" y1="235" x2="588" y2="235" class="rdg-l" marker-end="url(#rdg-arrow)"></line>
+    <text x="530" y="215" text-anchor="middle" class="rdg-m">vision_msgs/</text>
+    <text x="530" y="228" text-anchor="middle" class="rdg-m">Detection3DArray</text>
+  </svg>
+</figure>
+<style>
+  .rdg { margin: 1.5rem 0; }
+  .rdg-svg { width: 100%; display: block; overflow: visible; }
+  .rdg-svg text { font-size: 13px; fill: #24292e; }
+  .rdg-zone { font-weight: 600; fill: #586069 !important; }
+  .rdg-node rect { fill: #fff; stroke: #24292e; stroke-width: 1.2; }
+  .rdg-out rect { fill: #f1f8ff; stroke: #0366d6; }
+  .rdg-node text { text-anchor: middle; }
+  .rdg-svg .rdg-t { font-weight: 700; font-size: 14px; }
+  .rdg-svg .rdg-s { font-size: 12px; fill: #586069; }
+  .rdg-svg .rdg-m { font-size: 11px; fill: #0366d6; font-family: monospace; }
+  .rdg-l { stroke: #24292e; stroke-width: 1.5; fill: none; }
+</style>

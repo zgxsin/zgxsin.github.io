@@ -1,0 +1,60 @@
+<figure id="model-export-pipeline" class="mep">
+  <svg class="mep-svg" viewBox="0 0 760 250" role="img" aria-label="Model export pipeline. A PyTorch checkpoint, trained on any GPU, is exported to ONNX, a portable graph with a fixed input shape. ONNX is then built into a TensorRT engine on the target Jetson, where layers are fused, kernels are tuned and precision is reduced to FP16 or INT8 using a calibration set. The engine is specific to the GPU and TensorRT version.">
+    <defs>
+      <marker id="mep-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+    </defs>
+    <rect x="5" y="25" width="440" height="140" rx="10" fill="#f1f8ff" stroke="#c8e1ff"></rect>
+    <text x="15" y="17" class="mep-zone">Any machine (x86 workstation)</text>
+    <rect x="470" y="25" width="285" height="140" rx="10" fill="#f0fff4" stroke="#bef5cb"></rect>
+    <text x="480" y="17" class="mep-zone">On the target (e.g. Jetson Orin)</text>
+
+    <g class="mep-node">
+      <rect x="25" y="55" width="160" height="80" rx="8"></rect>
+      <text x="105" y="80" class="mep-t">PyTorch</text>
+      <text x="105" y="100">best.pt</text>
+      <text x="105" y="118" class="mep-s">weights + Python code</text>
+    </g>
+    <g class="mep-node">
+      <rect x="265" y="55" width="160" height="80" rx="8"></rect>
+      <text x="345" y="80" class="mep-t">ONNX</text>
+      <text x="345" y="100">model.onnx</text>
+      <text x="345" y="118" class="mep-s">portable graph, fixed shape</text>
+    </g>
+    <g class="mep-node">
+      <rect x="560" y="55" width="175" height="80" rx="8"></rect>
+      <text x="647" y="80" class="mep-t">TensorRT</text>
+      <text x="647" y="100">model.engine</text>
+      <text x="647" y="118" class="mep-s">tied to GPU + TRT version</text>
+    </g>
+    <line x1="185" y1="95" x2="263" y2="95" stroke="#24292e" stroke-width="1.5" marker-end="url(#mep-arrow)"></line>
+    <text x="224" y="86" text-anchor="middle" class="mep-s">export</text>
+    <line x1="425" y1="95" x2="558" y2="95" stroke="#24292e" stroke-width="1.5" marker-end="url(#mep-arrow)"></line>
+    <text x="510" y="86" text-anchor="middle" class="mep-s">build</text>
+    <text x="510" y="114" text-anchor="middle" class="mep-s">trtexec</text>
+
+    <g transform="translate(470 185)">
+      <text x="0" y="0" font-weight="600">What the build does</text>
+      <text x="0" y="20" class="mep-s">fuse conv + BN + activation into one kernel</text>
+      <text x="0" y="37" class="mep-s">time candidate kernels, keep the fastest</text>
+      <text x="0" y="54" class="mep-s">FP32 to FP16, or INT8 with a calibration set</text>
+    </g>
+    <g transform="translate(25 185)">
+      <text x="0" y="0" font-weight="600">Check after every arrow</text>
+      <text x="0" y="20" class="mep-s">run the same images through both models</text>
+      <text x="0" y="37" class="mep-s">compare boxes and scores, then mAP on the val set</text>
+      <text x="0" y="54" class="mep-s">a silent preprocessing mismatch is the usual bug</text>
+    </g>
+  </svg>
+</figure>
+<style>
+  .mep { margin: 1.5rem 0; }
+  .mep-svg { width: 100%; display: block; overflow: visible; }
+  .mep-svg text { font-size: 13px; fill: #24292e; }
+  .mep-zone { font-weight: 600; fill: #586069 !important; }
+  .mep-node rect { fill: #fff; stroke: #24292e; stroke-width: 1.2; }
+  .mep-node text { text-anchor: middle; }
+  .mep-svg .mep-t { font-weight: 700; font-size: 14px; }
+  .mep-svg .mep-s { font-size: 12px; fill: #586069; }
+</style>

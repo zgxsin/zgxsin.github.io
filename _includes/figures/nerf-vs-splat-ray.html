@@ -1,0 +1,112 @@
+<figure id="nerf-vs-splat-ray" class="nvs">
+  <div class="nvs-legend">
+    <span><i class="nvs-dot nvs-hit"></i>sample inside an object: useful</span>
+    <span><i class="nvs-dot nvs-miss"></i>sample in empty space: wasted network query</span>
+    <span>thick segment: part of the ray covered by a Gaussian</span>
+  </div>
+  <svg class="nvs-svg" viewBox="0 0 760 270" role="img" aria-label="Left: NeRF marches along a ray and queries the network at every sample, most of which fall in empty space. Right: Gaussian splatting only blends the few Gaussians that the ray overlaps, and a Gaussian off the ray costs nothing for this pixel."></svg>
+</figure>
+<style>
+  .nvs { margin: 1.5rem 0; }
+  .nvs-svg { width: 100%; display: block; overflow: visible; }
+  .nvs-svg text { font-size: 13px; fill: #24292e; }
+  .nvs-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
+  .nvs-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+  .nvs-hit { background: #e36209; }
+  .nvs-miss { background: #fff; border: 1.5px solid #959da5; }
+</style>
+<script>
+(function () {
+  var svg = document.querySelector('#nerf-vs-splat-ray .nvs-svg');
+  var NS = 'http://www.w3.org/2000/svg';
+  var COLOR = { text: '#24292e', muted: '#586069', gray: '#959da5', orange: '#e36209' };
+
+  function el(name, attrs, text, parent) {
+    var node = document.createElementNS(NS, name);
+    for (var key in attrs) node.setAttribute(key, attrs[key]);
+    if (text !== undefined && text !== null) node.textContent = text;
+    (parent || svg).appendChild(node);
+    return node;
+  }
+
+  var defs = el('defs', {});
+  [['red', '#d73a49'], ['blue', '#0366d6'], ['green', '#28a745'], ['cloud', '#6a737d']].forEach(function (c) {
+    var g = el('radialGradient', { id: 'nvs-grad-' + c[0] }, null, defs);
+    for (var r = 0; r <= 1.0001; r += 0.125) {
+      el('stop', { offset: r, 'stop-color': c[1], 'stop-opacity': (0.9 * Math.exp(-0.5 * Math.pow(2 * r, 2))).toFixed(3) }, null, g);
+    }
+  });
+
+  // Each panel: camera at the bottom left, ray toward the top right.
+  var CAM = [40, 225], DIR = [300, -170];
+  function at(t, ox) { return [ox + CAM[0] + t * DIR[0], CAM[1] + t * DIR[1]]; }
+  function inEllipse(p, e) {
+    var a = -e.rot * Math.PI / 180, dx = p[0] - e.c[0], dy = p[1] - e.c[1];
+    var u = dx * Math.cos(a) - dy * Math.sin(a), v = dx * Math.sin(a) + dy * Math.cos(a);
+    return (u * u) / (e.rx * e.rx) + (v * v) / (e.ry * e.ry) <= 1;
+  }
+  function ellipse(e, fill) {
+    el('ellipse', { cx: e.c[0], cy: e.c[1], rx: e.rx, ry: e.ry, fill: fill, transform: 'rotate(' + e.rot + ' ' + e.c[0] + ' ' + e.c[1] + ')' });
+  }
+  function camera(ox) {
+    var c = [ox + CAM[0], CAM[1]], a = Math.atan2(DIR[1], DIR[0]), L = 22, h = 0.45;
+    var p1 = [c[0] + L * Math.cos(a - h), c[1] + L * Math.sin(a - h)], p2 = [c[0] + L * Math.cos(a + h), c[1] + L * Math.sin(a + h)];
+    el('polygon', { points: [c, p1, p2].map(function (p) { return p.join(','); }).join(' '), fill: COLOR.text, 'fill-opacity': 0.15, stroke: COLOR.text, 'stroke-width': 1.5 });
+    el('circle', { cx: c[0], cy: c[1], r: 3.5, fill: COLOR.text });
+    el('text', { x: c[0] - 6, y: c[1] + 22, fill: COLOR.muted }, 'pixel ray');
+  }
+  function ray(ox) {
+    var a = at(0, ox), b = at(1.02, ox);
+    el('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: COLOR.text, 'stroke-width': 1.25 });
+  }
+
+  // Left: NeRF.
+  var objects = [
+    { c: at(0.45, 0), rx: 34, ry: 22, rot: -15 },
+    { c: at(0.74, 0), rx: 24, ry: 24, rot: 0 }
+  ];
+  objects.forEach(function (e) { ellipse(e, 'url(#nvs-grad-cloud)'); });
+  ray(0);
+  var N = 24, hits = 0;
+  for (var i = 0; i < N; i++) {
+    var p = at(0.1 + 0.86 * i / (N - 1), 0);
+    var inside = objects.some(function (e) { return inEllipse(p, e); });
+    if (inside) hits++;
+    el('circle', { cx: p[0], cy: p[1], r: 3.5, fill: inside ? COLOR.orange : '#fff', stroke: inside ? COLOR.orange : COLOR.gray, 'stroke-width': 1.5 });
+  }
+  camera(0);
+  el('text', { x: 185, y: 18, 'text-anchor': 'middle', 'font-weight': 600 }, 'NeRF: query the MLP at every sample');
+  el('text', { x: 185, y: 262, 'text-anchor': 'middle', fill: COLOR.muted }, N + ' network queries, only ' + hits + ' inside an object');
+
+  // Right: Gaussian splatting.
+  var OX = 390;
+  var gaussians = [
+    { c: at(0.42, OX), rx: 38, ry: 15, rot: 35, fill: 'red', stroke: '#d73a49' },
+    { c: at(0.73, OX), rx: 16, ry: 30, rot: 0, fill: 'blue', stroke: '#0366d6' },
+    { c: [at(0.62, OX)[0] + 40, at(0.62, OX)[1] + 62], rx: 18, ry: 9, rot: -30, fill: 'green', stroke: '#28a745' }
+  ];
+  gaussians.forEach(function (g) { ellipse(g, 'url(#nvs-grad-' + g.fill + ')'); });
+  ray(OX);
+  var touched = 0;
+  gaussians.forEach(function (g) {
+    var first = null, last = null;
+    for (var s = 0; s <= 400; s++) {
+      var t = s / 400;
+      if (inEllipse(at(t, OX), { c: g.c, rx: g.rx * 0.75, ry: g.ry * 0.75, rot: g.rot })) {
+        if (first === null) first = t;
+        last = t;
+      }
+    }
+    if (first !== null) {
+      touched++;
+      var a = at(first, OX), b = at(last, OX);
+      el('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: g.stroke, 'stroke-width': 6, 'stroke-linecap': 'round' });
+    }
+    el('circle', { cx: g.c[0], cy: g.c[1], r: 2.5, fill: COLOR.text });
+  });
+  camera(OX);
+  el('text', { x: OX + 185, y: 18, 'text-anchor': 'middle', 'font-weight': 600 }, 'Splatting: blend the Gaussians the ray meets');
+  el('text', { x: OX + 185, y: 262, 'text-anchor': 'middle', fill: COLOR.muted }, touched + ' Gaussians, each with a closed-form α; empty space is free');
+  el('line', { x1: 380, y1: 30, x2: 380, y2: 250, stroke: '#d0d7de', 'stroke-dasharray': '3 3' });
+})();
+</script>

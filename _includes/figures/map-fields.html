@@ -1,0 +1,168 @@
+<figure id="map-fields" class="mf">
+  <div class="mf-modes" role="group" aria-label="What each cell stores">
+    <button type="button" data-mode="occ" class="mf-active">Occupancy</button>
+    <button type="button" data-mode="tsdf">TSDF</button>
+    <button type="button" data-mode="esdf">ESDF</button>
+  </div>
+  <div class="mf-legend"></div>
+  <svg class="mf-svg" role="img" aria-label="A 2D grid map of a scene with a round and two rectangular obstacles, observed by a sensor on the left. The same cells are colored by occupancy, by truncated signed distance, or by Euclidean distance to the nearest obstacle."></svg>
+  <label class="mf-control">
+    <span>Truncation distance:</span>
+    <output class="mf-readout"></output>
+    <input class="mf-slider" type="range" min="0.5" max="3" step="0.25" value="1">
+  </label>
+  <figcaption class="mf-caption"></figcaption>
+</figure>
+<style>
+  .mf { margin: 1.5rem 0; }
+  .mf-svg { width: 100%; display: block; overflow: visible; }
+  .mf-svg text { font-size: 13px; fill: #24292e; paint-order: stroke; stroke: #fff; stroke-width: 3px; }
+  .mf-modes { display: flex; gap: 6px; margin-bottom: 6px; }
+  .mf-modes button { font: inherit; font-size: 0.875rem; padding: 2px 10px; border: 1px solid #d0d7de; border-radius: 6px; background: #f6f8fa; color: #24292e; cursor: pointer; }
+  .mf-modes button.mf-active { background: #0366d6; border-color: #0366d6; color: #fff; }
+  .mf-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
+  .mf-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; border: 1px solid #d0d7de; vertical-align: -1px; }
+  .mf-control { display: block; margin-top: 8px; font-size: 0.875rem; color: #586069; }
+  .mf-control[hidden] { display: none; }
+  .mf-readout { margin-left: 4px; color: #24292e; font-variant-numeric: tabular-nums; }
+  .mf-slider { display: block; width: 100%; margin-top: 6px; }
+  .mf-caption { margin-top: 8px; font-size: 0.875rem; color: #586069; }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('map-fields');
+  var svg = root.querySelector('.mf-svg');
+  var buttons = root.querySelectorAll('.mf-modes button');
+  var control = root.querySelector('.mf-control');
+  var slider = root.querySelector('.mf-slider');
+  var readout = root.querySelector('.mf-readout');
+  var legend = root.querySelector('.mf-legend');
+  var caption = root.querySelector('.mf-caption');
+  var NS = 'http://www.w3.org/2000/svg';
+  var COLOR = { text: '#24292e', muted: '#586069', border: '#d0d7de', unknown: '#d0d7de', free: '#ffffff', blue: '#0366d6', red: '#d73a49' };
+
+  // World in metres, y pointing up. One sensor on the left looks at three obstacles.
+  var WW = 24, WH = 12, CELL = 0.5, NX = WW / CELL, NY = WH / CELL, ESDF_MAX = 4;
+  var SENSOR = [1.5, 6];
+  var CIRCLE = { c: [10, 8.5], r: 1.6 };
+  var BOXES = [{ c: [15.5, 3], h: [1, 1.5] }, { c: [22.5, 6], h: [0.5, 4.5] }];
+  var mode = 'occ';
+
+  function boxSdf(p, b) {
+    var qx = Math.abs(p[0] - b.c[0]) - b.h[0], qy = Math.abs(p[1] - b.c[1]) - b.h[1];
+    return Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0);
+  }
+  function sdf(p) {
+    var d = Math.hypot(p[0] - CIRCLE.c[0], p[1] - CIRCLE.c[1]) - CIRCLE.r;
+    BOXES.forEach(function (b) { d = Math.min(d, boxSdf(p, b)); });
+    return d;
+  }
+
+  // Ray-cast once from the sensor through every cell centre.
+  var cells = [];
+  for (var j = 0; j < NY; j++) {
+    for (var i = 0; i < NX; i++) {
+      var p = [(i + 0.5) * CELL, (j + 0.5) * CELL];
+      var dx = p[0] - SENSOR[0], dy = p[1] - SENSOR[1], dist = Math.hypot(dx, dy);
+      var tHit = Infinity;
+      for (var t = 0; t < 40; t += 0.02) {
+        var q = [SENSOR[0] + t * dx / dist, SENSOR[1] + t * dy / dist];
+        if (q[0] < 0 || q[0] > WW || q[1] < 0 || q[1] > WH) break;
+        if (sdf(q) < 0) { tHit = t; break; }
+      }
+      var state;
+      if (dist - tHit > CELL * 0.7) state = 'unknown';
+      else if (dist >= tHit || sdf(p) < CELL * 0.35) state = 'occ';
+      else state = 'free';
+      cells.push({ i: i, j: j, p: p, state: state, proj: tHit - dist });
+    }
+  }
+  var occupied = cells.filter(function (c) { return c.state === 'occ'; });
+  cells.forEach(function (c) {
+    if (c.state === 'unknown') return;
+    c.esdf = Infinity;
+    occupied.forEach(function (o) { c.esdf = Math.min(c.esdf, Math.hypot(c.p[0] - o.p[0], c.p[1] - o.p[1])); });
+  });
+
+  function swatch(color, opacity) {
+    return '<i class="mf-swatch" style="background:' + color + ';opacity:' + (opacity === undefined ? 1 : opacity) + '"></i>';
+  }
+  var TEXT = {
+    occ: {
+      legend: '<span>' + swatch(COLOR.free) + 'free</span><span>' + swatch(COLOR.text) + 'occupied</span><span>' + swatch(COLOR.unknown) + 'unknown</span>',
+      caption: 'Each cell stores the probability that it is occupied. Cells along a ray are marked free up to the hit and occupied at the hit; cells hidden behind an obstacle stay unknown. The surface can only be as precise as one cell, hence the staircase.'
+    },
+    tsdf: {
+      legend: '<span>' + swatch(COLOR.blue) + 'in front of the surface (+τ)</span><span>' + swatch(COLOR.red) + 'behind the surface (−τ)</span><span>' + swatch(COLOR.unknown) + 'never updated</span>',
+      caption: 'Each cell stores the distance to the surface measured along the sensor ray, clipped to ±τ. The surface is the zero crossing between blue and red, which can be interpolated to sub-cell accuracy. Everything further than τ in front of a surface just reads +τ, so the TSDF says little about how far free space extends.'
+    },
+    esdf: {
+      legend: '<span>' + swatch(COLOR.text) + 'occupied</span><span>' + swatch(COLOR.blue, 0.8) + 'close to an obstacle</span><span>' + swatch(COLOR.blue, 0.1) + ESDF_MAX + ' m or more away</span><span>' + swatch(COLOR.unknown) + 'unknown</span>',
+      caption: 'Each known cell stores the Euclidean distance to the nearest occupied cell, in all of free space rather than only near the surface. A planner can read the clearance at any point, and its gradient points away from the nearest obstacle.'
+    }
+  };
+
+  function fill(c) {
+    if (mode === 'occ') {
+      return { color: c.state === 'occ' ? COLOR.text : c.state === 'free' ? COLOR.free : COLOR.unknown, opacity: 1 };
+    }
+    if (mode === 'tsdf') {
+      var tau = parseFloat(slider.value);
+      if (c.proj < -tau) return { color: COLOR.unknown, opacity: 1 };
+      var v = Math.max(-1, Math.min(1, c.proj / tau));
+      return { color: v >= 0 ? COLOR.blue : COLOR.red, opacity: 0.06 + 0.74 * Math.abs(v) };
+    }
+    if (c.state === 'unknown') return { color: COLOR.unknown, opacity: 1 };
+    if (c.state === 'occ') return { color: COLOR.text, opacity: 1 };
+    return { color: COLOR.blue, opacity: 0.04 + 0.76 * (1 - Math.min(c.esdf / ESDF_MAX, 1)) };
+  }
+
+  function el(name, attrs, text) {
+    var node = document.createElementNS(NS, name);
+    for (var key in attrs) node.setAttribute(key, attrs[key]);
+    if (text !== undefined) node.textContent = text;
+    svg.appendChild(node);
+    return node;
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var W = Math.max(300, svg.getBoundingClientRect().width || 728);
+    var k = (W - 2) / WW, H = k * WH + 2;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    function X(x) { return 1 + k * x; }
+    function Y(y) { return 1 + k * (WH - y); }
+
+    cells.forEach(function (c) {
+      var f = fill(c);
+      el('rect', { x: X(c.i * CELL), y: Y((c.j + 1) * CELL), width: k * CELL, height: k * CELL, fill: COLOR.free, stroke: 'none' });
+      el('rect', { x: X(c.i * CELL), y: Y((c.j + 1) * CELL), width: k * CELL, height: k * CELL, fill: f.color, 'fill-opacity': f.opacity, stroke: COLOR.border, 'stroke-width': 0.5 });
+    });
+
+    var outline = { fill: 'none', stroke: mode === 'occ' ? COLOR.red : COLOR.text, 'stroke-width': 1.5, 'stroke-dasharray': '4 3' };
+    el('circle', Object.assign({ cx: X(CIRCLE.c[0]), cy: Y(CIRCLE.c[1]), r: k * CIRCLE.r }, outline));
+    BOXES.forEach(function (b) {
+      el('rect', Object.assign({ x: X(b.c[0] - b.h[0]), y: Y(b.c[1] + b.h[1]), width: 2 * k * b.h[0], height: 2 * k * b.h[1] }, outline));
+    });
+
+    el('circle', { cx: X(SENSOR[0]), cy: Y(SENSOR[1]), r: 5, fill: COLOR.text });
+    el('text', { x: X(SENSOR[0]), y: Y(SENSOR[1]) + 20, 'text-anchor': 'middle' }, 'sensor');
+
+    legend.innerHTML = TEXT[mode].legend;
+    caption.textContent = TEXT[mode].caption;
+    control.hidden = mode !== 'tsdf';
+    readout.textContent = 'τ = ' + parseFloat(slider.value).toFixed(2) + ' m (cell size ' + CELL + ' m)';
+  }
+
+  Array.prototype.forEach.call(buttons, function (button) {
+    button.addEventListener('click', function () {
+      mode = button.getAttribute('data-mode');
+      Array.prototype.forEach.call(buttons, function (b) { b.classList.toggle('mf-active', b === button); });
+      draw();
+    });
+  });
+  slider.addEventListener('input', draw);
+  if (window.ResizeObserver) new ResizeObserver(draw).observe(svg);
+  draw();
+})();
+</script>

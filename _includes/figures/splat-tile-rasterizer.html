@@ -1,0 +1,94 @@
+<figure id="splat-tile-rasterizer" class="str">
+  <div class="str-legend">
+    <span>grid: 16 × 16 pixel tiles of the image</span>
+    <span>dashed square: 3σ bounding box of a projected Gaussian</span>
+    <span>number in a tile: how many Gaussians it must blend</span>
+  </div>
+  <svg class="str-svg" role="img" aria-label="An image divided into tiles with four projected Gaussians. Each Gaussian is assigned to every tile its bounding box overlaps. Clicking a tile lists its Gaussians sorted front to back."></svg>
+  <p class="str-readout"></p>
+  <p class="str-hint">Click a tile to see its sorted list.</p>
+</figure>
+<style>
+  .str { margin: 1.5rem 0; }
+  .str-svg { width: 100%; display: block; overflow: visible; }
+  .str-svg text { font-size: 12px; fill: #586069; }
+  .str-svg rect.str-tile { cursor: pointer; }
+  .str-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: #586069; margin-bottom: 4px; }
+  .str-readout { font-size: 0.875rem; color: #24292e; margin: 8px 0 0; }
+  .str-hint { font-size: 0.8125rem; color: #586069; margin: 2px 0 0; }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('splat-tile-rasterizer');
+  var svg = root.querySelector('.str-svg');
+  var readout = root.querySelector('.str-readout');
+  var NS = 'http://www.w3.org/2000/svg';
+  var COLS = 8, ROWS = 5;
+  // Centers, scales and depths in tile units; depth is the distance from the camera.
+  var GAUSSIANS = [
+    { name: 'red', color: '#d73a49', c: [2.4, 1.9], s: [0.55, 0.22], rot: 30, depth: 2.0 },
+    { name: 'blue', color: '#0366d6', c: [3.5, 2.7], s: [0.42, 0.3], rot: -20, depth: 1.1 },
+    { name: 'green', color: '#28a745', c: [6.1, 1.5], s: [0.3, 0.2], rot: 60, depth: 3.0 },
+    { name: 'purple', color: '#6f42c1', c: [5.0, 3.5], s: [0.5, 0.14], rot: -10, depth: 0.8 }
+  ];
+  GAUSSIANS.forEach(function (g) {
+    var r = 3 * Math.max(g.s[0], g.s[1]);
+    g.box = [Math.max(0, Math.floor(g.c[0] - r)), Math.max(0, Math.floor(g.c[1] - r)), Math.min(COLS - 1, Math.floor(g.c[0] + r)), Math.min(ROWS - 1, Math.floor(g.c[1] + r))];
+    g.r = r;
+  });
+  function covers(g, i, j) { return i >= g.box[0] && i <= g.box[2] && j >= g.box[1] && j <= g.box[3]; }
+  function list(i, j) { return GAUSSIANS.filter(function (g) { return covers(g, i, j); }).sort(function (a, b) { return a.depth - b.depth; }); }
+
+  var selected = null, best = -1;
+  for (var i0 = 0; i0 < COLS; i0++) for (var j0 = 0; j0 < ROWS; j0++) {
+    if (list(i0, j0).length > best) { best = list(i0, j0).length; selected = [i0, j0]; }
+  }
+  var pairs = 0;
+  for (var i1 = 0; i1 < COLS; i1++) for (var j1 = 0; j1 < ROWS; j1++) pairs += list(i1, j1).length;
+
+  function el(name, attrs, text, parent) {
+    var node = document.createElementNS(NS, name);
+    for (var key in attrs) node.setAttribute(key, attrs[key]);
+    if (text !== undefined && text !== null) node.textContent = text;
+    (parent || svg).appendChild(node);
+    return node;
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var W = Math.max(300, svg.getBoundingClientRect().width || 728);
+    var ts = Math.min((W - 2) / COLS, 64), ox = (W - ts * COLS) / 2;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + (ts * ROWS + 2));
+    var defs = el('defs', {});
+    GAUSSIANS.forEach(function (g) {
+      var grad = el('radialGradient', { id: 'str-grad-' + g.name }, null, defs);
+      for (var r = 0; r <= 1.0001; r += 0.125) {
+        el('stop', { offset: r, 'stop-color': g.color, 'stop-opacity': (0.85 * Math.exp(-0.5 * Math.pow(3 * r, 2))).toFixed(3) }, null, grad);
+      }
+    });
+
+    for (var i = 0; i < COLS; i++) for (var j = 0; j < ROWS; j++) {
+      var sel = selected && selected[0] === i && selected[1] === j;
+      var rect = el('rect', { class: 'str-tile', x: ox + i * ts + 1, y: j * ts + 1, width: ts, height: ts, fill: sel ? '#fff8c5' : '#fff', stroke: '#d0d7de' });
+      rect.addEventListener('click', (function (a, b) { return function () { selected = [a, b]; draw(); }; })(i, j));
+      var n = list(i, j).length;
+      if (n) el('text', { x: ox + i * ts + 5, y: j * ts + 14, 'pointer-events': 'none' }, String(n));
+    }
+    if (selected) el('rect', { x: ox + selected[0] * ts + 1, y: selected[1] * ts + 1, width: ts, height: ts, fill: 'none', stroke: '#e36209', 'stroke-width': 2.5, 'pointer-events': 'none' });
+
+    GAUSSIANS.slice().sort(function (a, b) { return b.depth - a.depth; }).forEach(function (g) {
+      var cx = ox + g.c[0] * ts + 1, cy = g.c[1] * ts + 1;
+      el('ellipse', { cx: cx, cy: cy, rx: 3 * g.s[0] * ts, ry: 3 * g.s[1] * ts, fill: 'url(#str-grad-' + g.name + ')', transform: 'rotate(' + g.rot + ' ' + cx + ' ' + cy + ')', 'pointer-events': 'none' });
+      var bx0 = Math.max(ox + 1, cx - g.r * ts), by0 = Math.max(1, cy - g.r * ts);
+      var bx1 = Math.min(ox + 1 + COLS * ts, cx + g.r * ts), by1 = Math.min(1 + ROWS * ts, cy + g.r * ts);
+      el('rect', { x: bx0, y: by0, width: bx1 - bx0, height: by1 - by0, fill: 'none', stroke: g.color, 'stroke-dasharray': '4 3', 'stroke-opacity': 0.7, 'pointer-events': 'none' });
+    });
+
+    var l = list(selected[0], selected[1]);
+    readout.textContent = 'Tile (' + selected[0] + ', ' + selected[1] + ') blends ' + (l.length ? l.length + ' Gaussian' + (l.length > 1 ? 's' : '') + ', front to back: ' + l.map(function (g) { return g.name + ' (depth ' + g.depth.toFixed(1) + ')'; }).join(' → ') : 'nothing, so its pixels show the background') + '. For the whole image, ' + GAUSSIANS.length + ' Gaussians become ' + pairs + ' (tile, depth) keys, sorted once on the GPU.';
+  }
+
+  if (window.ResizeObserver) new ResizeObserver(draw).observe(svg);
+  draw();
+})();
+</script>

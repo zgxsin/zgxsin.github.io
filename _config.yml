@@ -30,11 +30,10 @@ plugins:
 
 # GitHub Pages does not run jekyll-spaceship. Its mathjax and table processors rewrite
 # math and any line containing "|" before kramdown, so local math would render
-# differently from the live site.
+# differently from the live site. Mermaid is rendered client-side in _layouts/post.html.
 jekyll-spaceship:
   processors:
     - plantuml-processor
-    - mermaid-processor
     - polyfill-processor
     - media-processor
     - emoji-processor

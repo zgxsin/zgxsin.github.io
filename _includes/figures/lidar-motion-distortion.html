@@ -1,0 +1,146 @@
+<figure id="lidar-motion-distortion" class="fig lmd">
+  <div class="fig-legend">
+    <span><i class="lmd-swatch" style="background: #959da5"></i>true walls and pillar</span>
+    <span><i class="lmd-swatch" style="background: #d73a49"></i>raw scan, all points placed with the end-of-scan pose</span>
+    <span><i class="lmd-swatch" style="background: #0366d6"></i>deskewed, each point placed with the pose at its own time</span>
+  </div>
+  <div class="fig-buttons" role="group" aria-label="Which points to show">
+    <button type="button" data-show="raw" aria-pressed="true">Raw</button>
+    <button type="button" data-show="deskew" aria-pressed="false">Deskewed</button>
+    <button type="button" data-show="both" aria-pressed="false">Both</button>
+  </div>
+  <svg class="fig-svg fig-svg-wide lmd-svg" viewBox="0 0 760 440" role="img" aria-label="Top-down view of a room scanned by a spinning LiDAR during one 100 ms sweep while the robot drives and turns. Without motion compensation the walls appear bent and broken at the scan seam; with per-point deskewing they line up with the true walls."></svg>
+  <label class="fig-control">Forward speed: <output class="lmd-v"></output>
+    <input class="lmd-slider" data-key="v" type="range" min="0" max="6" step="0.1" value="2"></label>
+  <label class="fig-control">Yaw rate: <output class="lmd-w"></output>
+    <input class="lmd-slider" data-key="w" type="range" min="-3" max="3" step="0.1" value="1.5"></label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .lmd-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+  .lmd .lmd-slider { display: block; width: 100%; margin-top: 4px; }
+  .lmd output { color: var(--fig-text); font-variant-numeric: tabular-nums; }
+  .lmd-svg .lmd-note { font-size: 12px; fill: var(--fig-muted); }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('lidar-motion-distortion');
+  if (!root) return;
+  var svg = root.querySelector('.lmd-svg');
+  var sliders = root.querySelectorAll('.lmd-slider');
+  var buttons = root.querySelectorAll('.fig-buttons button');
+  var outV = root.querySelector('.lmd-v'), outW = root.querySelector('.lmd-w');
+  var NS = 'http://www.w3.org/2000/svg';
+  var C = { text: '#24292e', muted: '#586069', faint: '#959da5', blue: '#0366d6', red: '#d73a49' };
+
+  // Room in metres. The sensor starts at the origin, heading +x.
+  var ROOM = { x0: -6, x1: 10, y0: -4.5, y1: 4.5 };
+  var PILLAR = { x0: 4, x1: 5, y0: 1.2, y1: 2.2 };
+  var PERIOD = 0.1, RAYS = 540;
+  var SCALE = 44, OX = 6.5 * SCALE + 20, OY = 210;
+  var show = 'raw';
+
+  function px(p) { return [OX + SCALE * p[0], OY - SCALE * p[1]]; }
+  function el(name, attrs, text) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    svg.appendChild(n);
+    return n;
+  }
+
+  // Pose of the sensor at time t under a constant twist (v, w).
+  function pose(t, v, w) {
+    var th = w * t;
+    if (Math.abs(w) < 1e-6) return [v * t, 0, 0];
+    return [v / w * Math.sin(th), v / w * (1 - Math.cos(th)), th];
+  }
+
+  // Distance along a ray to the first wall or pillar face.
+  function cast(o, d) {
+    var best = Infinity;
+    // Room: exit distance through the slabs.
+    [['x0', 0], ['x1', 0], ['y0', 1], ['y1', 1]].forEach(function (s) {
+      var axis = s[1], b = ROOM[s[0]];
+      if (Math.abs(d[axis]) > 1e-9) {
+        var t = (b - o[axis]) / d[axis];
+        if (t > 0) best = Math.min(best, t);
+      }
+    });
+    // Pillar: slab entry test.
+    var tmin = -Infinity, tmax = Infinity;
+    [[PILLAR.x0, PILLAR.x1, 0], [PILLAR.y0, PILLAR.y1, 1]].forEach(function (s) {
+      var a = s[2];
+      if (Math.abs(d[a]) < 1e-9) {
+        if (o[a] < s[0] || o[a] > s[1]) { tmin = Infinity; }
+        return;
+      }
+      var t1 = (s[0] - o[a]) / d[a], t2 = (s[1] - o[a]) / d[a];
+      tmin = Math.max(tmin, Math.min(t1, t2));
+      tmax = Math.min(tmax, Math.max(t1, t2));
+    });
+    if (tmin <= tmax && tmin > 0) best = Math.min(best, tmin);
+    return best;
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var v = parseFloat(sliders[0].value), w = parseFloat(sliders[1].value);
+    outV.textContent = v.toFixed(1) + ' m/s (' + (v * PERIOD * 100).toFixed(0) + ' cm per sweep)';
+    outW.textContent = w.toFixed(1) + ' rad/s (' + (w * PERIOD * 180 / Math.PI).toFixed(1) + ' deg per sweep)';
+
+    // True geometry.
+    var a = px([ROOM.x0, ROOM.y1]), b = px([ROOM.x1, ROOM.y0]);
+    el('rect', { x: a[0], y: a[1], width: b[0] - a[0], height: b[1] - a[1], fill: 'none', stroke: C.faint, 'stroke-width': 6, 'stroke-opacity': 0.5 });
+    a = px([PILLAR.x0, PILLAR.y1]); b = px([PILLAR.x1, PILLAR.y0]);
+    el('rect', { x: a[0], y: a[1], width: b[0] - a[0], height: b[1] - a[1], fill: C.faint, 'fill-opacity': 0.3, stroke: C.faint, 'stroke-width': 1 });
+
+    var end = pose(PERIOD, v, w);
+    var raw = [], fixed = [];
+    for (var i = 0; i < RAYS; i++) {
+      var t = PERIOD * i / RAYS;
+      var P = pose(t, v, w);
+      var az = -Math.PI + 2 * Math.PI * i / RAYS; // sweep starts behind the sensor
+      var ang = P[2] + az, d = [Math.cos(ang), Math.sin(ang)];
+      var r = cast([P[0], P[1]], d);
+      if (!isFinite(r)) continue;
+      var world = [P[0] + r * d[0], P[1] + r * d[1]];
+      fixed.push(world);
+      // Raw: the point in the sensor frame at time t, interpreted in the end-of-scan frame.
+      var sx = r * Math.cos(az), sy = r * Math.sin(az), c = Math.cos(end[2]), s = Math.sin(end[2]);
+      raw.push([end[0] + c * sx - s * sy, end[1] + s * sx + c * sy]);
+    }
+    function dots(list, color) {
+      list.forEach(function (p) {
+        var q = px(p);
+        el('circle', { cx: q[0].toFixed(1), cy: q[1].toFixed(1), r: 1.8, fill: color });
+      });
+    }
+    if (show !== 'raw') dots(fixed, C.blue);
+    if (show !== 'deskew') dots(raw, C.red);
+
+    // Trajectory during the sweep, start and end poses.
+    var path = [];
+    for (var k = 0; k <= 20; k++) path.push(px(pose(PERIOD * k / 20, v, w)).join(','));
+    el('polyline', { points: path.join(' '), fill: 'none', stroke: C.text, 'stroke-width': 2 });
+    [[pose(0, v, w), 'start'], [end, 'end']].forEach(function (e) {
+      var q = px(e[0]), h = e[0][2];
+      el('circle', { cx: q[0], cy: q[1], r: 4, fill: '#fff', stroke: C.text, 'stroke-width': 1.5 });
+      el('line', { x1: q[0], y1: q[1], x2: q[0] + 16 * Math.cos(h), y2: q[1] - 16 * Math.sin(h), stroke: C.text, 'stroke-width': 1.5 });
+    });
+    var seam = px([ROOM.x0, 0]);
+    el('text', { x: seam[0] + 8, y: seam[1] - 8, class: 'lmd-note' }, 'scan seam');
+    el('text', { x: 20, y: 434, class: 'lmd-note' }, 'One sweep, 10 Hz. The sweep starts and ends behind the sensor (left), where the first and last points meet.');
+  }
+
+  sliders.forEach(function (s) { s.addEventListener('input', draw); });
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      show = btn.getAttribute('data-show');
+      buttons.forEach(function (o) { o.setAttribute('aria-pressed', o === btn ? 'true' : 'false'); });
+      draw();
+    });
+  });
+  draw();
+})();
+</script>

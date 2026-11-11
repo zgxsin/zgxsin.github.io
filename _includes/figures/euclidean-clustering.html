@@ -1,0 +1,146 @@
+<figure id="euclidean-clustering" class="fig lec">
+  <div class="fig-buttons" role="group" aria-label="Distance tolerance mode">
+    <button type="button" data-mode="fixed" aria-pressed="true">Fixed tolerance</button>
+    <button type="button" data-mode="adaptive" aria-pressed="false">Tolerance grows with range</button>
+  </div>
+  <svg class="fig-svg fig-svg-wide lec-svg" viewBox="0 0 760 380" role="img" aria-label="Top-down view of non-ground LiDAR points from two pedestrians standing close together, a bollard next to a car, and a container seen at a grazing angle. Points are coloured by Euclidean cluster. A small tolerance splits the far container and car; a large one merges the pedestrians and the bollard with the car."></svg>
+  <label class="fig-control">Cluster tolerance: <output class="lec-out"></output>
+    <input class="lec-slider" type="range" min="0.1" max="1.5" step="0.05" value="0.5"></label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .lec .lec-slider { display: block; width: 100%; margin-top: 4px; }
+  .lec output { color: var(--fig-text); font-variant-numeric: tabular-nums; }
+  .lec-svg .lec-note { font-size: 12px; fill: var(--fig-muted); }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('euclidean-clustering');
+  if (!root) return;
+  var svg = root.querySelector('.lec-svg');
+  var slider = root.querySelector('.lec-slider');
+  var out = root.querySelector('.lec-out');
+  var buttons = root.querySelectorAll('.fig-buttons button');
+  var NS = 'http://www.w3.org/2000/svg';
+  var PALETTE = ['#0366d6', '#22863a', '#6f42c1', '#e36209', '#d73a49', '#dbab09', '#005cc5', '#28a745'];
+  var C = { text: '#24292e', faint: '#959da5' };
+  var SCALE = 22, X0 = 40, Y0 = 190, MIN_SIZE = 2;
+  var mode = 'fixed';
+
+  function el(name, attrs, text) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    svg.appendChild(n);
+    return n;
+  }
+  function px(p) { return [X0 + SCALE * p[0], Y0 - SCALE * p[1]]; }
+
+  function rect(cx, cy, l, w, yawDeg) {
+    var a = yawDeg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+    return [[l, w], [-l, w], [-l, -w], [l, -w]].map(function (v) {
+      return [cx + c * v[0] / 2 - s * v[1] / 2, cy + s * v[0] / 2 + c * v[1] / 2];
+    });
+  }
+  var POLYS = [
+    { name: 'car', poly: rect(16, -3, 4.6, 1.9, 25), label: [16, -5.2] },
+    { name: 'container', poly: [[20, 3.2], [32, 3.2], [32, 5.8], [20, 5.8]], label: [26, 6.4] }
+  ];
+  var CIRCLES = [
+    { c: [6, 2.3], r: 0.25 }, { c: [6.2, 2.95], r: 0.25 },
+    { c: [13.3, -1.6], r: 0.12 }
+  ];
+
+  function raySeg(o, d, a, b) {
+    var e = [b[0] - a[0], b[1] - a[1]], den = d[0] * e[1] - d[1] * e[0];
+    if (Math.abs(den) < 1e-12) return Infinity;
+    var w = [a[0] - o[0], a[1] - o[1]];
+    var t = (w[0] * e[1] - w[1] * e[0]) / den, u = (w[0] * d[1] - w[1] * d[0]) / den;
+    return t > 0 && u >= 0 && u <= 1 ? t : Infinity;
+  }
+  function rayCircle(o, d, c) {
+    var oc = [o[0] - c.c[0], o[1] - c.c[1]], b = oc[0] * d[0] + oc[1] * d[1];
+    var disc = b * b - (oc[0] * oc[0] + oc[1] * oc[1] - c.r * c.r);
+    return disc > 0 ? -b - Math.sqrt(disc) : Infinity;
+  }
+
+  // Ray-cast at 0.4 deg resolution from a sensor at the origin.
+  var seed = 11;
+  function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+  var pts = [];
+  for (var deg = -35; deg <= 35; deg += 0.4) {
+    var a = deg * Math.PI / 180, d = [Math.cos(a), Math.sin(a)], best = Infinity;
+    POLYS.forEach(function (P) {
+      for (var i = 0; i < P.poly.length; i++) best = Math.min(best, raySeg([0, 0], d, P.poly[i], P.poly[(i + 1) % P.poly.length]));
+    });
+    CIRCLES.forEach(function (c) { best = Math.min(best, rayCircle([0, 0], d, c)); });
+    if (best < 40) {
+      var r = best + (rnd() - 0.5) * 0.05;
+      pts.push([r * d[0], r * d[1], r]);
+    }
+  }
+
+  function cluster(tol) {
+    var labels = pts.map(function () { return -1; }), next = 0;
+    function tolFor(p) { return mode === 'fixed' ? tol : tol * Math.max(1, p[2] / 10); }
+    for (var i = 0; i < pts.length; i++) {
+      if (labels[i] >= 0) continue;
+      labels[i] = next;
+      var queue = [i];
+      while (queue.length) {
+        var k = queue.pop();
+        for (var j = 0; j < pts.length; j++) {
+          if (labels[j] >= 0) continue;
+          var lim = Math.max(tolFor(pts[k]), tolFor(pts[j]));
+          if (Math.hypot(pts[k][0] - pts[j][0], pts[k][1] - pts[j][1]) < lim) { labels[j] = next; queue.push(j); }
+        }
+      }
+      next++;
+    }
+    return { labels: labels, count: next };
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var tol = parseFloat(slider.value);
+    var res = cluster(tol);
+    var sizes = {};
+    res.labels.forEach(function (l) { sizes[l] = (sizes[l] || 0) + 1; });
+    var colorOf = {}, used = 0;
+    Object.keys(sizes).forEach(function (l) { if (sizes[l] >= MIN_SIZE) colorOf[l] = PALETTE[used++ % PALETTE.length]; });
+
+    // Range rings for scale.
+    var o = px([0, 0]);
+    [10, 20, 30].forEach(function (r) {
+      el('path', { d: 'M' + px([r * Math.cos(0.38), r * Math.sin(0.38)]).join(',') + ' A' + r * SCALE + ',' + r * SCALE + ' 0 0 1 ' + px([r * Math.cos(-0.38), r * Math.sin(-0.38)]).join(','), fill: 'none', stroke: '#d0d7de', 'stroke-dasharray': '3 3' });
+      var q = px([r, 0]);
+      el('text', { x: q[0] + 4, y: q[1] - 4, class: 'lec-note' }, r + ' m');
+    });
+    pts.forEach(function (p, i) {
+      var q = px(p), c = colorOf[res.labels[i]];
+      el('circle', { cx: q[0].toFixed(1), cy: q[1].toFixed(1), r: c ? 3 : 2.2, fill: c || C.faint });
+    });
+    el('rect', { x: o[0] - 6, y: o[1] - 6, width: 12, height: 12, fill: C.text });
+    var lp = px([6.4, 3.8]);
+    el('text', { x: lp[0], y: lp[1], 'text-anchor': 'middle', class: 'lec-note' }, 'two pedestrians');
+    var lb = px([12.6, -0.6]);
+    el('text', { x: lb[0], y: lb[1], 'text-anchor': 'middle', class: 'lec-note' }, 'bollard');
+    POLYS.forEach(function (P) {
+      var q = px(P.label);
+      el('text', { x: q[0], y: q[1], 'text-anchor': 'middle', class: 'lec-note' }, P.name);
+    });
+    var objects = Object.keys(colorOf).length;
+    out.textContent = tol.toFixed(2) + ' m' + (mode === 'adaptive' ? ' at 10 m, scaled by range' : '') + ': ' + objects + ' clusters (5 true objects), ' + (res.count - objects) + ' fragments below ' + MIN_SIZE + ' points';
+  }
+
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      mode = btn.getAttribute('data-mode');
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+      draw();
+    });
+  });
+  slider.addEventListener('input', draw);
+  draw();
+})();
+</script>

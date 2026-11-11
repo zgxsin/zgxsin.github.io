@@ -24,6 +24,7 @@ truncate: 300 %} {% endif %}
     {% include header.html %}
     <div class="blogs">
       <h1>Blogs</h1>
+      {% include post-search.html %}
       {% unless posts_total == 0 %} {% include thoughts.html %} {% endunless %}
     </div>
 

@@ -1,0 +1,106 @@
+<figure id="voxel-downsample" class="fig lvx">
+  <div class="fig-legend">
+    <span><i class="lvx-swatch" style="background: #959da5"></i>input points (denser near the sensor)</span>
+    <span><i class="lvx-swatch" style="background: #0366d6"></i>one centroid per occupied voxel</span>
+    <span><i class="lvx-swatch" style="background: #e36209"></i>centroid more than 12 cm off the surface (corners, the curved pole)</span>
+  </div>
+  <svg class="fig-svg fig-svg-wide lvx-svg" viewBox="0 0 760 340" role="img" aria-label="Top-down 2D view of a LiDAR scan of two walls meeting in a corner and a round pole. A grid of voxels is overlaid; each occupied voxel is replaced by the centroid of its points. Larger voxels remove more points and pull centroids at the corner off the surface."></svg>
+  <label class="fig-control">Voxel size: <output class="lvx-out"></output>
+    <input class="lvx-slider" type="range" min="0.1" max="1.5" step="0.05" value="0.4"></label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .lvx-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+  .lvx .lvx-slider { display: block; width: 100%; margin-top: 4px; }
+  .lvx output { color: var(--fig-text); font-variant-numeric: tabular-nums; }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('voxel-downsample');
+  if (!root) return;
+  var svg = root.querySelector('.lvx-svg');
+  var slider = root.querySelector('.lvx-slider');
+  var out = root.querySelector('.lvx-out');
+  var NS = 'http://www.w3.org/2000/svg';
+  var C = { text: '#24292e', faint: '#959da5', border: '#d0d7de', blue: '#0366d6', orange: '#e36209' };
+  var SCALE = 40, X0 = 20, Y0 = 320; // metres to pixels, y up
+
+  function el(name, attrs) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    svg.appendChild(n);
+    return n;
+  }
+  function px(p) { return [X0 + SCALE * p[0], Y0 - SCALE * p[1]]; }
+
+  // Deterministic noise so the figure looks the same on every load.
+  var seed = 7;
+  function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+  function gauss() { return (rnd() + rnd() + rnd() - 1.5) * 0.06; }
+
+  // Sensor at (1, 1). Simulated rays hit an L-shaped wall and a round pole.
+  var S = [1, 1], points = [], onSurface = [];
+  var POLE = { c: [7, 2.4], r: 0.45 };
+  for (var i = 0; i < 260; i++) {
+    var a = 0.02 + (Math.PI / 2 - 0.04) * i / 259;
+    var d = [Math.cos(a), Math.sin(a)];
+    var best = Infinity;
+    // Wall along x = 17.5 and wall along y = 7.5.
+    best = Math.min(best, (17.5 - S[0]) / d[0], (7.5 - S[1]) / d[1]);
+    // Pole.
+    var oc = [S[0] - POLE.c[0], S[1] - POLE.c[1]];
+    var bq = oc[0] * d[0] + oc[1] * d[1], cq = oc[0] * oc[0] + oc[1] * oc[1] - POLE.r * POLE.r;
+    var disc = bq * bq - cq;
+    if (disc > 0) best = Math.min(best, -bq - Math.sqrt(disc));
+    points.push([S[0] + best * d[0] + gauss(), S[1] + best * d[1] + gauss()]);
+  }
+
+  function nearSurface(p) {
+    var dWall = Math.min(Math.abs(p[0] - 17.5), Math.abs(p[1] - 7.5));
+    var dPole = Math.abs(Math.hypot(p[0] - POLE.c[0], p[1] - POLE.c[1]) - POLE.r);
+    return Math.min(dWall, dPole) < 0.12;
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var s = parseFloat(slider.value);
+
+    // Grid lines.
+    for (var gx = 0; gx * s <= 18.5; gx++) {
+      var a = px([gx * s, 0]);
+      el('line', { x1: a[0], y1: px([0, 7.9])[1], x2: a[0], y2: Y0, stroke: C.border, 'stroke-width': 0.6 });
+    }
+    for (var gy = 0; gy * s <= 7.9; gy++) {
+      var b = px([0, gy * s]);
+      el('line', { x1: X0, y1: b[1], x2: px([18.5, 0])[0], y2: b[1], stroke: C.border, 'stroke-width': 0.6 });
+    }
+
+    // Accumulate per voxel: key from floor(p / s).
+    var voxels = {};
+    points.forEach(function (p) {
+      var key = Math.floor(p[0] / s) + ',' + Math.floor(p[1] / s);
+      var v = voxels[key] || (voxels[key] = { sx: 0, sy: 0, n: 0 });
+      v.sx += p[0]; v.sy += p[1]; v.n += 1;
+    });
+
+    points.forEach(function (p) {
+      var q = px(p);
+      el('circle', { cx: q[0].toFixed(1), cy: q[1].toFixed(1), r: 1.6, fill: C.faint });
+    });
+    var count = 0;
+    Object.keys(voxels).forEach(function (key) {
+      var v = voxels[key], c = [v.sx / v.n, v.sy / v.n], q = px(c);
+      var ix = +key.split(',')[0], iy = +key.split(',')[1], lo = px([ix * s, (iy + 1) * s]);
+      el('rect', { x: lo[0], y: lo[1], width: s * SCALE, height: s * SCALE, fill: C.blue, 'fill-opacity': 0.07 });
+      el('circle', { cx: q[0].toFixed(1), cy: q[1].toFixed(1), r: 3.2, fill: nearSurface(c) ? C.blue : C.orange });
+      count++;
+    });
+    var q = px(S);
+    el('rect', { x: q[0] - 6, y: q[1] - 6, width: 12, height: 12, fill: C.text });
+    out.textContent = s.toFixed(2) + ' m: ' + points.length + ' points in, ' + count + ' out (' + (100 * count / points.length).toFixed(0) + '%)';
+  }
+
+  slider.addEventListener('input', draw);
+  draw();
+})();
+</script>

@@ -1,0 +1,131 @@
+<figure id="ground-seg-figure" class="fig lgs">
+  <div class="fig-buttons" role="group" aria-label="Ground segmentation method">
+    <button type="button" data-method="height" aria-pressed="true">Height threshold</button>
+    <button type="button" data-method="slope" aria-pressed="false">Slope to last ground point</button>
+  </div>
+  <div class="fig-legend">
+    <span><i class="lgs-swatch" style="background: #22863a"></i>labelled ground</span>
+    <span><i class="lgs-swatch" style="background: #d73a49"></i>labelled obstacle</span>
+    <span><i class="lgs-swatch" style="background: #d0d7de"></i>terrain</span>
+  </div>
+  <svg class="fig-svg fig-svg-wide lgs-svg" viewBox="0 0 760 230" role="img" aria-label="Side view of one azimuth column of a LiDAR mounted 2 m high. Its beams hit flat ground, a 1 m crate, and a 10 degree ramp. Points are coloured ground or obstacle by either a fixed height threshold or by the slope to the last ground point; the height threshold mislabels the ramp, the slope test does not."></svg>
+  <label class="fig-control"><span class="lgs-label"></span> <output class="lgs-out"></output>
+    <input class="lgs-slider" type="range"></label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .lgs-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+  .lgs .lgs-slider { display: block; width: 100%; margin-top: 4px; }
+  .lgs output { color: var(--fig-text); font-variant-numeric: tabular-nums; }
+  .lgs-svg .lgs-note { font-size: 12px; fill: var(--fig-muted); }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('ground-seg-figure');
+  if (!root) return;
+  var svg = root.querySelector('.lgs-svg');
+  var slider = root.querySelector('.lgs-slider');
+  var label = root.querySelector('.lgs-label');
+  var out = root.querySelector('.lgs-out');
+  var buttons = root.querySelectorAll('.fig-buttons button');
+  var NS = 'http://www.w3.org/2000/svg';
+  var C = { text: '#24292e', muted: '#586069', border: '#d0d7de', green: '#22863a', red: '#d73a49' };
+
+  var H = 2.0, XMAX = 24;
+  var SX = 30, SZ = 60, X0 = 30, Z0 = 185; // height drawn at 2x scale
+  var CRATE = { x0: 6, x1: 6.8, h: 1.0 };
+  var RAMP = { x0: 13, x1: 19, slope: 10 * Math.PI / 180 };
+  var METHODS = {
+    height: { label: 'Height threshold:', min: 0.05, max: 1.2, step: 0.05, value: 0.3, fmt: function (v) { return v.toFixed(2) + ' m'; } },
+    slope: { label: 'Max slope:', min: 2, max: 45, step: 1, value: 15, fmt: function (v) { return v.toFixed(0) + ' deg'; } }
+  };
+  var method = 'height';
+
+  function terrain(x) {
+    var z = 0;
+    if (x > RAMP.x0) z = (Math.min(x, RAMP.x1) - RAMP.x0) * Math.tan(RAMP.slope);
+    if (x >= CRATE.x0 && x <= CRATE.x1) z = Math.max(z, CRATE.h);
+    return z;
+  }
+  function px(x, z) { return [X0 + SX * x, Z0 - SZ * z]; }
+  function el(name, attrs, text) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    svg.appendChild(n);
+    return n;
+  }
+
+  // Ray-march 40 beams from -30 deg to 0 deg.
+  var hits = [];
+  for (var b = 0; b < 40; b++) {
+    var ang = (-30 + 30 * b / 39) * Math.PI / 180, t = Math.tan(ang);
+    for (var x = 0.01; x <= XMAX; x += 0.01) {
+      var z = H + x * t;
+      if (z <= terrain(x)) { hits.push([x, z]); break; }
+    }
+  }
+  hits.sort(function (a, c) { return a[0] - c[0]; });
+
+  function classify(thr) {
+    if (method === 'height') return hits.map(function (p) { return p[1] < thr; });
+    var last = [0, 0], lim = thr * Math.PI / 180;
+    return hits.map(function (p) {
+      var ok = Math.abs(Math.atan2(p[1] - last[1], p[0] - last[0])) < lim;
+      if (ok) last = p;
+      return ok;
+    });
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var thr = parseFloat(slider.value), m = METHODS[method];
+    var labels = classify(thr);
+    var nGround = labels.filter(Boolean).length;
+    out.textContent = m.fmt(thr) + ': ' + nGround + ' ground, ' + (labels.length - nGround) + ' obstacle points';
+
+    // Terrain silhouette.
+    var pts = [px(0, -0.15)];
+    for (var x = 0; x <= XMAX; x += 0.05) pts.push(px(x, terrain(x)));
+    pts.push(px(XMAX, -0.15));
+    el('polygon', { points: pts.map(function (p) { return p.join(','); }).join(' '), fill: C.border, 'fill-opacity': 0.6 });
+    if (method === 'height') {
+      var a = px(0, thr), e = px(XMAX, thr);
+      el('line', { x1: a[0], y1: a[1], x2: e[0], y2: e[1], stroke: C.muted, 'stroke-dasharray': '4 3' });
+    }
+
+    var s = px(0, H);
+    hits.forEach(function (p, i) {
+      var q = px(p[0], p[1]);
+      el('line', { x1: s[0], y1: s[1], x2: q[0], y2: q[1], stroke: C.muted, 'stroke-width': 0.4, 'stroke-opacity': 0.35 });
+    });
+    hits.forEach(function (p, i) {
+      var q = px(p[0], p[1]);
+      el('circle', { cx: q[0].toFixed(1), cy: q[1].toFixed(1), r: 3, fill: labels[i] ? C.green : C.red });
+    });
+
+    el('rect', { x: s[0] - 6, y: s[1] - 6, width: 12, height: 12, fill: C.text });
+    el('line', { x1: s[0], y1: s[1] + 6, x2: s[0], y2: px(0, 0)[1], stroke: C.text, 'stroke-width': 2 });
+    var c = px((CRATE.x0 + CRATE.x1) / 2, CRATE.h + 0.12);
+    el('text', { x: c[0], y: c[1], 'text-anchor': 'middle', class: 'lgs-note' }, 'crate, 1 m');
+    var sh = px(10, 0.12);
+    el('text', { x: sh[0], y: sh[1], 'text-anchor': 'middle', class: 'lgs-note' }, 'shadow: no returns');
+    var r = px((RAMP.x0 + RAMP.x1) / 2 + 0.5, 0.75);
+    el('text', { x: r[0], y: r[1], 'text-anchor': 'end', class: 'lgs-note' }, '10 deg ramp');
+    el('text', { x: s[0] + 12, y: s[1] + 4, class: 'lgs-note' }, 'LiDAR at 2 m, 40 beams from -30 to 0 deg');
+    el('text', { x: 750, y: 222, 'text-anchor': 'end', class: 'lgs-note' }, 'height drawn at 2x scale');
+  }
+
+  function setMethod(name) {
+    method = name;
+    var m = METHODS[name];
+    label.textContent = m.label;
+    slider.min = m.min; slider.max = m.max; slider.step = m.step; slider.value = m.value;
+    buttons.forEach(function (o) { o.setAttribute('aria-pressed', o.getAttribute('data-method') === name ? 'true' : 'false'); });
+    draw();
+  }
+  buttons.forEach(function (btn) { btn.addEventListener('click', function () { setMethod(btn.getAttribute('data-method')); }); });
+  slider.addEventListener('input', draw);
+  setMethod('height');
+})();
+</script>

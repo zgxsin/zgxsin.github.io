@@ -1,0 +1,45 @@
+<figure id="lidar-calibration-frames" class="fig lcf">
+  <svg class="fig-svg fig-svg-wide lcf-svg" viewBox="0 0 760 320" role="img" aria-label="Transform tree: base_link at the top with fixed transforms to the IMU, the front LiDAR, the rear LiDAR and the camera. Dashed curves below show how each pair is calibrated: hand-eye or continuous-time between the front LiDAR and the IMU, ICP on the overlap between the two LiDARs, and target or edge alignment between the front LiDAR and the camera.">
+    <defs>
+      <marker id="lcf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+      <marker id="lcf-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#586069"></path>
+      </marker>
+    </defs>
+<rect x="300" y="20" width="160" height="46" rx="8" fill="#f1f8ff" stroke="#0366d6" stroke-width="1.3"></rect>
+<text x="380.0" y="46.5" class="lcf-t">base_link</text>
+<rect x="20" y="140" width="150" height="46" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="95.0" y="166.5" class="lcf-t">imu</text>
+<polyline points="308.8,66.0 95.0,140.0" fill="none" class="lcf-l" stroke="#24292e" marker-end="url(#lcf-arrow)"></polyline>
+<text x="223.9375" y="95.9" text-anchor="end" class="lcf-g">T_BI</text>
+<rect x="210" y="140" width="150" height="46" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="285.0" y="166.5" class="lcf-t">lidar_front</text>
+<polyline points="356.2,66.0 285.0,140.0" fill="none" class="lcf-l" stroke="#24292e" marker-end="url(#lcf-arrow)"></polyline>
+<text x="321.3125" y="95.9" text-anchor="end" class="lcf-g">T_BL1</text>
+<rect x="400" y="140" width="150" height="46" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="475.0" y="166.5" class="lcf-t">lidar_rear</text>
+<polyline points="403.8,66.0 475.0,140.0" fill="none" class="lcf-l" stroke="#24292e" marker-end="url(#lcf-arrow)"></polyline>
+<text x="438.6875" y="95.9" text-anchor="start" class="lcf-g">T_BL2</text>
+<rect x="590" y="140" width="150" height="46" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="665.0" y="166.5" class="lcf-t">camera</text>
+<polyline points="451.2,66.0 665.0,140.0" fill="none" class="lcf-l" stroke="#24292e" marker-end="url(#lcf-arrow)"></polyline>
+<text x="536.0625" y="95.9" text-anchor="start" class="lcf-g">T_BC</text>
+<path d="M255.0,186 Q190,235 125.0,186" fill="none" class="lcf-l lcf-d" stroke="#586069" marker-end="url(#lcf-arrow-m)"></path>
+<text x="190" y="228" text-anchor="middle" class="lcf-g">hand-eye / continuous time</text>
+<path d="M315.0,186 Q380,235 445.0,186" fill="none" class="lcf-l lcf-d" stroke="#586069" marker-end="url(#lcf-arrow-m)"></path>
+<text x="380" y="228" text-anchor="middle" class="lcf-g">ICP on overlap</text>
+<path d="M285.0,186 Q475,390 665.0,186" fill="none" class="lcf-l lcf-d" stroke="#586069" marker-end="url(#lcf-arrow-m)"></path>
+<text x="475" y="310" text-anchor="middle" class="lcf-g">target or edge alignment</text>
+  </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .lcf-svg .lcf-t { font-weight: 600; text-anchor: middle; }
+  .lcf-svg .lcf-s { font-size: 12px; fill: var(--fig-muted); text-anchor: middle; }
+  .lcf-svg .lcf-g { font-size: 12px; fill: var(--fig-muted); paint-order: stroke; stroke: #fff; stroke-width: 4px; }
+  .lcf-svg .lcf-zone { font-size: 12px; font-weight: 600; fill: var(--fig-muted); }
+  .lcf-l { stroke-width: 1.4; }
+  .lcf-d { stroke-dasharray: 5 4; }
+</style>

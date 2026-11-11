@@ -1,0 +1,53 @@
+<figure id="lidar-clock-sync" class="fig lcs">
+  <svg class="fig-svg fig-svg-wide lcs-svg" viewBox="0 0 760 250" role="img" aria-label="Clock synchronization. A PTP grandmaster or GNSS PPS disciplines the LiDAR clock, the host clock and the IMU clock. The LiDAR stamps every point and the IMU stamps every sample in that shared time base; both drivers feed the deskew step. Host receive time is only a fallback.">
+    <defs>
+      <marker id="lcs-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+      <marker id="lcs-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#586069"></path>
+      </marker>
+    </defs>
+<rect x="20" y="95" width="140" height="60" rx="8" fill="#f1f8ff" stroke="#0366d6" stroke-width="1.3"></rect>
+<text x="90.0" y="121.0" class="lcs-t">PTP grandmaster</text>
+<text x="90.0" y="138.0" class="lcs-s">or GNSS PPS</text>
+<rect x="220" y="20" width="150" height="52" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="295.0" y="42.0" class="lcs-t">LiDAR clock</text>
+<text x="295.0" y="59.0" class="lcs-s">hardware stamps</text>
+<rect x="220" y="99" width="150" height="52" rx="8" fill="#f6f8fa" stroke="#959da5" stroke-width="1.3"></rect>
+<text x="295.0" y="121.0" class="lcs-t">Host clock</text>
+<text x="295.0" y="138.0" class="lcs-s">runs the drivers</text>
+<rect x="220" y="178" width="150" height="52" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="295.0" y="200.0" class="lcs-t">IMU clock</text>
+<text x="295.0" y="217.0" class="lcs-s">microcontroller</text>
+<rect x="455" y="20" width="130" height="52" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="520.0" y="49.5" class="lcs-t">LiDAR driver</text>
+<rect x="455" y="178" width="130" height="52" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="520.0" y="207.5" class="lcs-t">IMU driver</text>
+<rect x="630" y="95" width="115" height="60" rx="8" fill="#f0fff4" stroke="#22863a" stroke-width="1.3"></rect>
+<text x="687.5" y="121.0" class="lcs-t">Deskew</text>
+<text x="687.5" y="138.0" class="lcs-s">one time base</text>
+<polyline points="160.0,125.0 220.0,46.0" fill="none" class="lcs-l" stroke="#24292e" marker-end="url(#lcs-arrow)"></polyline>
+<polyline points="160.0,125.0 220.0,125.0" fill="none" class="lcs-l" stroke="#24292e" marker-end="url(#lcs-arrow)"></polyline>
+<polyline points="160.0,125.0 220.0,204.0" fill="none" class="lcs-l" stroke="#24292e" marker-end="url(#lcs-arrow)"></polyline>
+<text x="190" y="72" text-anchor="middle" class="lcs-g">sync</text>
+<polyline points="370.0,46.0 455.0,46.0" fill="none" class="lcs-l" stroke="#24292e" marker-end="url(#lcs-arrow)"></polyline>
+<text x="412" y="40" text-anchor="middle" class="lcs-g">per-point time</text>
+<polyline points="370.0,204.0 455.0,204.0" fill="none" class="lcs-l" stroke="#24292e" marker-end="url(#lcs-arrow)"></polyline>
+<text x="412" y="198" text-anchor="middle" class="lcs-g">stamped samples</text>
+<polyline points="370.0,125.0 520.0,125.0 520.0,72.0" fill="none" class="lcs-l lcs-d" stroke="#586069" marker-end="url(#lcs-arrow-m)"></polyline>
+<polyline points="520.0,125.0 520.0,178.0" fill="none" class="lcs-l lcs-d" stroke="#586069" marker-end="url(#lcs-arrow-m)"></polyline>
+<text x="445" y="119" text-anchor="middle" class="lcs-g">receive time: fallback only</text>
+<polyline points="585.0,46.0 608.0,46.0 608.0,110.0 630.0,110.0" fill="none" class="lcs-l" stroke="#24292e" marker-end="url(#lcs-arrow)"></polyline>
+<polyline points="585.0,204.0 608.0,204.0 608.0,140.0 630.0,140.0" fill="none" class="lcs-l" stroke="#24292e" marker-end="url(#lcs-arrow)"></polyline>
+  </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .lcs-svg .lcs-t { font-weight: 600; text-anchor: middle; }
+  .lcs-svg .lcs-s { font-size: 12px; fill: var(--fig-muted); text-anchor: middle; }
+  .lcs-svg .lcs-g { font-size: 12px; fill: var(--fig-muted); paint-order: stroke; stroke: #fff; stroke-width: 4px; }
+  .lcs-svg .lcs-zone { font-size: 12px; font-weight: 600; fill: var(--fig-muted); }
+  .lcs-l { stroke-width: 1.4; }
+  .lcs-d { stroke-dasharray: 5 4; }
+</style>

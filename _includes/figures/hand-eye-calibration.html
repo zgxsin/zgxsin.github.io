@@ -1,0 +1,85 @@
+<figure id="hand-eye-calibration" class="fig hec">
+  <svg class="fig-svg fig-svg-wide hec-svg" viewBox="0 0 760 300" role="img" aria-label="Left: the original hand-eye setup. A robot arm moves its gripper, the hand, which carries a camera, the eye. The arm's joint encoders give the hand motion A, the camera's view of a fixed checkerboard gives the eye motion B, and the unknown is the transform X from hand to eye. Right: the general case as a commutative square. Sensor 1 and sensor 2 at times i and j. Going from sensor 1 at time i to sensor 2 at time j along the top and right edge gives A X, along the left and bottom edge gives X B, so A X equals X B.">
+    <defs>
+      <marker id="hec-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+      <marker id="hec-arrow-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#0366d6"></path>
+      </marker>
+      <marker id="hec-arrow-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#e36209"></path>
+      </marker>
+      <marker id="hec-arrow-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#22863a"></path>
+      </marker>
+    </defs>
+
+    <!-- Left panel: robot arm with a camera on the gripper. -->
+    <text x="10" y="18" class="hec-zone">Where the name comes from</text>
+    <rect x="30" y="236" width="90" height="16" rx="3" fill="#f6f8fa" stroke="#24292e" stroke-width="1.2"></rect>
+    <line x1="75" y1="236" x2="110" y2="150" stroke="#959da5" stroke-width="10" stroke-linecap="round"></line>
+    <line x1="110" y1="150" x2="190" y2="110" stroke="#959da5" stroke-width="9" stroke-linecap="round"></line>
+    <circle cx="75" cy="236" r="7" fill="#fff" stroke="#24292e" stroke-width="1.5"></circle>
+    <circle cx="110" cy="150" r="7" fill="#fff" stroke="#24292e" stroke-width="1.5"></circle>
+    <circle cx="190" cy="110" r="7" fill="#fff" stroke="#24292e" stroke-width="1.5"></circle>
+    <!-- Gripper (hand). -->
+    <path d="M190,110 L210,104 M210,94 L210,114 M210,94 L226,94 M210,114 L226,114" stroke="#24292e" stroke-width="2.5" fill="none"></path>
+    <!-- Camera (eye) on top of the gripper. -->
+    <rect x="200" y="66" width="26" height="18" rx="3" fill="#0366d6"></rect>
+    <path d="M226,70 L236,66 L236,84 L226,80 z" fill="#0366d6"></path>
+    <!-- Checkerboard. -->
+    <g transform="translate(286,120)">
+      <rect x="0" y="0" width="16" height="16" fill="#24292e"></rect><rect x="16" y="0" width="16" height="16" fill="#fff"></rect><rect x="32" y="0" width="16" height="16" fill="#24292e"></rect>
+      <rect x="0" y="16" width="16" height="16" fill="#fff"></rect><rect x="16" y="16" width="16" height="16" fill="#24292e"></rect><rect x="32" y="16" width="16" height="16" fill="#fff"></rect>
+      <rect x="0" y="32" width="16" height="16" fill="#24292e"></rect><rect x="16" y="32" width="16" height="16" fill="#fff"></rect><rect x="32" y="32" width="16" height="16" fill="#24292e"></rect>
+      <rect x="0" y="0" width="48" height="48" fill="none" stroke="#24292e"></rect>
+    </g>
+    <line x1="238" y1="80" x2="284" y2="130" stroke="#0366d6" stroke-dasharray="4 3"></line>
+    <!-- X between hand and eye. -->
+    <path d="M206,96 Q176,80 198,72" fill="none" stroke="#e36209" stroke-width="1.6" marker-end="url(#hec-arrow-o)"></path>
+    <text x="146" y="78" class="hec-x">X = ?</text>
+    <text x="244" y="56" class="hec-g">eye: camera</text>
+    <text x="222" y="138" text-anchor="middle" class="hec-g">hand: gripper</text>
+    <text x="300" y="186" text-anchor="middle" class="hec-g">fixed board</text>
+    <text x="10" y="274" class="hec-n"><tspan fill="#22863a" font-weight="600">A</tspan>: hand motion from joint encoders</text>
+    <text x="10" y="290" class="hec-n"><tspan fill="#0366d6" font-weight="600">B</tspan>: eye motion from seeing the board</text>
+
+    <line x1="370" y1="10" x2="370" y2="280" stroke="#d0d7de"></line>
+
+    <!-- Right panel: commutative square. -->
+    <text x="390" y="18" class="hec-zone">Any two rigidly attached sensors</text>
+    <rect x="400" y="50" width="130" height="48" rx="8" fill="#fff" stroke="#24292e" stroke-width="1.3"></rect>
+    <text x="465" y="72" class="hec-t">sensor 1</text><text x="465" y="89" class="hec-s">at time i</text>
+    <rect x="610" y="50" width="130" height="48" rx="8" fill="#fff" stroke="#24292e" stroke-width="1.3"></rect>
+    <text x="675" y="72" class="hec-t">sensor 1</text><text x="675" y="89" class="hec-s">at time j</text>
+    <rect x="400" y="190" width="130" height="48" rx="8" fill="#f1f8ff" stroke="#0366d6" stroke-width="1.3"></rect>
+    <text x="465" y="212" class="hec-t">sensor 2</text><text x="465" y="229" class="hec-s">at time i</text>
+    <rect x="610" y="190" width="130" height="48" rx="8" fill="#f1f8ff" stroke="#0366d6" stroke-width="1.3"></rect>
+    <text x="675" y="212" class="hec-t">sensor 2</text><text x="675" y="229" class="hec-s">at time j</text>
+
+    <line x1="530" y1="74" x2="608" y2="74" stroke="#22863a" stroke-width="1.6" marker-end="url(#hec-arrow-g)"></line>
+    <text x="570" y="66" text-anchor="middle" class="hec-x" style="fill: #22863a">A</text>
+    <line x1="530" y1="214" x2="608" y2="214" stroke="#0366d6" stroke-width="1.6" marker-end="url(#hec-arrow-b)"></line>
+    <text x="570" y="206" text-anchor="middle" class="hec-x" style="fill: #0366d6">B</text>
+    <line x1="465" y1="98" x2="465" y2="188" stroke="#e36209" stroke-width="1.6" marker-end="url(#hec-arrow-o)"></line>
+    <text x="474" y="148" class="hec-x" style="fill: #e36209">X</text>
+    <line x1="675" y1="98" x2="675" y2="188" stroke="#e36209" stroke-width="1.6" marker-end="url(#hec-arrow-o)"></line>
+    <text x="684" y="148" class="hec-x" style="fill: #e36209">X</text>
+
+    <text x="570" y="140" text-anchor="middle" class="hec-eq">A X = X B</text>
+    <text x="570" y="160" text-anchor="middle" class="hec-n">both paths from top-left</text>
+    <text x="570" y="175" text-anchor="middle" class="hec-n">to bottom-right agree</text>
+    <text x="570" y="270" text-anchor="middle" class="hec-n">The sensors never need to see the same thing.</text>
+  </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .hec-svg .hec-zone { font-size: 12px; font-weight: 600; fill: var(--fig-muted); }
+  .hec-svg .hec-t { font-weight: 600; text-anchor: middle; }
+  .hec-svg .hec-s { font-size: 12px; fill: var(--fig-muted); text-anchor: middle; }
+  .hec-svg .hec-g { font-size: 12px; fill: var(--fig-muted); }
+  .hec-svg .hec-n { font-size: 12px; fill: var(--fig-muted); }
+  .hec-svg .hec-x { font-weight: 700; font-style: italic; fill: #e36209; }
+  .hec-svg .hec-eq { font-size: 16px; font-weight: 700; fill: var(--fig-text); }
+</style>

@@ -1,0 +1,18 @@
+---
+layout: null
+sitemap: false
+---
+{%- comment -%}
+  Search index for the blog page (_includes/post-search.html): every published post
+  with its rendered text. strip_html also drops <script> and <style> blocks.
+{%- endcomment -%}
+[
+{%- for post in site.posts %}
+  {
+    "title": {{ post.title | jsonify }},
+    "url": {{ post.url | relative_url | jsonify }},
+    "date": {{ post.date | date: "%b %d, %Y" | jsonify }},
+    "text": {{ post.content | strip_html | normalize_whitespace | jsonify }}
+  }{% unless forloop.last %},{% endunless %}
+{%- endfor %}
+]

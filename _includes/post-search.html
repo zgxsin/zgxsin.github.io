@@ -1,0 +1,94 @@
+{%- comment -%}
+  Full-text search over all posts, used on the blog index. Loads /search.json on first
+  use, filters by every word typed (title and body), and hides the year list while a
+  query is active. "/" focuses the box; the query is kept in ?q= so results can be linked.
+{%- endcomment -%}
+<div class="post-search" role="search">
+  <input id="post-search-input" class="post-search-input" type="search" placeholder="Search posts (press /)" aria-label="Search all posts" autocomplete="off">
+  <p id="post-search-status" class="post-search-status" aria-live="polite"></p>
+  <ol id="post-search-results" class="post-search-results"></ol>
+</div>
+<script>
+(function () {
+  var input = document.getElementById('post-search-input');
+  var status = document.getElementById('post-search-status');
+  var list = document.getElementById('post-search-results');
+  var INDEX_URL = '{{ "/search.json" | relative_url }}';
+  var index = null, loading = null;
+
+  function load() {
+    if (!loading) {
+      loading = fetch(INDEX_URL).then(function (r) { return r.json(); }).then(function (data) {
+        index = data.map(function (p) {
+          return { title: p.title, url: p.url, date: p.date, text: p.text, lt: p.title.toLowerCase(), lx: p.text.toLowerCase() };
+        });
+      }).catch(function () { status.textContent = 'Search index could not be loaded.'; });
+    }
+    return loading;
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
+  }
+  function escapeRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function highlight(s, terms) {
+    var re = new RegExp('(' + terms.map(escapeRe).join('|') + ')', 'gi');
+    return escapeHtml(s).replace(re, '<mark>$1</mark>');
+  }
+  function count(hay, term) {
+    var n = 0, i = hay.indexOf(term);
+    while (i !== -1 && n < 50) { n++; i = hay.indexOf(term, i + term.length); }
+    return n;
+  }
+  function snippet(p, terms) {
+    var at = -1;
+    terms.forEach(function (t) { var i = p.lx.indexOf(t); if (i !== -1 && (at === -1 || i < at)) at = i; });
+    if (at === -1) return p.text.slice(0, 160) + (p.text.length > 160 ? '...' : '');
+    var start = Math.max(0, at - 70), end = Math.min(p.text.length, at + 130);
+    // Start and end on word boundaries.
+    if (start > 0) { var sp = p.text.indexOf(' ', start); if (sp !== -1 && sp < at) start = sp + 1; }
+    if (end < p.text.length) { var ep = p.text.lastIndexOf(' ', end); if (ep > at) end = ep; }
+    return (start > 0 ? '...' : '') + p.text.slice(start, end) + (end < p.text.length ? '...' : '');
+  }
+
+  function render() {
+    var q = input.value.trim();
+    document.body.classList.toggle('post-search-active', q.length > 0);
+    var url = new URL(window.location.href);
+    if (q) url.searchParams.set('q', q); else url.searchParams.delete('q');
+    history.replaceState(null, '', url);
+    list.innerHTML = '';
+    if (!q) { status.textContent = ''; return; }
+    if (!index) { status.textContent = 'Loading...'; load().then(render); return; }
+
+    var terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+    var hits = [];
+    index.forEach(function (p) {
+      var score = 0;
+      for (var k = 0; k < terms.length; k++) {
+        var inTitle = p.lt.indexOf(terms[k]) !== -1, n = count(p.lx, terms[k]);
+        if (!inTitle && n === 0) return;
+        score += (inTitle ? 20 : 0) + n;
+      }
+      hits.push({ p: p, score: score });
+    });
+    hits.sort(function (a, b) { return b.score - a.score; });
+    status.textContent = hits.length === 0 ? 'No posts match "' + q + '".' : hits.length + (hits.length === 1 ? ' post matches.' : ' posts match.');
+    list.innerHTML = hits.map(function (h) {
+      return '<li class="post-search-hit"><a class="post-list-title" href="' + h.p.url + '">' + highlight(h.p.title, terms) + '</a>' +
+        '<span class="post-search-date">' + escapeHtml(h.p.date) + '</span>' +
+        '<p class="post-search-snippet">' + highlight(snippet(h.p, terms), terms) + '</p></li>';
+    }).join('');
+  }
+
+  input.addEventListener('focus', load);
+  input.addEventListener('input', render);
+  input.addEventListener('keydown', function (e) { if (e.key === 'Escape') { input.value = ''; render(); } });
+  document.addEventListener('keydown', function (e) {
+    var tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA') { e.preventDefault(); input.focus(); }
+  });
+  var initial = new URLSearchParams(window.location.search).get('q');
+  if (initial) { input.value = initial; render(); }
+})();
+</script>

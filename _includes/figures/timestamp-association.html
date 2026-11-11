@@ -1,0 +1,77 @@
+<figure id="timestamp-association" class="fig lta">
+  <svg class="fig-svg fig-svg-wide lta-svg" viewBox="0 0 760 220" role="img" aria-label="Two sorted timelines: IMU samples on top with a dropout gap, scan times below. Each scan is matched to its nearest IMU sample if it lies within the tolerance window, shaded around the scan time. The pointer into the IMU list only moves forward. The scan inside the dropout has no sample within tolerance and is rejected.">
+    <defs>
+      <marker id="lta-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+      <marker id="lta-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#586069"></path>
+      </marker>
+    </defs>
+<text x="20" y="20" text-anchor="start" class="lta-zone">IMU samples</text>
+<text x="20" y="134" text-anchor="start" class="lta-zone">scan times</text>
+<line x1="30" y1="60" x2="750" y2="60" stroke="#d0d7de"></line>
+<line x1="30" y1="150" x2="750" y2="150" stroke="#d0d7de"></line>
+<circle cx="40" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="40" y="44" text-anchor="middle" class="lta-g">j=0</text>
+<circle cx="75" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="75" y="44" text-anchor="middle" class="lta-g">j=1</text>
+<circle cx="110" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="110" y="44" text-anchor="middle" class="lta-g">j=2</text>
+<circle cx="145" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="145" y="44" text-anchor="middle" class="lta-g">j=3</text>
+<circle cx="180" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="180" y="44" text-anchor="middle" class="lta-g">j=4</text>
+<circle cx="215" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="215" y="44" text-anchor="middle" class="lta-g">j=5</text>
+<circle cx="250" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="250" y="44" text-anchor="middle" class="lta-g">j=6</text>
+<circle cx="285" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="285" y="44" text-anchor="middle" class="lta-g">j=7</text>
+<circle cx="320" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="320" y="44" text-anchor="middle" class="lta-g">j=8</text>
+<circle cx="355" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="355" y="44" text-anchor="middle" class="lta-g">j=9</text>
+<circle cx="530" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="530" y="44" text-anchor="middle" class="lta-g">j=10</text>
+<circle cx="565" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="565" y="44" text-anchor="middle" class="lta-g">j=11</text>
+<circle cx="600" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="600" y="44" text-anchor="middle" class="lta-g">j=12</text>
+<circle cx="635" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="635" y="44" text-anchor="middle" class="lta-g">j=13</text>
+<circle cx="670" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="670" y="44" text-anchor="middle" class="lta-g">j=14</text>
+<circle cx="705" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="705" y="44" text-anchor="middle" class="lta-g">j=15</text>
+<circle cx="740" cy="60" r="5" fill="#6f42c1"></circle>
+<text x="740" y="44" text-anchor="middle" class="lta-g">j=16</text>
+<text x="442" y="64" text-anchor="middle" class="lta-g">dropout</text>
+<rect x="76" y="140" width="44" height="20" rx="4" fill="#22863a" fill-opacity="0.15"></rect>
+<rect x="93" y="145" width="10" height="10" fill="#24292e"></rect>
+<polyline points="98.0,140.0 110.0,68.0" fill="none" class="lta-l" stroke="#22863a" marker-end="url(#lta-arrow-m)"></polyline>
+<text x="98" y="182" text-anchor="middle" class="lta-g">match j=2</text>
+<rect x="246" y="140" width="44" height="20" rx="4" fill="#22863a" fill-opacity="0.15"></rect>
+<rect x="263" y="145" width="10" height="10" fill="#24292e"></rect>
+<polyline points="268.0,140.0 285.0,68.0" fill="none" class="lta-l" stroke="#22863a" marker-end="url(#lta-arrow-m)"></polyline>
+<text x="268" y="182" text-anchor="middle" class="lta-g">match j=7</text>
+<rect x="418" y="140" width="44" height="20" rx="4" fill="#d73a49" fill-opacity="0.15"></rect>
+<rect x="435" y="145" width="10" height="10" fill="#24292e"></rect>
+<polyline points="440.0,140.0 355.0,68.0" fill="none" class="lta-l lta-d" stroke="#586069" marker-end="url(#lta-arrow-m)"></polyline>
+<text x="440" y="182" text-anchor="middle" class="lta-g">nearest j=9 too far: reject</text>
+<rect x="633" y="140" width="44" height="20" rx="4" fill="#22863a" fill-opacity="0.15"></rect>
+<rect x="650" y="145" width="10" height="10" fill="#24292e"></rect>
+<polyline points="655.0,140.0 670.0,68.0" fill="none" class="lta-l" stroke="#22863a" marker-end="url(#lta-arrow-m)"></polyline>
+<text x="655" y="182" text-anchor="middle" class="lta-g">match j=14</text>
+<text x="390" y="212" text-anchor="middle" class="lta-g">shaded: tolerance window; the pointer j never moves backwards, so one pass is O(m + n)</text>
+  </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .lta-svg .lta-t { font-weight: 600; text-anchor: middle; }
+  .lta-svg .lta-s { font-size: 12px; fill: var(--fig-muted); text-anchor: middle; }
+  .lta-svg .lta-g { font-size: 12px; fill: var(--fig-muted); paint-order: stroke; stroke: #fff; stroke-width: 4px; }
+  .lta-svg .lta-zone { font-size: 12px; font-weight: 600; fill: var(--fig-muted); }
+  .lta-l { stroke-width: 1.4; }
+  .lta-d { stroke-dasharray: 5 4; }
+</style>

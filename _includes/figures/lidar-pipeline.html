@@ -1,0 +1,60 @@
+<figure id="lidar-pipeline" class="fig lpo">
+  <svg class="fig-svg fig-svg-wide lpo-svg" viewBox="0 0 760 290" role="img" aria-label="The LiDAR perception pipeline as a loop of eight stages: sensor, calibration, deskew and filters on the top row, then ground segmentation, clustering and detection, tracking and the planner on the bottom row. An IMU and odometry box feeds both deskewing and tracking.">
+    <defs>
+      <marker id="lpo-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+      <marker id="lpo-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#586069"></path>
+      </marker>
+    </defs>
+<rect x="10" y="22" width="740" height="92" rx="10" fill="#f1f8ff" stroke="#0366d6" stroke-opacity="0.35"></rect>
+<text x="18" y="15" class="lpo-zone">Per point: make the geometry right</text>
+<rect x="10" y="186" width="740" height="92" rx="10" fill="#f0fff4" stroke="#22863a" stroke-opacity="0.35"></rect>
+<text x="18" y="179" class="lpo-zone">Per object: decide what is there</text>
+<rect x="20" y="37" width="160" height="62" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="100.0" y="64.0" class="lpo-t">Sensor</text>
+<text x="100.0" y="81.0" class="lpo-s">points + per-point time</text>
+<rect x="213" y="37" width="160" height="62" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="293.0" y="64.0" class="lpo-t">Calibration</text>
+<text x="293.0" y="81.0" class="lpo-s">extrinsics, time offset</text>
+<rect x="406" y="37" width="160" height="62" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="486.0" y="64.0" class="lpo-t">Deskew</text>
+<text x="486.0" y="81.0" class="lpo-s">motion compensation</text>
+<rect x="580" y="37" width="160" height="62" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="660.0" y="64.0" class="lpo-t">Filters</text>
+<text x="660.0" y="81.0" class="lpo-s">crop, outliers, downsample</text>
+<rect x="20" y="201" width="160" height="62" rx="8" fill="#f0fff4" stroke="#22863a" stroke-width="1.3"></rect>
+<text x="100.0" y="228.0" class="lpo-t">Planner</text>
+<text x="100.0" y="245.0" class="lpo-s">objects + free space</text>
+<rect x="213" y="201" width="160" height="62" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="293.0" y="228.0" class="lpo-t">Tracking</text>
+<text x="293.0" y="245.0" class="lpo-s">velocity, IDs</text>
+<rect x="406" y="201" width="160" height="62" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="486.0" y="228.0" class="lpo-t">Clustering / detection</text>
+<text x="486.0" y="245.0" class="lpo-s">objects, boxes</text>
+<rect x="580" y="201" width="160" height="62" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="660.0" y="228.0" class="lpo-t">Ground segmentation</text>
+<text x="660.0" y="245.0" class="lpo-s">ground vs. rest</text>
+<rect x="250" y="128" width="120" height="40" rx="8" fill="#f6f8fa" stroke="#959da5" stroke-width="1.3"></rect>
+<text x="310.0" y="151.5" class="lpo-t">IMU / odometry</text>
+<polyline points="180.0,68.0 213.0,68.0" fill="none" class="lpo-l" stroke="#24292e" marker-end="url(#lpo-arrow)"></polyline>
+<polyline points="373.0,68.0 406.0,68.0" fill="none" class="lpo-l" stroke="#24292e" marker-end="url(#lpo-arrow)"></polyline>
+<polyline points="566.0,68.0 580.0,68.0" fill="none" class="lpo-l" stroke="#24292e" marker-end="url(#lpo-arrow)"></polyline>
+<polyline points="660.0,99.0 660.0,201.0" fill="none" class="lpo-l" stroke="#24292e" marker-end="url(#lpo-arrow)"></polyline>
+<polyline points="580.0,232.0 566.0,232.0" fill="none" class="lpo-l" stroke="#24292e" marker-end="url(#lpo-arrow)"></polyline>
+<polyline points="406.0,232.0 373.0,232.0" fill="none" class="lpo-l" stroke="#24292e" marker-end="url(#lpo-arrow)"></polyline>
+<polyline points="213.0,232.0 180.0,232.0" fill="none" class="lpo-l" stroke="#24292e" marker-end="url(#lpo-arrow)"></polyline>
+<polyline points="370.0,148.0 440.0,148.0 440.0,99.0" fill="none" class="lpo-l" stroke="#586069" marker-end="url(#lpo-arrow-m)"></polyline>
+<polyline points="300.0,168.0 300.0,201.0" fill="none" class="lpo-l" stroke="#586069" marker-end="url(#lpo-arrow-m)"></polyline>
+  </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .lpo-svg .lpo-t { font-weight: 600; text-anchor: middle; }
+  .lpo-svg .lpo-s { font-size: 12px; fill: var(--fig-muted); text-anchor: middle; }
+  .lpo-svg .lpo-g { font-size: 12px; fill: var(--fig-muted); paint-order: stroke; stroke: #fff; stroke-width: 4px; }
+  .lpo-svg .lpo-zone { font-size: 12px; font-weight: 600; fill: var(--fig-muted); }
+  .lpo-l { stroke-width: 1.4; }
+  .lpo-d { stroke-dasharray: 5 4; }
+</style>

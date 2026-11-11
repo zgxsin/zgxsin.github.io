@@ -1,0 +1,56 @@
+<figure id="lidar-monitoring" class="fig lmo">
+  <svg class="fig-svg fig-svg-wide lmo-svg" viewBox="0 0 760 300" role="img" aria-label="Dependable obstacle information. The LiDARs feed three independent paths: the full perception stack, health monitors and a simple geometric safety layer. Perception output and health are fused into objects plus a free and unknown grid with validity per sector for the planner. Health also drives degraded modes, and the safety layer can trigger an emergency stop on its own.">
+    <defs>
+      <marker id="lmo-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+      <marker id="lmo-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#586069"></path>
+      </marker>
+    </defs>
+<rect x="20" y="110" width="110" height="70" rx="8" fill="#f6f8fa" stroke="#959da5" stroke-width="1.3"></rect>
+<text x="75.0" y="141.0" class="lmo-t">LiDARs</text>
+<text x="75.0" y="158.0" class="lmo-s">+ radar, cameras</text>
+<rect x="185" y="20" width="170" height="62" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="270.0" y="47.0" class="lmo-t">Full perception</text>
+<text x="270.0" y="64.0" class="lmo-s">detect, track, classify</text>
+<rect x="185" y="114" width="170" height="62" rx="8" fill="#fff8f2" stroke="#e36209" stroke-width="1.3"></rect>
+<text x="270.0" y="141.0" class="lmo-t">Health monitors</text>
+<text x="270.0" y="158.0" class="lmo-s">rate, blockage, calib</text>
+<rect x="185" y="208" width="170" height="62" rx="8" fill="#fff5f5" stroke="#d73a49" stroke-width="1.3"></rect>
+<text x="270.0" y="235.0" class="lmo-t">Safety layer</text>
+<text x="270.0" y="252.0" class="lmo-s">protective field, no ML</text>
+<rect x="410" y="20" width="170" height="62" rx="8" fill="#f1f8ff" stroke="#0366d6" stroke-width="1.3"></rect>
+<text x="495.0" y="47.0" class="lmo-t">Output fusion</text>
+<text x="495.0" y="64.0" class="lmo-s">objects + free / unknown</text>
+<rect x="410" y="114" width="170" height="62" rx="8" fill="#fff8f2" stroke="#e36209" stroke-width="1.3"></rect>
+<text x="495.0" y="141.0" class="lmo-t">Degraded mode</text>
+<text x="495.0" y="158.0" class="lmo-s">speed limit or stop</text>
+<rect x="410" y="208" width="170" height="62" rx="8" fill="#fff5f5" stroke="#d73a49" stroke-width="1.3"></rect>
+<text x="495.0" y="235.0" class="lmo-t">Emergency stop</text>
+<text x="495.0" y="252.0" class="lmo-s">direct to vehicle</text>
+<rect x="630" y="52" width="110" height="92" rx="8" fill="#f0fff4" stroke="#22863a" stroke-width="1.3"></rect>
+<text x="685.0" y="86.5" class="lmo-t">Planner</text>
+<text x="685.0" y="103.5" class="lmo-s">sector validity,</text>
+<text x="685.0" y="118.5" class="lmo-s">timestamps</text>
+<polyline points="130.0,145.0 185.0,51.0" fill="none" class="lmo-l" stroke="#24292e" marker-end="url(#lmo-arrow)"></polyline>
+<polyline points="130.0,145.0 185.0,145.0" fill="none" class="lmo-l" stroke="#24292e" marker-end="url(#lmo-arrow)"></polyline>
+<polyline points="130.0,145.0 185.0,239.0" fill="none" class="lmo-l" stroke="#24292e" marker-end="url(#lmo-arrow)"></polyline>
+<polyline points="355.0,51.0 410.0,51.0" fill="none" class="lmo-l" stroke="#24292e" marker-end="url(#lmo-arrow)"></polyline>
+<polyline points="355.0,145.0 410.0,145.0" fill="none" class="lmo-l" stroke="#24292e" marker-end="url(#lmo-arrow)"></polyline>
+<polyline points="355.0,130.0 395.0,130.0 395.0,75.0 410.0,75.0" fill="none" class="lmo-l" stroke="#586069" marker-end="url(#lmo-arrow-m)"></polyline>
+<polyline points="355.0,239.0 410.0,239.0" fill="none" class="lmo-l" stroke="#24292e" marker-end="url(#lmo-arrow)"></polyline>
+<polyline points="580.0,51.0 630.0,70.0" fill="none" class="lmo-l" stroke="#24292e" marker-end="url(#lmo-arrow)"></polyline>
+<polyline points="580.0,145.0 630.0,128.0" fill="none" class="lmo-l" stroke="#24292e" marker-end="url(#lmo-arrow)"></polyline>
+<text x="300" y="292" text-anchor="middle" class="lmo-g">the simple path bounds the worst case; the complex path optimizes behaviour</text>
+  </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .lmo-svg .lmo-t { font-weight: 600; text-anchor: middle; }
+  .lmo-svg .lmo-s { font-size: 12px; fill: var(--fig-muted); text-anchor: middle; }
+  .lmo-svg .lmo-g { font-size: 12px; fill: var(--fig-muted); paint-order: stroke; stroke: #fff; stroke-width: 4px; }
+  .lmo-svg .lmo-zone { font-size: 12px; font-weight: 600; fill: var(--fig-muted); }
+  .lmo-l { stroke-width: 1.4; }
+  .lmo-d { stroke-dasharray: 5 4; }
+</style>

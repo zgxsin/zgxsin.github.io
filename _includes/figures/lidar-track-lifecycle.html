@@ -1,0 +1,43 @@
+<figure id="lidar-track-lifecycle" class="fig ltm">
+  <svg class="fig-svg fig-svg-wide ltm-svg" viewBox="0 0 760 260" role="img" aria-label="Track lifecycle state machine. An unmatched detection creates a tentative track. M hits in N scans confirm it, misses before that delete it. A confirmed track without a match coasts; a match brings it back, and missing for too long or a covariance that grows too large deletes it.">
+    <defs>
+      <marker id="ltm-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+      <marker id="ltm-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#586069"></path>
+      </marker>
+    </defs>
+<circle cx="30" cy="80" r="8" fill="#24292e"></circle>
+<rect x="90" y="55" width="150" height="50" rx="25" fill="#f6f8fa" stroke="#959da5" stroke-width="1.3"></rect>
+<text x="165.0" y="83.5" class="ltm-t">Tentative</text>
+<rect x="360" y="55" width="150" height="50" rx="25" fill="#f0fff4" stroke="#22863a" stroke-width="1.3"></rect>
+<text x="435.0" y="83.5" class="ltm-t">Confirmed</text>
+<rect x="600" y="55" width="140" height="50" rx="25" fill="#fff8f2" stroke="#e36209" stroke-width="1.3"></rect>
+<text x="670.0" y="83.5" class="ltm-t">Coasting</text>
+<rect x="360" y="190" width="150" height="50" rx="25" fill="#fff5f5" stroke="#d73a49" stroke-width="1.3"></rect>
+<text x="435.0" y="218.5" class="ltm-t">Deleted</text>
+<polyline points="38.0,80.0 90.0,80.0" fill="none" class="ltm-l" stroke="#24292e" marker-end="url(#ltm-arrow)"></polyline>
+<text x="64" y="120" text-anchor="start" class="ltm-g">unmatched detection</text>
+<polyline points="240.0,80.0 360.0,80.0" fill="none" class="ltm-l" stroke="#24292e" marker-end="url(#ltm-arrow)"></polyline>
+<text x="300" y="72" text-anchor="middle" class="ltm-g">M hits in N scans</text>
+<polyline points="510.0,90.0 600.0,90.0" fill="none" class="ltm-l" stroke="#24292e" marker-end="url(#ltm-arrow)"></polyline>
+<text x="555" y="108" text-anchor="middle" class="ltm-g">no match</text>
+<path d="M650.0,55 Q555,5 455.0,55" fill="none" class="ltm-l" stroke="#24292e" marker-end="url(#ltm-arrow)"></path>
+<text x="555" y="50" text-anchor="middle" class="ltm-g">matched again</text>
+<polyline points="165.0,105.0 165.0,215.0 360.0,215.0" fill="none" class="ltm-l" stroke="#24292e" marker-end="url(#ltm-arrow)"></polyline>
+<text x="172" y="160" text-anchor="start" class="ltm-g">misses before confirmation</text>
+<polyline points="670.0,105.0 670.0,215.0 510.0,215.0" fill="none" class="ltm-l" stroke="#24292e" marker-end="url(#ltm-arrow)"></polyline>
+<text x="662" y="160" text-anchor="end" class="ltm-g">missed too long or</text>
+<text x="662" y="176" text-anchor="end" class="ltm-g">covariance too large</text>
+  </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .ltm-svg .ltm-t { font-weight: 600; text-anchor: middle; }
+  .ltm-svg .ltm-s { font-size: 12px; fill: var(--fig-muted); text-anchor: middle; }
+  .ltm-svg .ltm-g { font-size: 12px; fill: var(--fig-muted); paint-order: stroke; stroke: #fff; stroke-width: 4px; }
+  .ltm-svg .ltm-zone { font-size: 12px; font-weight: 600; fill: var(--fig-muted); }
+  .ltm-l { stroke-width: 1.4; }
+  .ltm-d { stroke-dasharray: 5 4; }
+</style>

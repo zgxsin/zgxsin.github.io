@@ -1,0 +1,56 @@
+<figure id="lidar-filter-chain" class="fig lfc">
+  <svg class="fig-svg fig-svg-wide lfc-svg" viewBox="0 0 760 270" role="img" aria-label="Filter chain in two stages. Cheap per-point tests first: invalid points, self filter, range and intensity gates. Then deskewing, neighbourhood outlier removal and voxel downsampling, which feed ground segmentation, odometry and mapping.">
+    <defs>
+      <marker id="lfc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+      <marker id="lfc-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#586069"></path>
+      </marker>
+    </defs>
+<rect x="10" y="26" width="740" height="88" rx="10" fill="#f1f8ff" stroke="#0366d6" stroke-opacity="0.35"></rect>
+<text x="18" y="19" class="lfc-zone">Per point, O(N), cheapest first</text>
+<rect x="10" y="166" width="740" height="88" rx="10" fill="#f5f0ff" stroke="#6f42c1" stroke-opacity="0.35"></rect>
+<text x="18" y="159" class="lfc-zone">Neighbourhood and time aware</text>
+<rect x="20" y="41" width="160" height="58" rx="8" fill="#f6f8fa" stroke="#959da5" stroke-width="1.3"></rect>
+<text x="100.0" y="66.0" class="lfc-t">Raw cloud</text>
+<text x="100.0" y="83.0" class="lfc-s">organized, with time</text>
+<rect x="213" y="41" width="160" height="58" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="293.0" y="66.0" class="lfc-t">Invalid points</text>
+<text x="293.0" y="83.0" class="lfc-s">NaN, zero range</text>
+<rect x="406" y="41" width="160" height="58" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="486.0" y="66.0" class="lfc-t">Self filter</text>
+<text x="486.0" y="83.0" class="lfc-s">crop box / robot model</text>
+<rect x="580" y="41" width="160" height="58" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="660.0" y="66.0" class="lfc-t">Range, intensity</text>
+<text x="660.0" y="83.0" class="lfc-s">gates, FOV masks</text>
+<rect x="580" y="181" width="160" height="58" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="660.0" y="206.0" class="lfc-t">Deskew</text>
+<text x="660.0" y="223.0" class="lfc-s">before any averaging</text>
+<rect x="406" y="181" width="160" height="58" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="486.0" y="206.0" class="lfc-t">Outlier removal</text>
+<text x="486.0" y="223.0" class="lfc-s">SOR, DROR, edges</text>
+<rect x="213" y="181" width="160" height="58" rx="8" fill="#ffffff" stroke="#24292e" stroke-width="1.3"></rect>
+<text x="293.0" y="206.0" class="lfc-t">Voxel downsample</text>
+<text x="293.0" y="223.0" class="lfc-s">per consumer</text>
+<rect x="20" y="181" width="160" height="58" rx="8" fill="#f0fff4" stroke="#22863a" stroke-width="1.3"></rect>
+<text x="100.0" y="206.0" class="lfc-t">Consumers</text>
+<text x="100.0" y="223.0" class="lfc-s">ground seg, odometry, map</text>
+<polyline points="180.0,70.0 213.0,70.0" fill="none" class="lfc-l" stroke="#24292e" marker-end="url(#lfc-arrow)"></polyline>
+<polyline points="373.0,70.0 406.0,70.0" fill="none" class="lfc-l" stroke="#24292e" marker-end="url(#lfc-arrow)"></polyline>
+<polyline points="566.0,70.0 580.0,70.0" fill="none" class="lfc-l" stroke="#24292e" marker-end="url(#lfc-arrow)"></polyline>
+<polyline points="660.0,99.0 660.0,181.0" fill="none" class="lfc-l" stroke="#24292e" marker-end="url(#lfc-arrow)"></polyline>
+<polyline points="580.0,210.0 566.0,210.0" fill="none" class="lfc-l" stroke="#24292e" marker-end="url(#lfc-arrow)"></polyline>
+<polyline points="406.0,210.0 373.0,210.0" fill="none" class="lfc-l" stroke="#24292e" marker-end="url(#lfc-arrow)"></polyline>
+<polyline points="213.0,210.0 180.0,210.0" fill="none" class="lfc-l" stroke="#24292e" marker-end="url(#lfc-arrow)"></polyline>
+  </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .lfc-svg .lfc-t { font-weight: 600; text-anchor: middle; }
+  .lfc-svg .lfc-s { font-size: 12px; fill: var(--fig-muted); text-anchor: middle; }
+  .lfc-svg .lfc-g { font-size: 12px; fill: var(--fig-muted); paint-order: stroke; stroke: #fff; stroke-width: 4px; }
+  .lfc-svg .lfc-zone { font-size: 12px; font-weight: 600; fill: var(--fig-muted); }
+  .lfc-l { stroke-width: 1.4; }
+  .lfc-d { stroke-dasharray: 5 4; }
+</style>

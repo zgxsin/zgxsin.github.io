@@ -18,6 +18,54 @@ This post follows the data through that chain in the order it is processed, then
 
 Calibration is not a runtime step, but every later stage consumes its result, so it comes first.
 
+Two ideas that later sections build on are introduced here first: the bird's-eye view, the frame most of the processing ends up in, and hand-eye calibration, the standard way to find the transform between two sensors that do not see the same thing.
+
+### Bird's-eye view (BEV)
+
+A **bird's-eye view** is the scene seen from directly above: the ground plane $(x, y)$ around the robot, with height summarized instead of kept as an axis. In practice it is a 2D grid, for example 100 m x 100 m with 0.1 to 0.5 m cells. Every point $(x, y, z)$ goes to the cell $(\lfloor x/s \rfloor, \lfloor y/s \rfloor)$ under it, and each cell stores features of its points: occupied or not, minimum and maximum height, point count, mean intensity.
+
+{% include figures/birds-eye-view.html caption="The same scene from the side and from above. In BEV the car is 4 m long whether it is at 5 m or 50 m, and the pedestrian and car occupy separate cells even where one hides part of the other from the sensor. The barrier arm shows what is lost: without the height range per cell, it looks like a wall across the road." %}
+
+BEV is the default working frame for ground vehicles because:
+
+- **Objects on the ground do not stack.** Two cars never occupy the same $(x, y)$, so in BEV they never overlap. In the sensor's own view (the range image below, or a camera image), a near object hides a far one.
+- **Size does not change with range.** A car has the same footprint at 5 m and at 50 m, so one clustering tolerance, one box prior or one convolution kernel works everywhere.
+- **Planning and tracking already live there.** Paths, occupancy grids and object states $(x, y, \theta, v)$ are 2D, so BEV output needs no further conversion.
+- **Sensors meet in one grid.** Several LiDARs, radars and lifted camera features all map to the same cells.
+
+The cost is the height structure. An overhang (barrier arm, trailer bed, branch) lands on the cells under it, and a curb and a wall look alike unless the cell keeps its height range. A 2.5D elevation map keeps one height per cell, and voxels keep the full 3D structure; see [3D map representations](/2026/06/13/3d-map-representations/).
+
+### Hand-eye calibration
+
+**Where the name comes from.** The problem was first posed for robot arms (Shiu and Ahmad 1989, Tsai and Lenz 1989). A camera, the **eye**, is bolted to the gripper, the **hand**, and the transform between the two is unknown. The arm knows how its hand moved from the joint encoders and forward kinematics. The camera knows how it moved by observing a fixed checkerboard before and after. Neither sensor sees the other, yet the two motions must be consistent, because hand and eye are rigidly attached. Finding the hand-to-eye transform from those paired motions is hand-eye calibration. The name stuck for any pair of rigidly mounted sensors that can each measure their own motion: LiDAR and IMU, LiDAR and wheel odometry, two LiDARs, or a LiDAR and a camera with no overlapping view.
+
+{% include figures/hand-eye-calibration.html caption="Left: the original setup, a camera (eye) on a robot gripper (hand). Right: the same constraint for any two rigidly attached sensors." %}
+
+**The equation.** Using the notation of [rigid body transformation](/2022/08/07/rigid-body-transformation/), let $\mathbf{X} = \mathbf{T}\_{12}$ be the unknown pose of sensor 2 in the frame of sensor 1. Because the sensors are rigidly attached, $\mathbf{T}\_{W2}(t) = \mathbf{T}\_{W1}(t) \, \mathbf{X}$ at every time $t$. Between two times $i$ and $j$, sensor 1 moves by $\mathbf{A} = \mathbf{T}\_{W1}(t\_i)^{-1} \mathbf{T}\_{W1}(t\_j)$, which comes from its own odometry, registration or kinematics. Sensor 2 moves by
+
+$$
+\mathbf{B} = \mathbf{T}_{W2}(t_i)^{-1} \mathbf{T}_{W2}(t_j) = \mathbf{X}^{-1} \mathbf{T}_{W1}(t_i)^{-1} \mathbf{T}_{W1}(t_j) \, \mathbf{X} = \mathbf{X}^{-1} \mathbf{A} \mathbf{X},
+$$
+
+so every motion pair $k$ gives $\mathbf{A}\_k \mathbf{X} = \mathbf{X} \mathbf{B}\_k$. The world frame cancels out: each sensor only has to estimate its own motion, in its own frame, and the sensors never need to observe a common target. That is the main appeal for robots, where sensors often share no field of view.
+
+**Splitting rotation and translation.** With $\mathbf{X} = (\mathbf{R}\_X, \mathbf{t}\_X)$, the equation separates into
+
+$$
+\mathbf{R}_{A_k} \mathbf{R}_X = \mathbf{R}_X \mathbf{R}_{B_k}, \qquad
+(\mathbf{R}_{A_k} - \mathbf{I}) \, \mathbf{t}_X = \mathbf{R}_X \mathbf{t}_{B_k} - \mathbf{t}_{A_k}.
+$$
+
+The rotation part says the two sensors rotate by the same angle, about axes related by $\mathbf{R}\_X$: if $\mathbf{a}\_k$ and $\mathbf{b}\_k$ are the rotation axes of $\mathbf{R}\_{A\_k}$ and $\mathbf{R}\_{B\_k}$, then $\mathbf{a}\_k = \mathbf{R}\_X \mathbf{b}\_k$. That is one direction correspondence per motion pair, solved like point set alignment with an SVD (see [SVD and PCA](/2026/03/06/svd-and-pca/)) or as a linear least squares problem in quaternions. The translation part is then linear in $\mathbf{t}\_X$. A joint nonlinear least squares refinement over all pairs (see [Hessian and Gauss-Newton](/2025/11/03/hessian-gaussian-newton/)) usually follows.
+
+**What the motion must contain.**
+
+- **At least two rotations about non-parallel axes.** One axis correspondence leaves $\mathbf{R}\_X$ free to spin about that axis.
+- **Rotation, not only translation.** $\mathbf{R}\_{A\_k} - \mathbf{I}$ is singular along the rotation axis, so the component of $\mathbf{t}\_X$ along that axis is unobservable. A ground robot that only yaws therefore cannot recover the vertical offset between its sensors; take it from CAD or a separate measurement.
+- **Accurate, time-aligned motion estimates.** The calibration is only as good as $\mathbf{A}\_k$ and $\mathbf{B}\_k$, and a time offset between the sensors looks like a rotation error. Use segments where both odometries are reliable, and estimate the time offset jointly if it is not known.
+
+For LiDAR to IMU, the gyroscope measures rotation well but the IMU's translation drifts within seconds, so in practice the rotation is solved hand-eye style and the full extrinsic and time offset are refined in a continuous-time batch optimization or online inside the LiDAR-inertial odometry filter. With a monocular camera, $\mathbf{t}\_{B\_k}$ is known only up to scale, which adds one unknown scale factor to the translation equations.
+
 ## How a LiDAR measures
 
 ### Time of flight
@@ -45,13 +93,15 @@ With $c \approx 3 \times 10^8$ m/s, 1 ns of timing error is 15 cm of range, so t
 
 A driver typically publishes, per point: `x, y, z`, `intensity`, `ring` (laser index), `t` (offset from the scan start, in ns), and for some sensors `ambient` light, `range` and the return number when the sensor reports multiple echoes (strongest and last return).
 
-For a spinning sensor the points form an **organized cloud**: a range image with one row per ring and one column per azimuth step. Pixel $(u, v)$ of the image holds the point with
+A point cloud is **organized** when it is stored as a 2D grid (height x width, like an image) whose layout follows the sensor's sampling, so a point's row and column say which beam and which firing produced it, and neighbors in the grid are neighbors in space. Pixels without a return stay in place, marked invalid. An **unorganized** cloud is a flat list of points (height 1) with no such structure, which is what voxel filters, merging several sensors, or a map produce. In PCL and ROS `sensor_msgs/PointCloud2` the difference is just `height > 1`.
+
+For a spinning sensor the organized cloud is a **range image** with one row per ring and one column per azimuth step. Pixel $(u, v)$ of the image holds the point with
 
 $$
 u = \text{ring}, \qquad v = \left\lfloor \frac{\phi + \pi}{2\pi} \, W \right\rfloor, \qquad \phi = \operatorname{atan2}(y, x),
 $$
 
-where $W$ is the number of columns (for example 1024 or 2048). In the range image, neighbors are found in $O(1)$ instead of through a [k-d tree](/2024/10/01/kd-tree/), which is why many fast algorithms (ground removal, clustering, LOAM feature extraction) work on it. Keep the organized structure as long as possible, and drop invalid pixels only at the end.
+where $W$ is the number of columns (for example 1024 or 2048). The range image is the sensor's own view, the complement of the [bird's-eye view](#birds-eye-view-bev): compact and lossless, but near objects occlude far ones and an object's size in pixels shrinks with range. In the range image, neighbors are found in $O(1)$ instead of through a [k-d tree](/2024/10/01/kd-tree/), which is why many fast algorithms (ground removal, clustering, LOAM feature extraction) work on it. Keep the organized structure as long as possible, and drop invalid pixels only at the end.
 
 ### Resolution is anisotropic
 
@@ -96,39 +146,8 @@ The rotational part matters most: an error of 1 deg moves a point at 10 m by $10
 | Pair | Method | Notes |
 | --- | --- | --- |
 | LiDAR to LiDAR | ICP / GICP on the overlapping region, initialized from CAD | Needs overlap and enough structure in all directions (not a long corridor) |
-| LiDAR to IMU or body | Hand-eye calibration $\mathbf{A}\_k \mathbf{X} = \mathbf{X} \mathbf{B}\_k$, or a continuous-time batch optimization over a trajectory | Needs rotation about at least two non-parallel axes; planar driving leaves the vertical offset unobservable |
+| LiDAR to IMU or body | [Hand-eye calibration](#hand-eye-calibration) $\mathbf{A}\_k \mathbf{X} = \mathbf{X} \mathbf{B}\_k$, or a continuous-time batch optimization over a trajectory | Needs rotation about at least two non-parallel axes; planar driving leaves the vertical offset unobservable |
 | LiDAR to camera | Target-based (board with known geometry, plane and edge correspondences), or targetless (align depth edges to image edges, mutual information of intensity) | Validate by projecting points into the image |
-
-### Hand-eye calibration
-
-**Where the name comes from.** The problem was first posed for robot arms (Shiu and Ahmad 1989, Tsai and Lenz 1989). A camera, the **eye**, is bolted to the gripper, the **hand**, and the transform between the two is unknown. The arm knows how its hand moved from the joint encoders and forward kinematics. The camera knows how it moved by observing a fixed checkerboard before and after. Neither sensor sees the other, yet the two motions must be consistent, because hand and eye are rigidly attached. Finding the hand-to-eye transform from those paired motions is hand-eye calibration. The name stuck for any pair of rigidly mounted sensors that can each measure their own motion: LiDAR and IMU, LiDAR and wheel odometry, two LiDARs, or a LiDAR and a camera with no overlapping view.
-
-{% include figures/hand-eye-calibration.html caption="Left: the original setup, a camera (eye) on a robot gripper (hand). Right: the same constraint for any two rigidly attached sensors." %}
-
-**The equation.** Let $\mathbf{X} = \mathbf{T}\_{12}$ be the unknown pose of sensor 2 in the frame of sensor 1. Because the sensors are rigidly attached, $\mathbf{T}\_{W2}(t) = \mathbf{T}\_{W1}(t) \, \mathbf{X}$ at every time $t$. Between two times $i$ and $j$, sensor 1 moves by $\mathbf{A} = \mathbf{T}\_{W1}(t\_i)^{-1} \mathbf{T}\_{W1}(t\_j)$, which comes from its own odometry, registration or kinematics. Sensor 2 moves by
-
-$$
-\mathbf{B} = \mathbf{T}\_{W2}(t\_i)^{-1} \mathbf{T}\_{W2}(t\_j) = \mathbf{X}^{-1} \mathbf{T}\_{W1}(t\_i)^{-1} \mathbf{T}\_{W1}(t\_j) \, \mathbf{X} = \mathbf{X}^{-1} \mathbf{A} \mathbf{X},
-$$
-
-so every motion pair $k$ gives $\mathbf{A}\_k \mathbf{X} = \mathbf{X} \mathbf{B}\_k$. The world frame cancels out: each sensor only has to estimate its own motion, in its own frame, and the sensors never need to observe a common target. That is the main appeal for robots, where sensors often share no field of view.
-
-**Splitting rotation and translation.** With $\mathbf{X} = (\mathbf{R}\_X, \mathbf{t}\_X)$, the equation separates into
-
-$$
-\mathbf{R}\_{A\_k} \mathbf{R}\_X = \mathbf{R}\_X \mathbf{R}\_{B\_k}, \qquad
-(\mathbf{R}\_{A\_k} - \mathbf{I}) \, \mathbf{t}\_X = \mathbf{R}\_X \mathbf{t}\_{B\_k} - \mathbf{t}\_{A\_k}.
-$$
-
-The rotation part says the two sensors rotate by the same angle, about axes related by $\mathbf{R}\_X$: if $\mathbf{a}\_k$ and $\mathbf{b}\_k$ are the rotation axes of $\mathbf{R}\_{A\_k}$ and $\mathbf{R}\_{B\_k}$, then $\mathbf{a}\_k = \mathbf{R}\_X \mathbf{b}\_k$. That is one direction correspondence per motion pair, solved like point set alignment with an SVD (see [SVD and PCA](/2026/03/06/svd-and-pca/)) or as a linear least squares problem in quaternions. The translation part is then linear in $\mathbf{t}\_X$. A joint nonlinear least squares refinement over all pairs (see [Hessian and Gauss-Newton](/2025/11/03/hessian-gaussian-newton/)) usually follows.
-
-**What the motion must contain.**
-
-- **At least two rotations about non-parallel axes.** One axis correspondence leaves $\mathbf{R}\_X$ free to spin about that axis.
-- **Rotation, not only translation.** $\mathbf{R}\_{A\_k} - \mathbf{I}$ is singular along the rotation axis, so the component of $\mathbf{t}\_X$ along that axis is unobservable. A ground robot that only yaws therefore cannot recover the vertical offset between its sensors; take it from CAD or a separate measurement.
-- **Accurate, time-aligned motion estimates.** The calibration is only as good as $\mathbf{A}\_k$ and $\mathbf{B}\_k$, and a time offset between the sensors looks like a rotation error. Use segments where both odometries are reliable, and estimate the time offset jointly if it is not known.
-
-For LiDAR to IMU, the gyroscope measures rotation well but the IMU's translation drifts within seconds, so in practice the rotation is solved hand-eye style and the full extrinsic and time offset are refined in a continuous-time batch optimization or online inside the LiDAR-inertial odometry filter. With a monocular camera, $\mathbf{t}\_{B\_k}$ is known only up to scale, which adds one unknown scale factor to the translation equations.
 
 ### Validation in the field
 
@@ -166,7 +185,7 @@ A spinning LiDAR takes 100 ms for one sweep at 10 Hz. If the robot moves during 
 For a point $\mathbf{p}\_i$ measured at time $t\_i$, deskewing re-expresses it in the sensor frame at a reference time $t\_r$ (usually the scan end):
 
 $$
-\mathbf{p}\_i' = \mathbf{T}\_{WL}(t\_r)^{-1} \, \mathbf{T}\_{WL}(t\_i) \, \mathbf{p}\_i.
+\mathbf{p}_i' = \mathbf{T}_{WL}(t_r)^{-1} \, \mathbf{T}_{WL}(t_i) \, \mathbf{p}_i.
 $$
 
 The only hard part is getting $\mathbf{T}\_{WL}(t)$ at every point time. Options, from simplest to best:
@@ -246,7 +265,7 @@ Methods, from simplest to most robust:
 1. **Height threshold.** Ground is everything below $z < z\_{\text{thr}}$ in the body frame. Fails on slopes, under pitching motion and on curbs, and always deletes the lowest part of every obstacle.
 2. **Single plane fit with RANSAC.** Fit $\mathbf{n}^\top \mathbf{p} + d = 0$ to the cloud, take inliers as ground. Handles a tilted sensor, fails on terrain that is not one plane. RANSAC needs $k = \log(1 - P) / \log(1 - w^3)$ iterations to find an all-inlier sample with probability $P$, given inlier ratio $w$.
 3. **Local slope along each azimuth column.** Walk outward through the rings of one column (Himmelsbach et al., Bogoslavskyi and Stachniss). A point is ground if the slope from the last ground point is below a threshold. Handles ramps and is $O(N)$ on the range image.
-4. **Region-wise plane fitting.** Divide the ground into polar bins (Patchwork++ uses concentric zones with bins that grow with range), fit a plane per bin with PCA, and accept it if it is upright, low and flat enough. Robust on rough terrain and fast.
+4. **Region-wise plane fitting.** Divide the [BEV](#birds-eye-view-bev) ground plane into polar bins (Patchwork++ uses concentric zones with bins that grow with range), fit a plane per bin with PCA, and accept it if it is upright, low and flat enough. Robust on rough terrain and fast.
 5. **Learned semantic segmentation** (RangeNet++, Cylinder3D). Best on the data it was trained on, needs labels and a GPU.
 
 {% include figures/ground-segmentation.html caption="One azimuth column. The height threshold labels the upper ramp as obstacle, and the lower half of the crate as ground. The slope test follows the ramp; raise its threshold far enough and it starts accepting the bottom of the crate face." %}
@@ -266,16 +285,16 @@ The choice of $\epsilon$ runs straight into the anisotropic resolution above: sm
 Faster alternatives:
 
 - **Range image clustering** (Bogoslavskyi and Stachniss): two neighboring pixels with ranges $d\_1 \geq d\_2$ and angular separation $\psi$ belong to the same object if $\beta = \operatorname{atan2}(d\_2 \sin\psi, \, d\_1 - d\_2 \cos\psi)$ exceeds a threshold (about 10 deg). The angle is independent of range, so the threshold is too. $O(N)$ with connected components on the image.
-- **2D grid connected components**: project non-ground points into a bird's-eye-view occupancy grid and label connected cells. Very fast, loses overhangs.
+- **2D grid connected components**: project non-ground points into a [bird's-eye-view](#birds-eye-view-bev) occupancy grid and label connected cells. Very fast, but an overhang merges with whatever stands under it.
 - **DBSCAN**: Euclidean clustering with a core-point density requirement, so isolated noise does not bridge two clusters.
 
 ### Box fitting and detection
 
 A cluster becomes an object with a bounding box, a heading and a class.
 
-- **Box fitting.** PCA gives a poor heading for partially seen objects, because a LiDAR sees one or two sides only. **L-shape fitting** (Zhang et al. 2017) searches the heading that best explains the visible points as two perpendicular edges, which matches how vehicles appear.
+- **Box fitting.** PCA gives a poor heading for partially seen objects, because a LiDAR sees one or two sides only. **L-shape fitting** (Zhang et al. 2017) projects the cluster to [BEV](#birds-eye-view-bev) and searches the heading that best explains the visible points as two perpendicular edges, which matches how vehicles appear.
 - **Geometric classification** by size and shape (height, footprint, point count) separates pedestrians, vehicles and poles in simple environments.
-- **Learned 3D detectors** (PointPillars, CenterPoint, VoxelNeXt) output oriented boxes with class and score directly, including the unseen extent of the object (amodal boxes). They classify far better, but only for classes in their training data.
+- **Learned 3D detectors** (PointPillars, CenterPoint, VoxelNeXt) output oriented boxes with class and score directly, including the unseen extent of the object (amodal boxes). They classify far better, but only for classes in their training data. PointPillars and CenterPoint encode the points into a [BEV](#birds-eye-view-bev) feature map and run a 2D CNN on it, which keeps them fast and makes near and far objects look alike to the network.
 
 A robust system runs both: the learned detector for known classes and accurate boxes, and geometric clustering as a class-agnostic safety layer that reports anything solid in the path, even if no network has ever seen it.
 
@@ -285,7 +304,7 @@ A detector answers "what is here now". Planning needs "where will it be", which 
 
 {% include figures/lidar-tracking-loop.html %}
 
-1. **Predict** each track to the scan timestamp with a motion model: constant velocity for pedestrians, constant turn rate and velocity (CTRV) for vehicles, inside a [Kalman filter](/2026/04/25/kalman-filter/) (EKF or UKF for the nonlinear CTRV).
+1. **Predict** each track to the scan timestamp with a motion model. Track states live in [BEV](#birds-eye-view-bev), $(x, y, \theta, v, \omega)$ plus box size, since ground objects do not move vertically. Models: constant velocity for pedestrians, constant turn rate and velocity (CTRV) for vehicles, inside a [Kalman filter](/2026/04/25/kalman-filter/) (EKF or UKF for the nonlinear CTRV).
 2. **Gate**: ignore pairs whose innovation $\mathbf{y}$ is improbable, $\mathbf{y}^\top \mathbf{S}^{-1} \mathbf{y} > \chi^2\_{k, 0.99}$ (9.21 for a 2D position).
 3. **Associate**: solve the assignment problem on the gated costs with the Hungarian algorithm (global nearest neighbor). JPDA or MHT handle dense scenes with ambiguous assignments at higher cost.
 4. **Update** the matched tracks.
@@ -344,7 +363,7 @@ The key distinction is between "no obstacle" and "I cannot see". A perception sy
 
 **Dependable output.**
 
-- Publish free space **and** unknown space, not only an object list. An occupancy grid with three states lets the planner slow down for what it cannot see.
+- Publish free space **and** unknown space, not only an object list. A [BEV](#birds-eye-view-bev) occupancy grid with three states (free, occupied, unknown) lets the planner slow down for what it cannot see.
 - Attach validity per sector and a timestamp to every output. A planner using an obstacle list must be able to tell that the rear sector is blind.
 - Keep a simple, deterministic safety path (doer/checker): points in a protective field around the vehicle, minimal processing, no learning, triggering a stop. The complex stack optimizes behavior; the simple path bounds the worst case.
 - Define degraded modes: reduced speed when a sensor is degraded, stop when a safety-relevant sector is blind.
@@ -358,7 +377,7 @@ Then close the loop: log every monitor trigger with the raw data, review false a
 **Requirements.** Start from the stopping distance. At 25 km/h (7 m/s), with 0.3 s of system latency and 2 m/s² of comfortable deceleration:
 
 $$
-d\_{\text{stop}} = v \, t\_{\text{lat}} + \frac{v^2}{2a} = 7 \cdot 0.3 + \frac{49}{4} \approx 14.4 \text{ m}.
+d_{\text{stop}} = v \, t_{\text{lat}} + \frac{v^2}{2a} = 7 \cdot 0.3 + \frac{49}{4} \approx 14.4 \text{ m}.
 $$
 
 Add margin for tracking confirmation and false-alarm suppression, and the requirement becomes: detect a pedestrian at 40 m ahead, with 99.9+% recall within the stopping envelope, end-to-end latency under 200 ms, and no blind zone around the truck when starting to move.

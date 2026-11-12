@@ -22,7 +22,8 @@ and served at https://www.guoxiang-zhou.xyz.
 - Start with `* TOC` + `{:toc}` on the next line; the layout turns it into the side panel.
 - Math: `$...$` inline and `$$...$$` display (MathJax 4, client-side). Escape `_` and `*`
   inside inline math with a backslash when kramdown would read them as emphasis
-  (`\mathbf{p}\_1`). Use `\lbrace \rbrace` instead of `\{ \}`.
+  (`\mathbf{p}\_1`). Do not escape inside `$$` display blocks: kramdown passes them through
+  verbatim and MathJax renders `\_` as a literal underscore. Use `\lbrace \rbrace` instead of `\{ \}`.
 - Never write `{{` or `{%` in prose or code blocks; Liquid evaluates them. Wrap such code in
   `{% raw %}...{% endraw %}`.
 - Link other posts by URL path, e.g. `[Kalman filter](/2026/04/25/kalman-filter/)`.

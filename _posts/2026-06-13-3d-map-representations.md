@@ -3,6 +3,7 @@ title: "3D Map Representations for Robots: Point Clouds, Voxels and Distance Fie
 published: false
 date: 2026-06-13
 author: "Guoxiang (Shawn) Zhou"
+categories: [technology]
 ---
 
 * TOC

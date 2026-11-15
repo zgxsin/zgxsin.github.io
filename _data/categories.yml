@@ -1,0 +1,9 @@
+# Post categories, in the order they appear on the Blogs page. A post lists one or more
+# slugs in its front matter, e.g. `categories: [technology]`. Add a new category here
+# first; slugs not listed here are ignored by the filter and the post labels.
+- slug: technology
+  name: Technology
+- slug: life
+  name: Life
+- slug: finance
+  name: Finance

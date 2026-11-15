@@ -3,6 +3,7 @@ title: "Nonlinear Least Squares for Robotics: Gauss-Newton, Levenberg-Marquardt 
 published: true
 date: 2025-11-03
 author: "Guoxiang (Shawn) Zhou"
+categories: [technology]
 ---
 
 * TOC

@@ -3,6 +3,7 @@ title: Kalman Filter and Extended Kalman Filter
 published: true
 date: 2026-04-25
 author: "Guoxiang (Shawn) Zhou"
+categories: [technology]
 ---
 
 * TOC

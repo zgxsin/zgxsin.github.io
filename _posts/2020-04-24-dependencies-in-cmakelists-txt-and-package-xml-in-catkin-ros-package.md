@@ -4,7 +4,7 @@ published: true
 date: 2020-04-24 18:50
 author: "Guoxiang (Shawn) Zhou"
 comments: true
-categories: [C++, cakin, Robotics, ros]
+categories: [technology]
 ---
 
 <!-- wp:heading -->

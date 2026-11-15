@@ -3,6 +3,7 @@ title: "Transformers and CNNs"
 published: false
 date: 2026-11-15
 author: "Guoxiang (Shawn) Zhou"
+categories: [technology]
 ---
 
 * TOC

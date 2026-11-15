@@ -4,7 +4,7 @@ published: true
 date: 2020-04-19 02:04
 author: "Guoxiang (Shawn) Zhou"
 comments: true
-categories: [Technical]
+categories: [technology]
 ---
 <!-- wp:paragraph -->
 <p>转载自CSDN<a href="https://blog.csdn.net/gatieme/article/details/50989257?depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1&amp;utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1">博客</a>。</p>

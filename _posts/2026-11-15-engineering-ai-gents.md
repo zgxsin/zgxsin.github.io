@@ -3,6 +3,7 @@ title: "CS 329Z: Engineering AI Agents"
 published: false
 date: 2026-11-15
 author: "Guoxiang (Shawn) Zhou"
+categories: [technology]
 ---
 
 * TOC

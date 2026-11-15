@@ -3,6 +3,7 @@ title: "Differentiable Rendering: Neural Fields and Volume Rendering"
 published: false
 date: 2026-08-02
 author: "Guoxiang (Shawn) Zhou"
+categories: [technology]
 ---
 
 * TOC

@@ -3,6 +3,7 @@ title: "LiDAR Perception: From Raw Points to Tracked Obstacles"
 published: false
 date: 2026-11-11
 author: "Guoxiang (Shawn) Zhou"
+categories: [technology]
 ---
 
 * TOC

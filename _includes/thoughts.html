@@ -5,9 +5,11 @@
     <h2 class="post-year-title">{{ year.name }} <span class="post-year-count">{{ year.items | size }}</span></h2>
     <ul class="post-list">
       {% for post in year.items %}
-        <li class="post-list-item">
+        <li class="post-list-item" data-categories="{{ post.categories | join: ' ' }}">
           <time class="post-list-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %d" }}</time>
           <a class="post-list-title" href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          {%- for cat in site.data.categories %}{% if post.categories contains cat.slug %}
+          <span class="post-category">{{ cat.name }}</span>{% endif %}{% endfor %}
         </li>
       {% endfor %}
     </ul>

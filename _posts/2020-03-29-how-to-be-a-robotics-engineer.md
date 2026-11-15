@@ -4,7 +4,7 @@ published: true
 date: 2020-03-29 14:20
 author: "Guoxiang (Shawn) Zhou"
 comments: true
-categories: [Robotics]
+categories: [technology]
 ---
 <!-- wp:paragraph -->
 <p>转载自大疆技术总监<a href="https://zhuanlan.zhihu.com/p/22266788">杨硕的文章</a>， 我个人觉得写的不错，贴在这里仅供大家参考。</p>

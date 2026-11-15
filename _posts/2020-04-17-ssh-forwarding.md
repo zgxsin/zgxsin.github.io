@@ -4,7 +4,7 @@ published: true
 date: 2020-04-17 22:08
 author: "Guoxiang (Shawn) Zhou"
 comments: true
-categories: [Miscellaneous]
+categories: [technology]
 ---
 
 <!-- wp:paragraph -->

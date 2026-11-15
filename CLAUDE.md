@@ -17,7 +17,10 @@ and served at https://www.guoxiang-zhou.xyz.
 
 - File: `_posts/YYYY-MM-DD-slug.md`. The URL is `/YYYY/MM/DD/slug/`; changing the date or
   slug breaks existing links, so do not rename published posts.
-- Front matter: `title`, `date`, `author: "Guoxiang (Shawn) Zhou"`, `published: true`. Optional
+- Front matter: `title`, `date`, `author: "Guoxiang (Shawn) Zhou"`, `published: true`,
+  `categories: [technology]`. Category slugs must be listed in `_data/categories.yml`
+  (technology, life, finance); add new ones there. They drive the filter on the Blogs page
+  and the label on each post, and are not part of the URL. Optional
   `image: /assets/images/posts/<slug>/cover.png` sets the social preview image.
 - Start with `* TOC` + `{:toc}` on the next line; the layout turns it into the side panel.
 - Math: `$...$` inline and `$$...$$` display (MathJax 4, client-side). Escape `_` and `*`

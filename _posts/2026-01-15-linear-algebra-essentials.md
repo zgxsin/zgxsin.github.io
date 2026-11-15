@@ -3,6 +3,7 @@ title: Linear Algebra Essentials
 published: true
 date: 2026-01-15
 author: "Guoxiang (Shawn) Zhou"
+categories: [technology]
 ---
 
 ## Linear Transformations

@@ -577,3 +577,71 @@ body:not(.toc-hidden) .toc-show {
 .post-list-title:hover {
   color: #0366d6;
 }
+
+/* Category filter (_includes/category-filter.html) and category labels on posts. */
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.category-chip {
+  font: inherit;
+  font-size: 0.875rem;
+  padding: 3px 12px;
+  border: 1px solid $border;
+  border-radius: 999px;
+  background: #fff;
+  color: $text;
+  cursor: pointer;
+}
+
+.category-chip:hover,
+.category-chip[aria-pressed="true"] {
+  border-color: #0366d6;
+  color: #0366d6;
+  background: #f1f8ff;
+}
+
+.category-count {
+  color: $muted;
+  margin-left: 2px;
+}
+
+.post-search-active .category-filter {
+  display: none;
+}
+
+.post-category {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 0 8px;
+  border: 1px solid $border;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: $muted;
+  white-space: nowrap;
+}
+
+.post-category + .post-category {
+  margin-left: 0;
+}
+
+a.post-category:hover {
+  color: #0366d6;
+  border-color: #0366d6;
+  text-decoration: none;
+}
+
+p > .post-category {
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* .post-list-item is display: flex, which would override the hidden attribute. */
+.post-year[hidden],
+.post-list-item[hidden] {
+  display: none;
+}

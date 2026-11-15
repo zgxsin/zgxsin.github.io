@@ -3,6 +3,7 @@ title: Singular Value Decomposition and PCA analysis
 published: true
 date: 2026-03-06
 author: "Guoxiang (Shawn) Zhou"
+categories: [technology]
 ---
 
 In the Linear Algebra Essentials post, eigen decomposition $A = PDP^{-1}$ lets us look at a transformation in a coordinate system where it only scales. But it has two limits:

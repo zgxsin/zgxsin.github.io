@@ -1,0 +1,49 @@
+{%- comment -%}
+  Category filter on the blog index. Categories come from _data/categories.yml; a post
+  belongs to the ones listed in its `categories` front matter. Filtering is client-side:
+  it hides list items in _includes/thoughts.html and keeps the choice in ?category=.
+{%- endcomment -%}
+<nav class="category-filter" aria-label="Filter posts by category">
+  <button type="button" class="category-chip" data-category="" aria-pressed="true">All <span class="category-count">{{ site.posts | size }}</span></button>
+  {%- for cat in site.data.categories %}
+    {%- assign n = site.categories[cat.slug] | size %}
+    {%- if n > 0 %}
+  <button type="button" class="category-chip" data-category="{{ cat.slug }}" aria-pressed="false">{{ cat.name }} <span class="category-count">{{ n }}</span></button>
+    {%- endif %}
+  {%- endfor %}
+</nav>
+<script>
+(function () {
+  var chips = document.querySelectorAll('.category-chip');
+  if (!chips.length) return;
+
+  function apply(slug) {
+    chips.forEach(function (c) { c.setAttribute('aria-pressed', c.getAttribute('data-category') === slug ? 'true' : 'false'); });
+    document.querySelectorAll('.post-year').forEach(function (year) {
+      var shown = 0;
+      year.querySelectorAll('.post-list-item').forEach(function (item) {
+        var cats = (item.getAttribute('data-categories') || '').split(' ');
+        var on = !slug || cats.indexOf(slug) !== -1;
+        item.hidden = !on;
+        if (on) shown++;
+      });
+      year.hidden = shown === 0;
+      var count = year.querySelector('.post-year-count');
+      if (count) count.textContent = shown;
+    });
+    var url = new URL(window.location.href);
+    if (slug) url.searchParams.set('category', slug); else url.searchParams.delete('category');
+    history.replaceState(null, '', url);
+  }
+
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () { apply(c.getAttribute('data-category')); });
+  });
+  // The post list comes after this script in the page, so wait until it is parsed.
+  document.addEventListener('DOMContentLoaded', function () {
+    var initial = new URLSearchParams(window.location.search).get('category') || '';
+    var known = Array.prototype.some.call(chips, function (c) { return c.getAttribute('data-category') === initial; });
+    apply(known ? initial : '');
+  });
+})();
+</script>

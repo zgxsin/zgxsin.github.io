@@ -5,7 +5,7 @@ published: true
 date: 2020-05-01 10:39
 author: "Guoxiang (Shawn) Zhou"
 comments: true
-categories: [C++]
+categories: [technology]
 ---
 
 <!-- wp:paragraph -->

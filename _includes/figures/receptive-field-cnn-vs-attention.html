@@ -1,0 +1,107 @@
+<figure id="receptive-field-cnn-vs-attention" class="fig rfa">
+  <div class="fig-buttons rfa-modes">
+    <button type="button" data-m="cnn" aria-pressed="true">CNN (kernel size 3)</button>
+    <button type="button" data-m="att" aria-pressed="false">Self-attention</button>
+  </div>
+  <div class="fig-legend">
+    <span><i class="rfa-swatch" style="background: #e36209"></i>the output we follow</span>
+    <span><i class="rfa-swatch" style="background: #0366d6"></i>inputs and features it depends on</span>
+    <span><i class="rfa-swatch" style="background: #d0d7de"></i>no influence</span>
+  </div>
+  <svg class="fig-svg fig-svg-wide rfa-svg" viewBox="0 0 760 300" role="img" aria-label="A one-dimensional row of 15 inputs and several layers stacked above it. In CNN mode, the highlighted top output depends only on a window of inputs that widens by two per layer. In self-attention mode, it depends on every input after a single layer."></svg>
+  <label class="fig-control">Number of layers: <output class="rfa-out"></output>
+    <input class="rfa-slider" type="range" min="1" max="4" step="1" value="2"></label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .rfa-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+  .rfa .rfa-slider { display: block; width: 100%; margin-top: 4px; }
+  .rfa output { color: var(--fig-text); font-variant-numeric: tabular-nums; }
+  .rfa-svg .rfa-note { font-size: 12px; fill: var(--fig-muted); }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('receptive-field-cnn-vs-attention');
+  if (!root) return;
+  var svg = root.querySelector('.rfa-svg');
+  var slider = root.querySelector('.rfa-slider');
+  var out = root.querySelector('.rfa-out');
+  var buttons = root.querySelectorAll('.rfa-modes button');
+  var NS = 'http://www.w3.org/2000/svg';
+  var C = { text: '#24292e', muted: '#586069', border: '#d0d7de', blue: '#0366d6', orange: '#e36209' };
+  var N = 15, MID = 7, X0 = 110, DX = 44, YB = 250, YT = 40;
+  var mode = 'cnn';
+
+  function el(name, attrs, text) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    svg.appendChild(n);
+    return n;
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var L = parseInt(slider.value, 10);
+    var dy = (YB - YT) / L;
+    function y(l) { return YB - l * dy; }
+    function x(i) { return X0 + i * DX; }
+
+    // active[l][i]: node i at layer l influences the top output (layer L, node MID).
+    var active = [];
+    for (var l = 0; l <= L; l++) {
+      active.push([]);
+      for (var i = 0; i < N; i++) {
+        var on;
+        if (l === L) on = i === MID;
+        else if (mode === 'cnn') on = Math.abs(i - MID) <= (L - l);
+        else on = true;
+        active[l].push(on);
+      }
+    }
+
+    // Edges between consecutive layers, drawn only where both ends matter.
+    for (l = 1; l <= L; l++) {
+      for (var a = 0; a < N; a++) {
+        if (!active[l][a]) continue;
+        for (var b = 0; b < N; b++) {
+          var connected = mode === 'cnn' ? Math.abs(a - b) <= 1 : true;
+          if (!connected || !active[l - 1][b]) continue;
+          el('line', { x1: x(a), y1: y(l), x2: x(b), y2: y(l - 1), stroke: C.blue,
+            'stroke-width': mode === 'cnn' ? 1.2 : 0.6, 'stroke-opacity': mode === 'cnn' ? 0.7 : 0.25 });
+        }
+      }
+    }
+
+    // Nodes.
+    for (l = 0; l <= L; l++) {
+      for (i = 0; i < N; i++) {
+        var fill = l === L && i === MID ? C.orange : (active[l][i] ? C.blue : '#ffffff');
+        var stroke = active[l][i] ? (l === L && i === MID ? C.orange : C.blue) : C.border;
+        if (l === L && i !== MID) { fill = '#ffffff'; stroke = C.border; }
+        el('circle', { cx: x(i), cy: y(l), r: 8, fill: fill, stroke: stroke, 'stroke-width': 1.5 });
+      }
+      var name = l === 0 ? 'input' : (l === L ? 'output' : 'layer ' + l);
+      el('text', { x: 20, y: y(l) + 4, class: 'rfa-note' }, name);
+    }
+
+    var seen = 0;
+    for (i = 0; i < N; i++) if (active[0][i]) seen++;
+    var pairs = mode === 'cnn' ? '3 per output' : N + ' per output';
+    el('text', { x: 380, y: 290, 'text-anchor': 'middle' },
+      'The output sees ' + seen + ' of ' + N + ' inputs.   Connections per layer: ' + pairs +
+      (mode === 'cnn' ? ' (grows with n)' : ' (grows with n² in total)'));
+    out.textContent = L;
+  }
+
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      mode = btn.getAttribute('data-m');
+      buttons.forEach(function (o) { o.setAttribute('aria-pressed', o === btn ? 'true' : 'false'); });
+      draw();
+    });
+  });
+  slider.addEventListener('input', draw);
+  draw();
+})();
+</script>

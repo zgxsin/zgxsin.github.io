@@ -1,0 +1,135 @@
+<figure id="cnn-convolution" class="fig cvk">
+  <div class="fig-buttons cvk-kernels">
+    <button type="button" data-k="vert" aria-pressed="true">Vertical edge</button>
+    <button type="button" data-k="horz" aria-pressed="false">Horizontal edge</button>
+    <button type="button" data-k="blur" aria-pressed="false">Blur</button>
+  </div>
+  <svg class="fig-svg fig-svg-wide cvk-svg" viewBox="0 0 760 330" role="img" aria-label="Convolution of a 7 by 7 image of the letter L with a 3 by 3 kernel. The kernel slides over the image; at each position the nine pixel values are multiplied by the nine kernel weights and summed into one cell of a 5 by 5 output feature map. An edge kernel produces large values only where the brightness changes."></svg>
+  <label class="fig-control">Kernel position: <output class="cvk-out"></output>
+    <input class="cvk-slider" type="range" min="0" max="24" step="1" value="6"></label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .cvk .cvk-slider { display: block; width: 100%; margin-top: 4px; }
+  .cvk output { color: var(--fig-text); font-variant-numeric: tabular-nums; }
+  .cvk-svg .cvk-note { font-size: 12px; fill: var(--fig-muted); }
+  .cvk-svg .cvk-head { font-weight: 600; }
+  .cvk-svg .cvk-cell { cursor: pointer; }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('cnn-convolution');
+  if (!root) return;
+  var svg = root.querySelector('.cvk-svg');
+  var slider = root.querySelector('.cvk-slider');
+  var out = root.querySelector('.cvk-out');
+  var buttons = root.querySelectorAll('.cvk-kernels button');
+  var NS = 'http://www.w3.org/2000/svg';
+  var C = { text: '#24292e', muted: '#586069', border: '#d0d7de', blue: '#0366d6', red: '#d73a49', orange: '#e36209' };
+
+  var IMG = [
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 0, 0, 0, 0],
+    [0, 1, 1, 0, 0, 0, 0],
+    [0, 1, 1, 0, 0, 0, 0],
+    [0, 1, 1, 1, 1, 1, 0],
+    [0, 1, 1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0]
+  ];
+  var KERNELS = {
+    vert: { w: [[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]], label: ['-1', '0', '1'], scale: 3 },
+    horz: { w: [[-1, -1, -1], [0, 0, 0], [1, 1, 1]], scale: 3 },
+    blur: { w: [[1, 1, 1], [1, 1, 1], [1, 1, 1]].map(function (r) { return r.map(function () { return 1 / 9; }); }), scale: 1 }
+  };
+  var kernel = 'vert';
+  var CS = 32, IX = 20, IY = 50, KX = 300, KY = 114, OX = 470, OY = 82;
+
+  function el(name, attrs, text) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    svg.appendChild(n);
+    return n;
+  }
+  function fmt(v) {
+    if (kernel === 'blur') return v === 0 ? '0' : v.toFixed(1).replace(/^0/, '').replace(/^-0/, '-');
+    return String(Math.round(v));
+  }
+  function kfmt(v) { return kernel === 'blur' ? '1/9' : String(v); }
+  function conv(r, c) {
+    var w = KERNELS[kernel].w, s = 0;
+    for (var i = 0; i < 3; i++) for (var j = 0; j < 3; j++) s += IMG[r + i][c + j] * w[i][j];
+    return s;
+  }
+  function color(v) {
+    var a = Math.min(1, Math.abs(v) / KERNELS[kernel].scale);
+    if (a < 1e-6) return '#ffffff';
+    var base = v > 0 ? [3, 102, 214] : [215, 58, 73];
+    var mix = base.map(function (b) { return Math.round(255 + (b - 255) * a * 0.85); });
+    return 'rgb(' + mix.join(',') + ')';
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var pos = parseInt(slider.value, 10), pr = Math.floor(pos / 5), pc = pos % 5;
+    var w = KERNELS[kernel].w;
+
+    el('text', { x: IX + 3.5 * CS, y: 30, 'text-anchor': 'middle', class: 'cvk-head' }, 'Input image (7 x 7)');
+    el('text', { x: KX + 1.5 * CS, y: KY - 16, 'text-anchor': 'middle', class: 'cvk-head' }, 'Kernel (3 x 3)');
+    el('text', { x: OX + 2.5 * CS, y: OY - 16, 'text-anchor': 'middle', class: 'cvk-head' }, 'Feature map (5 x 5)');
+
+    // Input pixels.
+    for (var r = 0; r < 7; r++) for (var c = 0; c < 7; c++) {
+      var x = IX + c * CS, y = IY + r * CS;
+      el('rect', { x: x, y: y, width: CS, height: CS, fill: IMG[r][c] ? '#24292e' : '#ffffff', stroke: C.border });
+      el('text', { x: x + CS / 2, y: y + CS / 2 + 4, 'text-anchor': 'middle', class: 'cvk-note', style: IMG[r][c] ? 'fill:#ffffff' : '' }, IMG[r][c]);
+    }
+    el('rect', { x: IX + pc * CS, y: IY + pr * CS, width: 3 * CS, height: 3 * CS, fill: 'none', stroke: C.orange, 'stroke-width': 3, rx: 2 });
+
+    // Kernel.
+    el('text', { x: 268, y: KY + 1.5 * CS + 6, 'text-anchor': 'middle', style: 'font-size:22px' }, '×');
+    for (var i = 0; i < 3; i++) for (var j = 0; j < 3; j++) {
+      var kx = KX + j * CS, ky = KY + i * CS, wv = w[i][j];
+      el('rect', { x: kx, y: ky, width: CS, height: CS, fill: kernel === 'blur' ? '#f1f8ff' : color(wv * 3), stroke: C.orange, 'stroke-width': 1.2 });
+      el('text', { x: kx + CS / 2, y: ky + CS / 2 + 4, 'text-anchor': 'middle', class: 'cvk-note', style: 'fill:#24292e' }, kfmt(wv));
+    }
+    el('text', { x: 432, y: KY + 1.5 * CS + 6, 'text-anchor': 'middle', style: 'font-size:22px' }, '=');
+
+    // Output feature map.
+    for (var orow = 0; orow < 5; orow++) for (var ocol = 0; ocol < 5; ocol++) {
+      var v = conv(orow, ocol), ox = OX + ocol * CS, oy = OY + orow * CS;
+      var cell = el('rect', { x: ox, y: oy, width: CS, height: CS, fill: color(v), stroke: C.border, class: 'cvk-cell', 'data-p': orow * 5 + ocol });
+      el('text', { x: ox + CS / 2, y: oy + CS / 2 + 4, 'text-anchor': 'middle', class: 'cvk-note cvk-cell', 'data-p': orow * 5 + ocol, style: 'fill:#24292e' }, fmt(v));
+    }
+    el('rect', { x: OX + pc * CS, y: OY + pr * CS, width: CS, height: CS, fill: 'none', stroke: C.orange, 'stroke-width': 3 });
+    el('text', { x: OX + 2.5 * CS, y: OY + 5 * CS + 20, 'text-anchor': 'middle', class: 'cvk-note' }, 'blue: positive, red: negative');
+    el('text', { x: OX + 2.5 * CS, y: OY + 5 * CS + 36, 'text-anchor': 'middle', class: 'cvk-note' }, 'click a cell to move the kernel');
+
+    // The sum for the selected position.
+    var terms = [], nz = [];
+    for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) {
+      var p = IMG[pr + i][pc + j];
+      if (p !== 0 && w[i][j] !== 0) nz.push(p + '·' + (kernel === 'blur' ? '1/9' : '(' + w[i][j] + ')'));
+    }
+    var sum = conv(pr, pc);
+    var line = 'Sum of 9 products (pixel × weight). Non-zero ones: ' +
+      (nz.length ? nz.join(' + ') : 'none') + '  =  ' + fmt(sum);
+    el('text', { x: 20, y: 300, class: 'cvk-note', style: 'fill:#24292e' }, line);
+    out.textContent = 'row ' + (pr + 1) + ', column ' + (pc + 1);
+  }
+
+  buttons.forEach(function (b) {
+    b.addEventListener('click', function () {
+      kernel = b.getAttribute('data-k');
+      buttons.forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      draw();
+    });
+  });
+  svg.addEventListener('click', function (e) {
+    var p = e.target.getAttribute && e.target.getAttribute('data-p');
+    if (p !== null && p !== undefined) { slider.value = p; draw(); }
+  });
+  slider.addEventListener('input', draw);
+  draw();
+})();
+</script>

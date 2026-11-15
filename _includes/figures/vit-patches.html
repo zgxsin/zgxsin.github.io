@@ -1,0 +1,85 @@
+<figure id="vit-patches" class="fig vtp">
+  <svg class="fig-svg fig-svg-wide vtp-svg" viewBox="0 0 760 330" role="img" aria-label="A Vision Transformer cuts an image into a 4 by 4 grid of patches, lays the 16 patches out as a sequence, turns each patch into a vector and adds its position, then feeds the sequence plus a class token into a Transformer encoder that outputs a label."></svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .vtp-svg .vtp-note { font-size: 12px; fill: var(--fig-muted); }
+  .vtp-svg .vtp-head { font-weight: 600; }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('vit-patches');
+  if (!root) return;
+  var svg = root.querySelector('.vtp-svg');
+  var NS = 'http://www.w3.org/2000/svg';
+  var C = { text: '#24292e', muted: '#586069', border: '#d0d7de', blue: '#0366d6', blueBg: '#f1f8ff',
+    green: '#22863a', greenBg: '#f0fff4', orange: '#e36209', purple: '#6f42c1', faint: '#959da5' };
+
+  function el(parent, name, attrs, text) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    parent.appendChild(n);
+    return n;
+  }
+
+  // The scene, drawn in a 192 x 192 box: sky, ground, sun and a four-legged robot.
+  var defs = el(svg, 'defs', {});
+  var scene = el(defs, 'g', { id: 'vtp-scene' });
+  el(scene, 'rect', { x: 0, y: 0, width: 192, height: 130, fill: C.blueBg });
+  el(scene, 'rect', { x: 0, y: 130, width: 192, height: 62, fill: C.greenBg });
+  el(scene, 'circle', { cx: 158, cy: 32, r: 16, fill: C.orange, 'fill-opacity': 0.8 });
+  el(scene, 'rect', { x: 40, y: 80, width: 96, height: 32, rx: 8, fill: C.text });
+  el(scene, 'rect', { x: 128, y: 70, width: 30, height: 22, rx: 5, fill: C.text });
+  el(scene, 'circle', { cx: 150, cy: 80, r: 3, fill: C.orange });
+  [52, 72, 108, 126].forEach(function (lx, i) {
+    el(scene, 'path', { d: 'M' + lx + ',110 L' + (lx + (i % 2 ? 8 : -8)) + ',130 L' + lx + ',150',
+      stroke: C.text, 'stroke-width': 6, fill: 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+  });
+
+  var P = 48, IX = 20, IY = 60;
+  el(svg, 'text', { x: IX + 96, y: 36, 'text-anchor': 'middle', class: 'vtp-head' }, '1. Cut into 16 patches');
+  el(svg, 'use', { href: '#vtp-scene', x: IX, y: IY });
+  for (var g = 0; g <= 4; g++) {
+    el(svg, 'line', { x1: IX + g * P, y1: IY, x2: IX + g * P, y2: IY + 192, stroke: '#ffffff', 'stroke-width': 3 });
+    el(svg, 'line', { x1: IX, y1: IY + g * P, x2: IX + 192, y2: IY + g * P, stroke: '#ffffff', 'stroke-width': 3 });
+  }
+  el(svg, 'rect', { x: IX, y: IY, width: 192, height: 192, fill: 'none', stroke: C.border });
+  for (var n = 0; n < 16; n++) {
+    el(svg, 'text', { x: IX + (n % 4) * P + 5, y: IY + Math.floor(n / 4) * P + 14, class: 'vtp-note' }, n + 1);
+  }
+
+  // Sequence of patches.
+  var S = 27, TX = 262, TY = 70, sc = (S - 3) / P;
+  el(svg, 'text', { x: 500, y: 36, 'text-anchor': 'middle', class: 'vtp-head' }, '2. Read them as a sequence of tokens');
+  el(svg, 'path', { d: 'M222,156 C238,156 240,' + (TY + 12) + ' ' + (TX - 6) + ',' + (TY + 12), stroke: C.faint, 'stroke-width': 1.5, fill: 'none' });
+  // Class token in front.
+  var cx0 = TX + 16 * S;
+  for (n = 0; n < 16; n++) {
+    var r = Math.floor(n / 4), c = n % 4, tx = TX + n * S;
+    var clip = el(defs, 'clipPath', { id: 'vtp-clip-' + n });
+    el(clip, 'rect', { x: c * P, y: r * P, width: P, height: P });
+    var gpatch = el(svg, 'g', { transform: 'translate(' + tx + ',' + TY + ') scale(' + sc + ') translate(' + (-c * P) + ',' + (-r * P) + ')' });
+    el(gpatch, 'use', { href: '#vtp-scene', 'clip-path': 'url(#vtp-clip-' + n + ')' });
+    el(svg, 'rect', { x: tx, y: TY, width: S - 3, height: S - 3, fill: 'none', stroke: C.border });
+    el(svg, 'text', { x: tx + 12, y: TY + 40, 'text-anchor': 'middle', class: 'vtp-note' }, n + 1);
+    // Arrow to the embedding vector.
+    el(svg, 'line', { x1: tx + 12, y1: TY + 46, x2: tx + 12, y2: TY + 62, stroke: C.faint });
+    el(svg, 'rect', { x: tx + 4, y: TY + 64, width: 16, height: 40, rx: 3, fill: C.blueBg, stroke: C.blue });
+  }
+  el(svg, 'rect', { x: cx0 - 4, y: TY + 64, width: 16, height: 40, rx: 3, fill: '#f5f0ff', stroke: C.purple });
+  el(svg, 'text', { x: cx0 + 4, y: TY + 120, 'text-anchor': 'middle', class: 'vtp-note' }, 'CLS');
+  el(svg, 'text', { x: TX - 6, y: TY + 120, class: 'vtp-note' }, 'each patch → a vector, plus a position embedding');
+
+  // Encoder and head.
+  var EY = 218;
+  el(svg, 'line', { x1: 500, y1: TY + 126, x2: 500, y2: EY - 4, stroke: C.text, 'stroke-width': 1.5 });
+  el(svg, 'path', { d: 'M495,' + (EY - 9) + ' L500,' + (EY - 1) + ' L505,' + (EY - 9) + ' z', fill: C.text });
+  el(svg, 'rect', { x: TX - 6, y: EY, width: 16 * S + 26, height: 46, rx: 8, fill: '#ffffff', stroke: C.text, 'stroke-width': 1.2 });
+  el(svg, 'text', { x: 500, y: EY + 20, 'text-anchor': 'middle', class: 'vtp-head' }, '3. Transformer encoder');
+  el(svg, 'text', { x: 500, y: EY + 37, 'text-anchor': 'middle', class: 'vtp-note' }, 'every token attends to every other token, in every layer');
+  el(svg, 'line', { x1: cx0 + 4, y1: EY + 46, x2: cx0 + 4, y2: EY + 72, stroke: C.text, 'stroke-width': 1.5 });
+  el(svg, 'path', { d: 'M' + (cx0 - 1) + ',' + (EY + 67) + ' L' + (cx0 + 4) + ',' + (EY + 75) + ' L' + (cx0 + 9) + ',' + (EY + 67) + ' z', fill: C.text });
+  el(svg, 'text', { x: cx0 + 4, y: EY + 94, 'text-anchor': 'end', class: 'vtp-head' }, '4. "legged robot"');
+})();
+</script>

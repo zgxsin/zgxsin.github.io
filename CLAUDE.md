@@ -47,6 +47,8 @@ Pick the lightest tool that shows the idea:
 
 Fenced ```` ```mermaid ```` blocks render client-side (`_layouts/post.html`), themed to the
 site palette. Quote node labels that contain punctuation: `A["Encoder<br/>resize"]`.
+Do not start a label with `+ `, `- `, `* ` or `1. `: Mermaid parses it as a Markdown list
+and renders "Unsupported markdown: list".
 
 ### SVG figures
 

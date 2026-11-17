@@ -1,7 +1,7 @@
 ---
 title: "Transformers and CNNs"
-published: false
-date: 2026-11-15
+published: true
+date: 2026-11-17
 author: "Guoxiang (Shawn) Zhou"
 categories: [technology]
 ---
@@ -99,13 +99,43 @@ The limit is the same assumptions. Two distant parts of the image can only inter
 
 ## Transformers
 
-### Tokens: everything becomes a list of vectors
+### Tokens and embeddings: everything becomes a list of vectors
 
-A Transformer works on a **sequence of tokens**, each represented by a vector of a few hundred to a few thousand numbers (the **embedding**).
+A Transformer never sees raw text or pixels. Its input is a **sequence of tokens**, and each token is represented by a vector of numbers called its **embedding**. For text, getting there takes two steps.
 
-- **Text** is split into words or word pieces ("transform", "ers"), and each piece is looked up in a learned table to get its vector.
-- **Images** are cut into patches, each flattened into a vector (more on this in the [Vision Transformer](#vision-transformer-images-as-sequences) section).
-- Audio frames, LiDAR pillars, robot joint states, actions: anything that can be chopped into pieces can be tokens.
+**Step 1: tokenization, text to integer ids.** A **tokenizer** splits the text into pieces from a fixed **vocabulary** and replaces each piece by its index in that vocabulary, the **token id**. The pieces are neither whole words nor single characters but **subwords**: frequent words get their own token ("robot"), rare words are split into frequent fragments ("Transformers" becomes "Transform" + "ers"). This is a compromise. A word-level vocabulary cannot represent new words, names or typos, and a character-level one makes sequences very long, which is expensive because attention compares every token with every other. The vocabulary is built once, before training, by starting from single characters (or bytes) and repeatedly merging the most frequent adjacent pair in a large text corpus (byte-pair encoding, BPE, or a close variant). Typical vocabularies have 30,000 to 200,000 entries, and one English token is on average about three quarters of a word.
+
+| Piece | `The` | `·robot` | `·dropped` | `·the` | `·box` |
+| --- | --- | --- | --- | --- | --- |
+| Token id | 464 | 9379 | 5710 | 262 | 3091 |
+
+(The ids are made up for illustration; `·` marks a leading space, which most tokenizers keep as part of the token.)
+
+A token id is only a name. Id 9379 is not "larger" than id 464 in any meaningful way, so the network cannot compute with it directly.
+
+**Step 2: embedding lookup, id to vector.** The model holds an **embedding table**: a matrix $\mathbf{E}$ with one row per vocabulary entry and $d$ columns, where $d$ is the model width (768 in BERT-base and GPT-2 small, several thousand in large language models). The embedding of token id $i$ is simply row $i$ of $\mathbf{E}$. That is the whole operation, a table lookup. Mathematically it is the same as multiplying a one-hot vector (all zeros, a 1 at position $i$) by $\mathbf{E}$, so the embedding table is just a fully connected layer whose input happens to be one-hot.
+
+The entries of $\mathbf{E}$ are ordinary weights: they start random and are learned by backpropagation together with the rest of the network. Nobody decides what dimension 17 means. Because similar vectors lead to similar predictions, training pushes tokens that appear in similar contexts toward similar vectors: "box", "crate" and "package" end up close together, "box" and "tired" far apart. Directions can carry meaning too; the classic observation from word2vec is that $\text{vec(king)} - \text{vec(man)} + \text{vec(woman)}$ lands near $\text{vec(queen)}$. "Close" is measured with the dot product, which is exactly the comparison attention uses below.
+
+These input embeddings have one big limitation: they are **context-free**. "Bank" gets the same row of $\mathbf{E}$ in "river bank" and in "bank account". Fixing that is the job of the Transformer blocks. Each block rewrites every token's vector using the other tokens, so after a few layers the vector at "bank" encodes which bank is meant. The word "embedding" is used for both: the **input embedding** from the table, and the **contextual embedding** a layer outputs. In the rest of this post, "token vector" means a token's current vector at whatever layer it is.
+
+At the output, a language model runs the lookup in reverse: the final vector of a token is multiplied by a $d \times V$ matrix ($V$ = vocabulary size) to give one score per vocabulary entry, and a softmax turns the scores into the probability of each possible next token. Many models reuse $\mathbf{E}$ itself for this (weight tying).
+
+```mermaid
+flowchart TB
+  tkT["Text<br/>'The robot dropped the box'"] --> tkS["Tokenizer<br/>5 token ids"]
+  tkS --> tkE["Embedding lookup<br/>5 vectors of size d"]
+  tkE --> tkP["Add position<br/>(see below)"]
+  tkP --> tkB["Transformer blocks<br/>5 contextual vectors"]
+  tkB --> tkO["Output head<br/>score per vocabulary entry"]
+```
+
+Other inputs follow the same pattern with a different first step. What changes is only how a piece of input becomes a $d$-dimensional vector:
+
+- **Images** are cut into patches, and each patch's pixels (16 x 16 x 3 = 768 numbers) are flattened and multiplied by a learned matrix to give a $d$-dimensional **patch embedding**. Pixel values are continuous, so there is no vocabulary to look up; a linear layer takes the place of the table (more in the [Vision Transformer](#vision-transformer-images-as-sequences) section).
+- **Audio frames, LiDAR pillars, robot joint states, actions**: each chunk goes through its own small learned layer to become a $d$-dimensional vector.
+
+Once every token is a vector of the same size, the Transformer does not care where it came from. This is why one model can take text, image patches and robot state in the same sequence.
 
 The tokens then pass through a stack of identical **Transformer blocks**. Each block updates every token's vector, and the core operation that does this is **self-attention**.
 
@@ -146,10 +176,10 @@ $\mathbf{Q} \mathbf{K}^\top$ is an $n \times n$ table of scores: every token aga
 
 ```mermaid
 flowchart TB
-  atX["Token vectors"] --> atQ["Queries<br/>x W_Q"]
-  atX --> atK["Keys<br/>x W_K"]
-  atX --> atV["Values<br/>x W_V"]
-  atQ --> atS["Scores Q K^T / sqrt(d)<br/>n x n table"]
+  atX["Token vectors <b>X</b>"] --> atQ["Queries<br/><b>Q</b> = <b>X</b><b>W</b><sub>Q</sub>"]
+  atX --> atK["Keys<br/><b>K</b> = <b>X</b><b>W</b><sub>K</sub>"]
+  atX --> atV["Values<br/><b>V</b> = <b>X</b><b>W</b><sub>V</sub>"]
+  atQ --> atS["Scores <b>Q</b><b>K</b><sup>T</sup> / √d<br/>n × n table"]
   atK --> atS
   atS --> atSM["Softmax per row<br/>attention weights"]
   atSM --> atM["Weighted sum of values"]
@@ -228,7 +258,12 @@ The clearest difference is in how quickly information travels. In a CNN, each la
 
 ### The data trade-off
 
-Built-in assumptions are a head start when they are correct, and a ceiling when the data could teach something better. The ViT paper showed both sides: trained only on ImageNet (1.3 million images), ViT was worse than a comparable ResNet. Pretrained on 14 to 300 million images, it matched or beat the best CNNs. Later work narrowed the gap from both directions:
+A CNN is told in advance that nearby pixels matter most and that the same pattern can appear anywhere. A Transformer is told neither and has to discover such rules from examples. This cuts both ways:
+
+- **Little data**: the CNN wins. It already knows the rules that hold for most images, while the Transformer does not see enough examples to learn them.
+- **Lots of data**: the Transformer catches up and can pull ahead. It learns the same rules, plus patterns the CNN's fixed design cannot express, such as linking two distant parts of an image in a single layer.
+
+The ViT paper showed both sides: trained only on ImageNet (1.3 million images), ViT was worse than a comparable ResNet. Pretrained on 14 to 300 million images, it matched or beat the best CNNs. Later work narrowed the gap from both directions:
 
 - **DeiT** (2021) trained ViTs on ImageNet alone with strong data augmentation and distillation.
 - **Swin Transformer** (2021) put locality back into the Transformer: attention within local windows, merged hierarchically like a CNN, which also makes the cost linear in image size.

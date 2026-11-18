@@ -1,0 +1,92 @@
+<figure id="sim-domain-randomization" class="fig sdr">
+  <div class="fig-legend">
+    <span><i class="sdr-swatch" style="background: var(--fig-blue-bg); border-color: var(--fig-blue)"></i>friction values sampled in training</span>
+    <span><i class="sdr-dot" style="background: var(--fig-green)"></i>real surface covered</span>
+    <span><i class="sdr-dot" style="background: var(--fig-red)"></i>real surface outside training</span>
+  </div>
+  <svg class="fig-svg fig-svg-wide sdr-svg" viewBox="0 0 760 290" role="img" aria-label="Domain randomization of the ground friction coefficient. A blue band shows the range of friction values sampled during training, centered on the simulator's nominal value. Four real surfaces, wet grating, grass, concrete and a rubber mat, sit on the same axis and turn green when the band covers them. Sliders move the nominal value and widen the range; a readout describes the trade-off between robustness and conservatism."></svg>
+  <label class="fig-control">Sim nominal friction <input type="range" id="sdr-nom" min="0.3" max="1.3" step="0.05" value="0.8"> <span id="sdr-nom-v"></span></label>
+  <label class="fig-control">Randomization half-range &plusmn; <input type="range" id="sdr-w" min="0" max="0.7" step="0.05" value="0.1"> <span id="sdr-w-v"></span></label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .sdr-svg .sdr-note { font-size: 12px; fill: var(--fig-muted); }
+  .sdr-svg .sdr-title { font-weight: 700; }
+  .sdr-swatch { display: inline-block; width: 14px; height: 10px; margin-right: 6px; border: 1px solid; }
+  .sdr-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+  .sdr .fig-control span { color: var(--fig-text); }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('sim-domain-randomization');
+  if (!root) return;
+  var svg = root.querySelector('.sdr-svg');
+  var nomIn = document.getElementById('sdr-nom');
+  var wIn = document.getElementById('sdr-w');
+  var NS = 'http://www.w3.org/2000/svg';
+  var C = { text: '#24292e', muted: '#586069', border: '#d0d7de', blue: '#0366d6', blueBg: '#f1f8ff', green: '#22863a', red: '#d73a49' };
+  var X0 = 50, X1 = 720, MU_MAX = 1.6, AXIS_Y = 130;
+  var SURFACES = [
+    { name: 'wet grating', mu: 0.35 },
+    { name: 'grass', mu: 0.55 },
+    { name: 'concrete', mu: 0.9 },
+    { name: 'rubber mat', mu: 1.2 }
+  ];
+
+  function sx(mu) { return X0 + (X1 - X0) * mu / MU_MAX; }
+  function el(name, attrs, text) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    svg.appendChild(n);
+    return n;
+  }
+
+  function draw() {
+    var nom = Number(nomIn.value), w = Number(wIn.value);
+    var lo = Math.max(0.05, nom - w), hi = Math.min(MU_MAX, nom + w);
+    document.getElementById('sdr-nom-v').textContent = nom.toFixed(2);
+    document.getElementById('sdr-w-v').textContent = w.toFixed(2);
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    el('text', { x: X0, y: 20, class: 'sdr-title' }, 'Friction coefficient μ: training range vs. deployment surfaces');
+
+    // Training band.
+    var bw = Math.max(2, sx(hi) - sx(lo));
+    el('rect', { x: sx(lo), y: 50, width: bw, height: AXIS_Y - 50, fill: C.blueBg, stroke: C.blue, 'stroke-width': 1.5 });
+    el('line', { x1: sx(nom), y1: 44, x2: sx(nom), y2: AXIS_Y, stroke: C.blue, 'stroke-width': 2, 'stroke-dasharray': '4 3' });
+    el('text', { x: sx(nom), y: 40, 'text-anchor': 'middle', class: 'sdr-note' }, 'sim nominal');
+
+    // Axis and ticks.
+    el('line', { x1: X0, y1: AXIS_Y, x2: X1, y2: AXIS_Y, stroke: C.text, 'stroke-width': 1.2 });
+    for (var t = 0; t <= MU_MAX + 1e-9; t += 0.4) {
+      el('line', { x1: sx(t), y1: AXIS_Y, x2: sx(t), y2: AXIS_Y + 5, stroke: C.text });
+      el('text', { x: sx(t), y: AXIS_Y + 18, 'text-anchor': 'middle', class: 'sdr-note' }, t.toFixed(1));
+    }
+
+    // Real surfaces.
+    var covered = 0;
+    SURFACES.forEach(function (s, i) {
+      var ok = s.mu >= lo - 1e-9 && s.mu <= hi + 1e-9;
+      if (ok) covered++;
+      var col = ok ? C.green : C.red;
+      var ly = AXIS_Y + 44 + (i % 2) * 20;
+      el('line', { x1: sx(s.mu), y1: AXIS_Y, x2: sx(s.mu), y2: ly - 13, stroke: col, 'stroke-width': 1, 'stroke-dasharray': '2 2' });
+      el('circle', { cx: sx(s.mu), cy: AXIS_Y, r: 7, fill: col, stroke: '#fff', 'stroke-width': 2 });
+      el('text', { x: sx(s.mu), y: ly, 'text-anchor': 'middle', fill: col }, s.name + ' ' + s.mu.toFixed(2));
+    });
+
+    var verdict;
+    if (w < 0.15) verdict = 'Narrow range: fast to learn, tuned to one surface, brittle elsewhere.';
+    else if (w < 0.45) verdict = 'Moderate range: robust near nominal, still fast to train.';
+    else verdict = 'Wide range: robust, but slower to learn and a more cautious gait everywhere.';
+    el('text', { x: X0, y: AXIS_Y + 106 }, 'Covered: ' + covered + ' of ' + SURFACES.length + ' surfaces.');
+    el('text', { x: X0, y: AXIS_Y + 128, class: 'sdr-note' }, verdict);
+    el('text', { x: X0, y: AXIS_Y + 150, class: 'sdr-note' }, 'System identification moves the nominal value; randomization widens the band around it.');
+  }
+
+  nomIn.addEventListener('input', draw);
+  wIn.addEventListener('input', draw);
+  draw();
+})();
+</script>

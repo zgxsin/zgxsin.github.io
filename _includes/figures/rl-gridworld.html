@@ -1,0 +1,190 @@
+<figure id="rl-gridworld" class="fig rlg">
+  <div class="fig-legend">
+    <span><i class="rlg-swatch" style="background: var(--fig-blue)"></i>high value V(s)</span>
+    <span><i class="rlg-swatch" style="background: var(--fig-red)"></i>low value</span>
+    <span><i class="rlg-swatch" style="background: var(--fig-orange)"></i>most likely path from S</span>
+  </div>
+  <svg class="fig-svg fig-svg-wide rlg-svg" viewBox="0 0 760 350" role="img" aria-label="A 7 by 4 grid world solved with value iteration. The robot starts at S in the bottom-left corner, the goal G, which pays a reward of +10 on entry and ends the episode, is in the bottom-right corner, and the four cells left of the goal are a cliff with reward -10. Each cell is colored by its value and shows an arrow for the best action. Sliders change the discount factor, the reward per step and the probability of slipping sideways; with slip and a cheap step the policy takes a detour away from the cliff, with an expensive step it walks along the edge."></svg>
+  <label class="fig-control">Discount factor &gamma; <input type="range" id="rlg-gamma" min="0.5" max="0.99" step="0.01" value="0.95"> <span id="rlg-gamma-v"></span></label>
+  <label class="fig-control">Reward per step <input type="range" id="rlg-step" min="-2" max="0" step="0.05" value="-0.1"> <span id="rlg-step-v"></span></label>
+  <label class="fig-control">Slip probability <input type="range" id="rlg-slip" min="0" max="0.4" step="0.05" value="0.2"> <span id="rlg-slip-v"></span></label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .rlg-svg .rlg-note { font-size: 12px; fill: var(--fig-muted); }
+  .rlg-svg .rlg-val { font-size: 12px; }
+  .rlg-svg .rlg-big { font-size: 15px; font-weight: 700; }
+  .rlg-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+  .rlg .fig-control span { display: inline-block; min-width: 3em; color: var(--fig-text); }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('rl-gridworld');
+  if (!root) return;
+  var svg = root.querySelector('.rlg-svg');
+  var gIn = document.getElementById('rlg-gamma');
+  var sIn = document.getElementById('rlg-step');
+  var pIn = document.getElementById('rlg-slip');
+  var NS = 'http://www.w3.org/2000/svg';
+  var C = { text: '#24292e', muted: '#586069', border: '#d0d7de', blue: '#0366d6', red: '#d73a49', green: '#22863a', orange: '#e36209' };
+
+  var W = 7, H = 4, CELL = 76, X0 = 10, Y0 = 26;
+  var START = [0, 3], GOAL = [6, 3];
+  // Action order: up, right, down, left.
+  var DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+
+  function kind(x, y) {
+    if (x === GOAL[0] && y === GOAL[1]) return 'goal';
+    if (y === 3 && x > 1 && x < 6) return 'cliff';
+    return 'free';
+  }
+  function terminalReward(x, y) { var k = kind(x, y); return k === 'goal' ? 10 : (k === 'cliff' ? -10 : 0); }
+  function move(x, y, a) {
+    var nx = x + DIRS[a][0], ny = y + DIRS[a][1];
+    if (nx < 0 || nx >= W || ny < 0 || ny >= H) return [x, y];
+    return [nx, ny];
+  }
+  // Outcomes of action a: intended with 1 - slip, each perpendicular with slip / 2.
+  function outcomes(x, y, a, slip) {
+    var res = [[move(x, y, a), 1 - slip]];
+    if (slip > 0) {
+      res.push([move(x, y, (a + 1) % 4), slip / 2]);
+      res.push([move(x, y, (a + 3) % 4), slip / 2]);
+    }
+    return res;
+  }
+  function qValue(V, x, y, a, gamma, step, slip) {
+    var q = 0;
+    outcomes(x, y, a, slip).forEach(function (o) {
+      var nx = o[0][0], ny = o[0][1], r = step + terminalReward(nx, ny);
+      var v = kind(nx, ny) === 'free' ? V[ny][nx] : 0;
+      q += o[1] * (r + gamma * v);
+    });
+    return q;
+  }
+
+  function solve(gamma, step, slip) {
+    var V = [], x, y, a, it;
+    for (y = 0; y < H; y++) { V.push([]); for (x = 0; x < W; x++) V[y].push(0); }
+    for (it = 0; it < 2000; it++) {
+      var delta = 0, NV = V.map(function (row) { return row.slice(); });
+      for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+        if (kind(x, y) !== 'free') continue;
+        var best = -Infinity;
+        for (a = 0; a < 4; a++) best = Math.max(best, qValue(V, x, y, a, gamma, step, slip));
+        NV[y][x] = best;
+        delta = Math.max(delta, Math.abs(best - V[y][x]));
+      }
+      V = NV;
+      if (delta < 1e-6) break;
+    }
+    var P = [];
+    for (y = 0; y < H; y++) {
+      P.push([]);
+      for (x = 0; x < W; x++) {
+        var bestA = 0, bestQ = -Infinity;
+        for (a = 0; a < 4; a++) {
+          var q = qValue(V, x, y, a, gamma, step, slip);
+          if (q > bestQ + 1e-9) { bestQ = q; bestA = a; }
+        }
+        P[y].push(bestA);
+      }
+    }
+    return { V: V, P: P };
+  }
+
+  function el(name, attrs, text) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    svg.appendChild(n);
+    return n;
+  }
+  function mix(c1, c2, t) {
+    var a = parseInt(c1.slice(1), 16), b = parseInt(c2.slice(1), 16);
+    var r = Math.round(((a >> 16) & 255) * (1 - t) + ((b >> 16) & 255) * t);
+    var g = Math.round(((a >> 8) & 255) * (1 - t) + ((b >> 8) & 255) * t);
+    var bl = Math.round((a & 255) * (1 - t) + (b & 255) * t);
+    return 'rgb(' + r + ',' + g + ',' + bl + ')';
+  }
+  function cellColor(v) {
+    var t = Math.max(-1, Math.min(1, v / 10));
+    return t >= 0 ? mix('#ffffff', '#0366d6', 0.75 * t) : mix('#ffffff', '#d73a49', 0.75 * -t);
+  }
+
+  function draw() {
+    var gamma = Number(gIn.value), step = Number(sIn.value), slip = Number(pIn.value);
+    document.getElementById('rlg-gamma-v').textContent = gamma.toFixed(2);
+    document.getElementById('rlg-step-v').textContent = step.toFixed(2);
+    document.getElementById('rlg-slip-v').textContent = Math.round(slip * 100) + '%';
+    var sol = solve(gamma, step, slip);
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    el('text', { x: X0, y: 16, class: 'rlg-note' }, 'Value of each cell and the greedy action (value iteration)');
+    var x, y;
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+      var k0 = kind(x, y);
+      var fill = k0 === 'goal' ? '#dcffe4' : (k0 === 'cliff' ? '#5a1e24' : cellColor(sol.V[y][x]));
+      el('rect', { x: X0 + x * CELL, y: Y0 + y * CELL, width: CELL, height: CELL, fill: fill, stroke: C.border });
+    }
+    // Greedy path from S, ignoring slips. Drawn under the arrows and labels.
+    var px = START[0], py = START[1], pts = [], seen = {};
+    for (var i = 0; i < 40; i++) {
+      pts.push((X0 + px * CELL + CELL / 2) + ',' + (Y0 + py * CELL + (kind(px, py) === 'free' ? CELL / 2 - 8 : 4)));
+      if (kind(px, py) !== 'free' || seen[px + ',' + py]) break;
+      seen[px + ',' + py] = true;
+      var n = move(px, py, sol.P[py][px]);
+      px = n[0]; py = n[1];
+    }
+    el('polyline', { points: pts.join(' '), fill: 'none', stroke: C.orange, 'stroke-width': 10, 'stroke-opacity': 0.45, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+      var cx = X0 + x * CELL, cy = Y0 + y * CELL, k = kind(x, y);
+      if (k === 'goal') {
+        el('text', { x: cx + CELL / 2, y: cy + 22, 'text-anchor': 'middle', class: 'rlg-big', fill: C.green }, 'G');
+        el('text', { x: cx + CELL / 2, y: cy + 42, 'text-anchor': 'middle', class: 'rlg-val' }, 'reward +10');
+        el('text', { x: cx + CELL - 6, y: cy + CELL - 8, 'text-anchor': 'end', class: 'rlg-val' }, 'V = 0');
+      } else if (k === 'cliff') {
+        el('text', { x: cx + CELL / 2, y: cy + 22, 'text-anchor': 'middle', style: 'fill:#ffffff' }, 'cliff');
+        el('text', { x: cx + CELL / 2, y: cy + 42, 'text-anchor': 'middle', class: 'rlg-val', style: 'fill:#ffffff' }, 'reward -10');
+        el('text', { x: cx + CELL - 6, y: cy + CELL - 8, 'text-anchor': 'end', class: 'rlg-val', style: 'fill:#ffffff' }, 'V = 0');
+      } else {
+        var v = sol.V[y][x], a = sol.P[y][x];
+        var mx = cx + CELL / 2, my = cy + CELL / 2 - 8, L = 16;
+        var dx = DIRS[a][0] * L, dy = DIRS[a][1] * L;
+        el('line', { x1: mx - dx, y1: my - dy, x2: mx + dx, y2: my + dy, stroke: C.text, 'stroke-width': 2, 'marker-end': 'url(#rlg-arrow)' });
+        el('text', { x: cx + CELL - 6, y: cy + CELL - 8, 'text-anchor': 'end', class: 'rlg-val' }, v.toFixed(2));
+        if (x === START[0] && y === START[1]) el('text', { x: cx + 7, y: cy + 16, class: 'rlg-big' }, 'S');
+      }
+    }
+
+    var defs = el('defs', {});
+    var m = document.createElementNS(NS, 'marker');
+    [['id', 'rlg-arrow'], ['viewBox', '0 0 10 10'], ['refX', '8'], ['refY', '5'], ['markerWidth', '5'], ['markerHeight', '5'], ['orient', 'auto']]
+      .forEach(function (p) { m.setAttribute(p[0], p[1]); });
+    var path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', 'M0,0 L10,5 L0,10 z');
+    path.setAttribute('fill', C.text);
+    m.appendChild(path);
+    defs.appendChild(m);
+
+    var RX = X0 + W * CELL + 24;
+    var horizon = 1 / (1 - gamma);
+    el('text', { x: RX, y: Y0 + 14, class: 'rlg-note' }, 'Value at S');
+    el('text', { x: RX, y: Y0 + 38, class: 'rlg-big' }, sol.V[START[1]][START[0]].toFixed(2));
+    el('text', { x: RX, y: Y0 + 74, class: 'rlg-note' }, 'Effective horizon');
+    el('text', { x: RX, y: Y0 + 92, class: 'rlg-note' }, '1 / (1 - γ)');
+    el('text', { x: RX, y: Y0 + 116, class: 'rlg-big' }, horizon.toFixed(1) + ' steps');
+    el('text', { x: RX, y: Y0 + 152, class: 'rlg-note' }, 'Weight of a reward');
+    el('text', { x: RX, y: Y0 + 168, class: 'rlg-note' }, '10 steps ahead');
+    el('text', { x: RX, y: Y0 + 192, class: 'rlg-big' }, 'γ¹⁰ = ' + Math.pow(gamma, 10).toFixed(2));
+    el('text', { x: RX, y: Y0 + 230, class: 'rlg-note' }, 'Shortest path S to G:');
+    el('text', { x: RX, y: Y0 + 246, class: 'rlg-note' }, '8 steps (along cliff)');
+    el('text', { x: RX, y: Y0 + 270, class: 'rlg-note' }, 'Safe detour: 10+');
+    el('text', { x: RX, y: Y0 + 296, class: 'rlg-note' }, 'G and cliff are terminal:');
+    el('text', { x: RX, y: Y0 + 312, class: 'rlg-note' }, 'reward on entry, V = 0');
+  }
+
+  [gIn, sIn, pIn].forEach(function (inp) { inp.addEventListener('input', draw); });
+  draw();
+})();
+</script>

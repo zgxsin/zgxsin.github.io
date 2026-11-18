@@ -1,0 +1,81 @@
+<figure id="rl-ppo-clip" class="fig ppo">
+  <div class="fig-legend">
+    <span><i class="ppo-line" style="border-color: var(--fig-blue)"></i>PPO clipped objective</span>
+    <span><i class="ppo-line ppo-dash" style="border-color: var(--fig-muted)"></i>unclipped r &middot; A</span>
+    <span><i class="ppo-swatch" style="background: #fff5b1"></i>flat: zero gradient, no further push</span>
+  </div>
+  <svg class="fig-svg fig-svg-wide ppo-svg" viewBox="0 0 760 270" role="img" aria-label="Two plots of the PPO clipped surrogate objective against the probability ratio r between the new and the old policy. Left, a good action with positive advantage: the objective rises with r until 1 plus epsilon, then stays flat. Right, a bad action with negative advantage: the objective is flat below 1 minus epsilon and falls linearly above it. A slider changes epsilon and the width of the trust region around r equals 1."></svg>
+  <label class="fig-control">Clip range &epsilon; <input type="range" id="ppo-eps" min="0.05" max="0.5" step="0.05" value="0.2"> <span id="ppo-eps-v"></span></label>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .ppo-svg .ppo-note { font-size: 12px; fill: var(--fig-muted); }
+  .ppo-svg .ppo-title { font-weight: 700; }
+  .ppo-swatch { display: inline-block; width: 12px; height: 10px; margin-right: 6px; border: 1px solid var(--fig-border); }
+  .ppo-line { display: inline-block; width: 18px; height: 0; border-top: 3px solid; margin-right: 6px; vertical-align: middle; }
+  .ppo-dash { border-top-style: dashed; border-top-width: 2px; }
+  .ppo .fig-control span { color: var(--fig-text); }
+</style>
+<script>
+(function () {
+  var root = document.getElementById('rl-ppo-clip');
+  if (!root) return;
+  var svg = root.querySelector('.ppo-svg');
+  var epsIn = document.getElementById('ppo-eps');
+  var NS = 'http://www.w3.org/2000/svg';
+  var C = { text: '#24292e', muted: '#586069', border: '#d0d7de', blue: '#0366d6', yellow: '#fff5b1' };
+
+  function el(name, attrs, text) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    svg.appendChild(n);
+    return n;
+  }
+
+  function panel(ox, A, eps, title) {
+    var PW = 320, PH = 170, OY = 50;
+    var rMax = 2, yMin = -2, yMax = 2;
+    function sx(r) { return ox + (r / rMax) * PW; }
+    function sy(v) { return OY + (yMax - v) / (yMax - yMin) * PH; }
+    function obj(r) { return Math.min(r * A, Math.max(1 - eps, Math.min(1 + eps, r)) * A); }
+
+    el('text', { x: ox, y: 20, class: 'ppo-title' }, title);
+    // Flat regions where the clipped term is active.
+    if (A > 0) el('rect', { x: sx(1 + eps), y: OY, width: sx(rMax) - sx(1 + eps), height: PH, fill: C.yellow });
+    else el('rect', { x: sx(0), y: OY, width: sx(1 - eps) - sx(0), height: PH, fill: C.yellow });
+    el('rect', { x: ox, y: OY, width: PW, height: PH, fill: 'none', stroke: C.border });
+    el('line', { x1: ox, y1: sy(0), x2: ox + PW, y2: sy(0), stroke: C.border });
+    // Trust region bounds.
+    [1 - eps, 1, 1 + eps].forEach(function (r, i) {
+      el('line', { x1: sx(r), y1: OY, x2: sx(r), y2: OY + PH, stroke: i === 1 ? C.muted : C.border, 'stroke-dasharray': i === 1 ? '2 3' : '4 3' });
+    });
+    el('text', { x: sx(1 - eps), y: OY + PH + 16, 'text-anchor': 'middle', class: 'ppo-note' }, (1 - eps).toFixed(2));
+    el('text', { x: sx(1), y: OY - 6, 'text-anchor': 'middle', class: 'ppo-note' }, 'r = 1 (old policy)');
+    el('text', { x: sx(1 + eps), y: OY + PH + 16, 'text-anchor': 'middle', class: 'ppo-note' }, (1 + eps).toFixed(2));
+    el('text', { x: ox, y: OY + PH + 16, class: 'ppo-note' }, '0');
+    el('text', { x: ox + PW, y: OY + PH + 16, 'text-anchor': 'end', class: 'ppo-note' }, '2');
+    el('text', { x: ox + PW / 2, y: OY + PH + 36, 'text-anchor': 'middle', class: 'ppo-note' }, 'ratio r = π_new(a|s) / π_old(a|s)');
+
+    var raw = [], clip = [];
+    for (var i = 0; i <= 200; i++) {
+      var r = rMax * i / 200;
+      raw.push(sx(r) + ',' + sy(r * A));
+      clip.push(sx(r) + ',' + sy(obj(r)));
+    }
+    el('polyline', { points: raw.join(' '), fill: 'none', stroke: C.muted, 'stroke-width': 1.5, 'stroke-dasharray': '5 4' });
+    el('polyline', { points: clip.join(' '), fill: 'none', stroke: C.blue, 'stroke-width': 3 });
+  }
+
+  function draw() {
+    var eps = Number(epsIn.value);
+    document.getElementById('ppo-eps-v').textContent = eps.toFixed(2);
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    panel(20, 1, eps, 'Advantage A > 0 (better than expected)');
+    panel(420, -1, eps, 'Advantage A < 0 (worse than expected)');
+  }
+
+  epsIn.addEventListener('input', draw);
+  draw();
+})();
+</script>

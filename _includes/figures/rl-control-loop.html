@@ -1,0 +1,79 @@
+<figure id="rl-control-loop" class="fig rlc">
+  <svg class="fig-svg fig-svg-wide rlc-svg" viewBox="0 0 760 300" role="img" aria-label="Deployed learned locomotion controller. A velocity command from the operator or navigation enters the policy network, which runs at about 50 Hz and outputs 12 joint position targets. A joint PD controller running much faster turns the targets into motor torques that act on the robot and the terrain. Sensors (IMU, joint encoders, LiDAR or depth) feed a state estimator and an elevation map, which build the observation vector for the next policy step, closing the loop. The command is concatenated into the same observation vector.">
+    <defs>
+      <marker id="rlc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0,0 L10,5 L0,10 z" fill="#24292e"></path>
+      </marker>
+    </defs>
+
+    <rect x="190" y="12" width="180" height="114" rx="10" fill="#f1f8ff" stroke="#c8e1ff"></rect>
+    <text x="280" y="30" text-anchor="middle" class="rlc-zone">learned in simulation</text>
+
+    <g class="rlc-node">
+      <rect x="10" y="40" width="150" height="75" rx="8"></rect>
+      <text x="85" y="66" class="rlc-t">Command</text>
+      <text x="85" y="85" class="rlc-s">target velocity</text>
+      <text x="85" y="101" class="rlc-s">operator or navigation</text>
+    </g>
+    <g class="rlc-node rlc-policy">
+      <rect x="200" y="40" width="160" height="75" rx="8"></rect>
+      <text x="280" y="66" class="rlc-t">Policy network</text>
+      <text x="280" y="85" class="rlc-s">small MLP (+ memory)</text>
+      <text x="280" y="101" class="rlc-s">~50 Hz</text>
+    </g>
+    <g class="rlc-node">
+      <rect x="400" y="40" width="170" height="75" rx="8"></rect>
+      <text x="485" y="62" class="rlc-t">Joint PD control</text>
+      <text x="485" y="81" class="rlc-s">&#964; = Kp(q* - q) - Kd q&#775;</text>
+      <text x="485" y="97" class="rlc-s">in the drives, kHz rate</text>
+    </g>
+    <g class="rlc-node">
+      <rect x="610" y="40" width="140" height="75" rx="8"></rect>
+      <text x="680" y="66" class="rlc-t">Robot + terrain</text>
+      <text x="680" y="85" class="rlc-s">12 actuated joints</text>
+      <text x="680" y="101" class="rlc-s">contacts, slip</text>
+    </g>
+
+    <g class="rlc-node">
+      <rect x="160" y="190" width="240" height="90" rx="8"></rect>
+      <text x="280" y="212" class="rlc-t">Observation o_t</text>
+      <text x="280" y="231" class="rlc-s">base velocity, gravity direction,</text>
+      <text x="280" y="247" class="rlc-s">joint states, previous action,</text>
+      <text x="280" y="263" class="rlc-s">terrain heights + command</text>
+    </g>
+    <g class="rlc-node">
+      <rect x="430" y="190" width="160" height="90" rx="8"></rect>
+      <text x="510" y="216" class="rlc-t">State estimation</text>
+      <text x="510" y="236" class="rlc-s">base pose and twist,</text>
+      <text x="510" y="252" class="rlc-s">elevation map</text>
+    </g>
+    <g class="rlc-node">
+      <rect x="620" y="190" width="130" height="90" rx="8"></rect>
+      <text x="685" y="216" class="rlc-t">Sensors</text>
+      <text x="685" y="236" class="rlc-s">IMU, encoders,</text>
+      <text x="685" y="252" class="rlc-s">LiDAR, depth</text>
+    </g>
+
+    <line x1="160" y1="77" x2="198" y2="77" class="rlc-l" marker-end="url(#rlc-arrow)"></line>
+    <line x1="360" y1="77" x2="398" y2="77" class="rlc-l" marker-end="url(#rlc-arrow)"></line>
+    <text x="380" y="70" text-anchor="middle" class="rlc-g">q*</text>
+    <line x1="570" y1="77" x2="608" y2="77" class="rlc-l" marker-end="url(#rlc-arrow)"></line>
+    <text x="590" y="70" text-anchor="middle" class="rlc-g">&#964;</text>
+    <line x1="685" y1="115" x2="685" y2="188" class="rlc-l" marker-end="url(#rlc-arrow)"></line>
+    <line x1="620" y1="235" x2="592" y2="235" class="rlc-l" marker-end="url(#rlc-arrow)"></line>
+    <line x1="430" y1="235" x2="402" y2="235" class="rlc-l" marker-end="url(#rlc-arrow)"></line>
+    <line x1="280" y1="190" x2="280" y2="117" class="rlc-l rlc-back" marker-end="url(#rlc-arrow)"></line>
+    <text x="288" y="176" class="rlc-g">next step</text>
+  </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .rlc-node rect { fill: #fff; stroke: var(--fig-text); stroke-width: 1.2; }
+  .rlc-policy rect { stroke: var(--fig-blue); stroke-width: 2; }
+  .rlc-svg .rlc-t { text-anchor: middle; font-weight: 700; }
+  .rlc-svg .rlc-s { text-anchor: middle; font-size: 12px; fill: var(--fig-muted); }
+  .rlc-svg .rlc-g { font-size: 12px; fill: var(--fig-muted); }
+  .rlc-svg .rlc-zone { font-size: 12px; fill: var(--fig-blue); }
+  .rlc-l { stroke: var(--fig-text); stroke-width: 1.5; fill: none; }
+  .rlc-back { stroke-dasharray: 5 4; }
+</style>

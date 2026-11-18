@@ -1,0 +1,97 @@
+<figure id="sim-decision-guide" class="fig sdg">
+  <svg class="fig-svg fig-svg-wide sdg-svg" viewBox="0 0 760 444" role="img" aria-label="Decision guide for choosing a robotics simulator. Testing the ROS 2 stack in continuous integration leads to Gazebo, or to Isaac Sim when camera or LiDAR realism matters. Training a policy leads to Isaac Lab with an NVIDIA RTX GPU, otherwise to MuJoCo Playground with MJX or MuJoCo Warp. Control and planning research leads to Drake when rigorous contact or optimization tooling is needed, otherwise to MuJoCo. Perception data and digital twins lead to Isaac Sim, and autonomous driving leads to CARLA.">
+    <defs>
+      <marker id="sdg-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0,0 L10,5 L0,10 z" fill="#586069"></path>
+      </marker>
+    </defs>
+
+    <text x="120" y="20" text-anchor="middle" class="sdg-head">Goal</text>
+    <text x="385" y="20" text-anchor="middle" class="sdg-head">Deciding question</text>
+    <text x="645" y="20" text-anchor="middle" class="sdg-head">Choice</text>
+
+    <!-- Row 1: ROS 2 testing. -->
+    <rect class="sdg-goal" x="10" y="34" width="220" height="82" rx="8"></rect>
+    <text x="120" y="71" text-anchor="middle" class="sdg-strong">Test the ROS 2 stack</text>
+    <text x="120" y="89" text-anchor="middle" class="sdg-note">integration tests, CI</text>
+    <path class="sdg-edge" d="M230,75 H278" marker-end="url(#sdg-arrow)"></path>
+    <rect class="sdg-q" x="280" y="50" width="210" height="50" rx="25"></rect>
+    <text x="385" y="71" text-anchor="middle">Camera or LiDAR</text>
+    <text x="385" y="88" text-anchor="middle">realism matters?</text>
+    <path class="sdg-edge" d="M490,75 H510 V53 H538" marker-end="url(#sdg-arrow)"></path>
+    <path class="sdg-edge" d="M510,75 V97 H538" marker-end="url(#sdg-arrow)"></path>
+    <text x="516" y="48" class="sdg-note">no</text>
+    <text x="516" y="92" class="sdg-note">yes</text>
+    <rect class="sdg-choice" x="540" y="34" width="210" height="38" rx="6" stroke="#e36209"></rect>
+    <text x="645" y="50" text-anchor="middle" class="sdg-strong">Gazebo</text>
+    <text x="645" y="65" text-anchor="middle" class="sdg-note">headless, ros_gz</text>
+    <rect class="sdg-choice" x="540" y="78" width="210" height="38" rx="6" stroke="#22863a"></rect>
+    <text x="645" y="94" text-anchor="middle" class="sdg-strong">Isaac Sim</text>
+    <text x="645" y="109" text-anchor="middle" class="sdg-note">RTX sensors, ROS 2 bridge</text>
+
+    <!-- Row 2: policy training. -->
+    <rect class="sdg-goal" x="10" y="132" width="220" height="82" rx="8"></rect>
+    <text x="120" y="169" text-anchor="middle" class="sdg-strong">Train a policy</text>
+    <text x="120" y="187" text-anchor="middle" class="sdg-note">RL or imitation learning</text>
+    <path class="sdg-edge" d="M230,173 H278" marker-end="url(#sdg-arrow)"></path>
+    <rect class="sdg-q" x="280" y="148" width="210" height="50" rx="25"></rect>
+    <text x="385" y="169" text-anchor="middle">NVIDIA RTX GPU</text>
+    <text x="385" y="186" text-anchor="middle">available?</text>
+    <path class="sdg-edge" d="M490,173 H510 V151 H538" marker-end="url(#sdg-arrow)"></path>
+    <path class="sdg-edge" d="M510,173 V195 H538" marker-end="url(#sdg-arrow)"></path>
+    <text x="516" y="146" class="sdg-note">yes</text>
+    <text x="516" y="190" class="sdg-note">no</text>
+    <rect class="sdg-choice" x="540" y="132" width="210" height="38" rx="6" stroke="#22863a"></rect>
+    <text x="645" y="148" text-anchor="middle" class="sdg-strong">Isaac Lab</text>
+    <text x="645" y="163" text-anchor="middle" class="sdg-note">then validate in MuJoCo</text>
+    <rect class="sdg-choice" x="540" y="176" width="210" height="38" rx="6" stroke="#6f42c1"></rect>
+    <text x="645" y="192" text-anchor="middle" class="sdg-strong">MuJoCo Playground</text>
+    <text x="645" y="207" text-anchor="middle" class="sdg-note">MJX or MuJoCo Warp</text>
+
+    <!-- Row 3: control and planning. -->
+    <rect class="sdg-goal" x="10" y="230" width="220" height="82" rx="8"></rect>
+    <text x="120" y="267" text-anchor="middle" class="sdg-strong">Control and planning</text>
+    <text x="120" y="285" text-anchor="middle" class="sdg-note">MPC, contact research</text>
+    <path class="sdg-edge" d="M230,271 H278" marker-end="url(#sdg-arrow)"></path>
+    <rect class="sdg-q" x="280" y="246" width="210" height="50" rx="25"></rect>
+    <text x="385" y="267" text-anchor="middle">Rigorous contact or</text>
+    <text x="385" y="284" text-anchor="middle">optimization tooling?</text>
+    <path class="sdg-edge" d="M490,271 H510 V249 H538" marker-end="url(#sdg-arrow)"></path>
+    <path class="sdg-edge" d="M510,271 V293 H538" marker-end="url(#sdg-arrow)"></path>
+    <text x="516" y="244" class="sdg-note">yes</text>
+    <text x="516" y="288" class="sdg-note">no</text>
+    <rect class="sdg-choice" x="540" y="230" width="210" height="38" rx="6" stroke="#0366d6"></rect>
+    <text x="645" y="246" text-anchor="middle" class="sdg-strong">Drake</text>
+    <text x="645" y="261" text-anchor="middle" class="sdg-note">hydroelastic contact, optimization</text>
+    <rect class="sdg-choice" x="540" y="274" width="210" height="38" rx="6" stroke="#6f42c1"></rect>
+    <text x="645" y="290" text-anchor="middle" class="sdg-strong">MuJoCo</text>
+    <text x="645" y="305" text-anchor="middle" class="sdg-note">fast, analytic derivatives</text>
+
+    <!-- Row 4: perception. -->
+    <rect class="sdg-goal" x="10" y="328" width="220" height="44" rx="8"></rect>
+    <text x="120" y="346" text-anchor="middle" class="sdg-strong">Perception data</text>
+    <text x="120" y="363" text-anchor="middle" class="sdg-note">synthetic labels, digital twin</text>
+    <path class="sdg-edge" d="M230,350 H538" marker-end="url(#sdg-arrow)"></path>
+    <rect class="sdg-choice" x="540" y="331" width="210" height="38" rx="6" stroke="#22863a"></rect>
+    <text x="645" y="347" text-anchor="middle" class="sdg-strong">Isaac Sim</text>
+    <text x="645" y="362" text-anchor="middle" class="sdg-note">Replicator, RTX sensors</text>
+
+    <!-- Row 5: driving. -->
+    <rect class="sdg-goal" x="10" y="388" width="220" height="44" rx="8"></rect>
+    <text x="120" y="415" text-anchor="middle" class="sdg-strong">Autonomous driving</text>
+    <path class="sdg-edge" d="M230,410 H538" marker-end="url(#sdg-arrow)"></path>
+    <rect class="sdg-choice" x="540" y="391" width="210" height="38" rx="6" stroke="#586069"></rect>
+    <text x="645" y="407" text-anchor="middle" class="sdg-strong">CARLA</text>
+    <text x="645" y="422" text-anchor="middle" class="sdg-note">traffic, driving sensors</text>
+  </svg>
+  {% if include.caption %}<figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>{% endif %}
+</figure>
+<style>
+  .sdg-svg .sdg-head { font-size: 12px; font-weight: 700; fill: var(--fig-muted); letter-spacing: 0.04em; text-transform: uppercase; }
+  .sdg-svg .sdg-strong { font-weight: 700; }
+  .sdg-svg .sdg-note { font-size: 12px; fill: var(--fig-muted); }
+  .sdg-goal { fill: var(--fig-surface); stroke: var(--fig-border); stroke-width: 1.2; }
+  .sdg-q { fill: var(--fig-blue-bg); stroke: var(--fig-blue); stroke-width: 1.2; }
+  .sdg-choice { fill: #fff; stroke-width: 2; }
+  .sdg-edge { fill: none; stroke: var(--fig-muted); stroke-width: 1.4; }
+</style>

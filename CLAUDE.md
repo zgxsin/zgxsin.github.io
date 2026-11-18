@@ -30,17 +30,35 @@ and served at https://www.guoxiang-zhou.xyz.
 - Never write `{{` or `{%` in prose or code blocks; Liquid evaluates them. Wrap such code in
   `{% raw %}...{% endraw %}`.
 - Link other posts by URL path, e.g. `[Kalman filter](/2026/04/25/kalman-filter/)`.
+- Write out the full name at the first mention of every abbreviation, followed by the
+  abbreviation in parentheses: "reinforcement learning (RL)", then "RL" afterwards. This
+  covers prose, lists and tables, including common ones (GPU, ROS, LiDAR). Product and
+  brand names (NVIDIA, PhysX, RTX) are not abbreviations. Short labels inside Mermaid
+  diagrams and figures may use the abbreviation, and headings should avoid one that the
+  text has not yet defined.
+- Every entry in a References section links its title to the source: the arXiv abstract
+  page (`https://arxiv.org/abs/<id>`) when one exists, otherwise the DOI
+  (`https://doi.org/<doi>`) or the official project page. Check that each link resolves to
+  the cited paper before publishing.
 - Style: direct, technical, no em dashes, no emoji.
 
 ## Visuals
 
-Pick the lightest tool that shows the idea:
+Add a diagram or visual wherever it makes a concept easier to understand than prose
+alone: a pipeline or data flow, geometry, a trade-off controlled by a parameter, a
+comparison, a decision. Each one should explain something the text cannot show as well;
+skip decorative figures.
+
+Prefer SVG figures in `_includes/figures/` for diagrams and visuals: they control font
+size and layout, match the site palette, and stay readable on phones. Use Mermaid only for
+small diagrams (roughly up to six nodes in a single chain, no wide fan-out), where its
+automatic layout still renders at a readable size.
 
 | Need | Tool |
 | --- | --- |
-| Flowchart, pipeline, node graph, sequence, state machine | ```` ```mermaid ```` block |
-| Precise geometric diagram, annotated schematic | Static SVG figure in `_includes/figures/` |
+| Flowchart, pipeline, decision tree, architecture, annotated schematic | Static SVG figure in `_includes/figures/` |
 | Concept that becomes clear by changing a parameter | Interactive SVG figure (slider, buttons) |
+| Small linear flow or loop, a few nodes | ```` ```mermaid ```` block |
 | Screenshot, photo, plot exported from Python | `{% include image.html %}` |
 
 ### Mermaid

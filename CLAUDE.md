@@ -29,7 +29,7 @@ and served at https://www.guoxiang-zhou.xyz.
   verbatim and MathJax renders `\_` as a literal underscore. Use `\lbrace \rbrace` instead of `\{ \}`.
 - Never write `{{` or `{%` in prose or code blocks; Liquid evaluates them. Wrap such code in
   `{% raw %}...{% endraw %}`.
-- Link other posts by URL path, e.g. `[Kalman filter](/2026/04/25/kalman-filter/)`.
+- Link other posts by URL path, e.g. `[Kalman filter](/2024/12/15/kalman-filter/)`.
 - Write out the full name at the first mention of every abbreviation, followed by the
   abbreviation in parentheses: "reinforcement learning (RL)", then "RL" afterwards. This
   covers prose, lists and tables, including common ones (GPU, ROS, LiDAR). Product and

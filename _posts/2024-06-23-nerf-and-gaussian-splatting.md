@@ -1,7 +1,7 @@
 ---
 title: "NeRF and 3D Gaussian Splatting: Radiance Fields from Photos"
 published: true
-date: 2026-09-21
+date: 2024-06-23
 author: "Guoxiang (Shawn) Zhou"
 categories: [technology]
 ---

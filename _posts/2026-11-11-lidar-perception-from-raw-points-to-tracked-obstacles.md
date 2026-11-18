@@ -57,7 +57,7 @@ $$
 (\mathbf{R}_{A_k} - \mathbf{I}) \, \mathbf{t}_X = \mathbf{R}_X \mathbf{t}_{B_k} - \mathbf{t}_{A_k}.
 $$
 
-The rotation part says the two sensors rotate by the same angle, about axes related by $\mathbf{R}\_X$: if $\mathbf{a}\_k$ and $\mathbf{b}\_k$ are the rotation axes of $\mathbf{R}\_{A\_k}$ and $\mathbf{R}\_{B\_k}$, then $\mathbf{a}\_k = \mathbf{R}\_X \mathbf{b}\_k$. That is one direction correspondence per motion pair, solved like point set alignment with an SVD (see [SVD and PCA](/2026/03/06/svd-and-pca/)) or as a linear least squares problem in quaternions. The translation part is then linear in $\mathbf{t}\_X$. A joint nonlinear least squares refinement over all pairs (see [Hessian and Gauss-Newton](/2025/11/03/hessian-gaussian-newton/)) usually follows.
+The rotation part says the two sensors rotate by the same angle, about axes related by $\mathbf{R}\_X$: if $\mathbf{a}\_k$ and $\mathbf{b}\_k$ are the rotation axes of $\mathbf{R}\_{A\_k}$ and $\mathbf{R}\_{B\_k}$, then $\mathbf{a}\_k = \mathbf{R}\_X \mathbf{b}\_k$. That is one direction correspondence per motion pair, solved like point set alignment with an SVD (see [SVD and PCA](/2022/02/13/svd-and-pca/)) or as a linear least squares problem in quaternions. The translation part is then linear in $\mathbf{t}\_X$. A joint nonlinear least squares refinement over all pairs (see [Hessian and Gauss-Newton](/2025/11/03/hessian-gaussian-newton/)) usually follows.
 
 **What the motion must contain.**
 
@@ -305,7 +305,7 @@ A detector answers "what is here now". Planning needs "where will it be", which 
 
 {% include figures/lidar-tracking-loop.html %}
 
-1. **Predict** each track to the scan timestamp with a motion model. Track states live in [BEV](#birds-eye-view-bev), $(x, y, \theta, v, \omega)$ plus box size, since ground objects do not move vertically. Models: constant velocity for pedestrians, constant turn rate and velocity (CTRV) for vehicles, inside a [Kalman filter](/2026/04/25/kalman-filter/) (EKF or UKF for the nonlinear CTRV).
+1. **Predict** each track to the scan timestamp with a motion model. Track states live in [BEV](#birds-eye-view-bev), $(x, y, \theta, v, \omega)$ plus box size, since ground objects do not move vertically. Models: constant velocity for pedestrians, constant turn rate and velocity (CTRV) for vehicles, inside a [Kalman filter](/2024/12/15/kalman-filter/) (EKF or UKF for the nonlinear CTRV).
 2. **Gate**: ignore pairs whose innovation $\mathbf{y}$ is improbable, $\mathbf{y}^\top \mathbf{S}^{-1} \mathbf{y} > \chi^2\_{k, 0.99}$ (9.21 for a 2D position).
 3. **Associate**: solve the assignment problem on the gated costs with the Hungarian algorithm (global nearest neighbor). JPDA or MHT handle dense scenes with ambiguous assignments at higher cost.
 4. **Update** the matched tracks.
@@ -371,7 +371,7 @@ The key distinction is between "no obstacle" and "I cannot see". A perception sy
 
 {% include figures/lidar-monitoring.html %}
 
-Then close the loop: log every monitor trigger with the raw data, review false alarms and misses, and add the cases to the regression set. The [MLOps in robotics](/2026/11/08/machine-learnings-ops/) post covers that data loop.
+Then close the loop: log every monitor trigger with the raw data, review false alarms and misses, and add the cases to the regression set. The [MLOps in robotics](/2023/12/10/machine-learnings-ops/) post covers that data loop.
 
 ### Design a perception pipeline for an autonomous truck around pedestrians and containers
 

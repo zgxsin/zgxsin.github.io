@@ -19,7 +19,7 @@ Every method in this post answers three questions:
 2. **How is the representation turned into an image?** This is the renderer, also called the forward map.
 3. **How is the representation fitted to the photos?** Classically by triangulating matched features, today mostly by gradient descent through a differentiable renderer.
 
-This post builds up the toolkit behind modern photorealistic reconstruction: describe the scene as a **field**, store it in a grid, a neural network or both, and render it with **volume rendering**, so that the error in every pixel flows back into the scene by gradient descent. [NeRF and 3D Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/) are built on exactly this toolkit. For geometric maps built from range sensors (occupancy, TSDF, ESDF), see [3D map representations](/2026/06/13/3d-map-representations/).
+This post builds up the toolkit behind modern photorealistic reconstruction: describe the scene as a **field**, store it in a grid, a neural network or both, and render it with **volume rendering**, so that the error in every pixel flows back into the scene by gradient descent. [NeRF and 3D Gaussian splatting](/2024/06/23/nerf-and-gaussian-splatting/) are built on exactly this toolkit. For geometric maps built from range sensors (occupancy, TSDF, ESDF), see [3D map representations](/2026/06/13/3d-map-representations/).
 
 ### The classical pipeline: SfM and MVS
 
@@ -67,7 +67,7 @@ A **neural field** stores a field in the weights of a neural network, usually a 
 
 - **Occupancy networks and DeepSDF** (2019) learn occupancy or signed distance, and learned priors fill in unobserved parts of objects.
 - **iSDF** and **NICE-SLAM / Co-SLAM** learn an SDF online from depth images, so a neural map can replace the TSDF in a SLAM system.
-- **NeRF** learns density and view-dependent color, for photorealistic view synthesis (see [NeRF and 3D Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/#nerf-neural-radiance-fields)).
+- **NeRF** learns density and view-dependent color, for photorealistic view synthesis (see [NeRF and 3D Gaussian splatting](/2024/06/23/nerf-and-gaussian-splatting/#nerf-neural-radiance-fields)).
 
 Its properties are the opposite of a voxel grid's:
 
@@ -86,7 +86,7 @@ f(\mathbf{x}) = \sum_{i=1}^{n} \left(\mathbf{K}^{-1}\mathbf{y}\right)_i\, k(\mat
 k_{\text{NTK}}(\mathbf{x}_1, \mathbf{x}_2) = \big\langle \nabla_\theta f_{\theta_0}(\mathbf{x}_1),\, \nabla_\theta f_{\theta_0}(\mathbf{x}_2) \big\rangle
 $$
 
-where $\mathbf{K}\_{ij} = k(\mathbf{x}\_i, \mathbf{x}\_j)$ over the training points and $\mathbf{y}$ holds their target values. In other words, a neural field interpolates its training samples according to a fixed, fairly simple rule. It is about as "smart" as a voxel grid with a clever interpolation kernel. This view also explains a known weakness: the NTK of a plain MLP on raw coordinates is a smooth, low-pass kernel, so the network struggles to fit high-frequency detail. NeRF's [positional encoding](/2026/09/21/nerf-and-gaussian-splatting/#positional-encoding) fixes exactly that.
+where $\mathbf{K}\_{ij} = k(\mathbf{x}\_i, \mathbf{x}\_j)$ over the training points and $\mathbf{y}$ holds their target values. In other words, a neural field interpolates its training samples according to a fixed, fairly simple rule. It is about as "smart" as a voxel grid with a clever interpolation kernel. This view also explains a known weakness: the NTK of a plain MLP on raw coordinates is a smooth, low-pass kernel, so the network struggles to fit high-frequency detail. NeRF's [positional encoding](/2024/06/23/nerf-and-gaussian-splatting/#positional-encoding) fixes exactly that.
 
 ### Hybrid representations
 
@@ -175,7 +175,7 @@ $$
 \boxed{\ C \approx \sum_{i=1}^{n} T_i\, \alpha_i\, \mathbf{c}_i, \qquad T_i = \prod_{j=1}^{i-1} (1 - \alpha_j), \qquad \alpha_i = 1 - e^{-\sigma_i \delta_i}\ }
 $$
 
-Each sample contributes its color with weight $w_i = T_i \alpha_i$: it must be opaque itself ($\alpha_i$), and not hidden by what is in front of it ($T_i$). This is exactly **front-to-back alpha compositing**, the "over" operator graphics has used since the 1980s, which is why the same formula shows up again in [Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/#gaussian-splatting). The same weights give the **expected depth** of the pixel, $D = \sum_i w_i t_i$, and their sum $\sum_i w_i = 1 - T_{n+1}$ is how opaque the pixel is.
+Each sample contributes its color with weight $w_i = T_i \alpha_i$: it must be opaque itself ($\alpha_i$), and not hidden by what is in front of it ($T_i$). This is exactly **front-to-back alpha compositing**, the "over" operator graphics has used since the 1980s, which is why the same formula shows up again in [Gaussian splatting](/2024/06/23/nerf-and-gaussian-splatting/#gaussian-splatting). The same weights give the **expected depth** of the pixel, $D = \sum_i w_i t_i$, and their sum $\sum_i w_i = 1 - T_{n+1}$ is how opaque the pixel is.
 
 In the figure below, the blue cloud is semi-transparent and the red object behind it is nearly solid. Raise the density of the cloud: the transmittance drops earlier, the cloud's samples take more weight, and the red object fades from the pixel. With few samples, the pixel color is a coarse approximation; with more it converges.
 
@@ -197,7 +197,7 @@ where $f_r$ is the material's reflectance function (the BRDF) and $\mathbf{n}$ t
 
 ## What comes next
 
-Volume rendering of a radiance field, fitted by gradient descent, is the core of the two methods that made photorealistic reconstruction from photos practical. [NeRF and 3D Gaussian splatting](/2026/09/21/nerf-and-gaussian-splatting/) covers both: NeRF stores the field densely in a neural network, Gaussian splatting sparsely in millions of explicit Gaussians, and both render it with the equation derived above.
+Volume rendering of a radiance field, fitted by gradient descent, is the core of the two methods that made photorealistic reconstruction from photos practical. [NeRF and 3D Gaussian splatting](/2024/06/23/nerf-and-gaussian-splatting/) covers both: NeRF stores the field densely in a neural network, Gaussian splatting sparsely in millions of explicit Gaussians, and both render it with the equation derived above.
 
 ## References
 

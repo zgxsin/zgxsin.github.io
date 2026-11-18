@@ -1,7 +1,7 @@
 ---
 title: Singular Value Decomposition and PCA analysis
 published: true
-date: 2026-03-06
+date: 2022-02-13
 author: "Guoxiang (Shawn) Zhou"
 categories: [technology]
 ---

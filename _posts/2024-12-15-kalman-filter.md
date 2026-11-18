@@ -1,7 +1,7 @@
 ---
 title: Kalman Filter and Extended Kalman Filter
 published: true
-date: 2026-04-25
+date: 2024-12-15
 author: "Guoxiang (Shawn) Zhou"
 categories: [technology]
 ---

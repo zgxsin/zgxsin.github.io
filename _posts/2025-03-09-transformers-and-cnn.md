@@ -1,7 +1,7 @@
 ---
 title: "Transformers and CNNs"
 published: true
-date: 2026-11-17
+date: 2025-03-09
 author: "Guoxiang (Shawn) Zhou"
 categories: [technology]
 ---
@@ -280,7 +280,7 @@ Many current systems use both:
 
 ### Which one to use
 
-- **Limited data, tight compute or latency budget, embedded hardware**: start with a CNN (or a small, efficient hybrid). Mature tooling, predictable latency, easy to export and quantize; see [Machine Learning Ops in Robotics](/2026/11/08/machine-learnings-ops/).
+- **Limited data, tight compute or latency budget, embedded hardware**: start with a CNN (or a small, efficient hybrid). Mature tooling, predictable latency, easy to export and quantize; see [Machine Learning Ops in Robotics](/2023/12/10/machine-learnings-ops/).
 - **Large pretrained models are available for the task**: fine-tune a pretrained ViT or hybrid. Pretraining supplies the data the Transformer needs.
 - **Long sequences, global context, multiple modalities** (text, images, actions together): Transformers.
 

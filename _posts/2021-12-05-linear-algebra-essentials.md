@@ -1,7 +1,7 @@
 ---
 title: Linear Algebra Essentials
 published: true
-date: 2026-01-15
+date: 2021-12-05
 author: "Guoxiang (Shawn) Zhou"
 categories: [technology]
 ---

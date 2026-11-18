@@ -1,7 +1,7 @@
 ---
 title: "Robotics Simulation"
 published: true
-date: 2026-11-19
+date: 2026-07-12
 author: "Guoxiang (Shawn) Zhou"
 categories: [technology]
 ---
@@ -247,7 +247,7 @@ System identification is real-to-sim for the robot itself: collect excitation tr
 
 - **Meshes from scans.** LiDAR simultaneous localization and mapping (SLAM) maps, terrestrial laser scans or photogrammetry give geometry that can be meshed and imported as collision and visual geometry. Good enough for navigation testing on an actual site layout.
 - **CAD and building models.** Industrial sites often have CAD or building information modeling (BIM) models that convert to USD, giving a clean, semantically labeled twin, with the caveat that as-built rarely matches as-designed.
-- **Neural reconstruction.** Neural radiance fields (NeRF) and 3D Gaussian Splatting ([previous post](/2026/09/21/nerf-and-gaussian-splatting/)) reconstruct a site's appearance photorealistically from images. Isaac Sim can now render Gaussian reconstructions next to USD assets. Splats have no collision geometry, so a mesh or depth-derived proxy is still needed for physics.
+- **Neural reconstruction.** Neural radiance fields (NeRF) and 3D Gaussian Splatting ([NeRF and Gaussian splatting post](/2024/06/23/nerf-and-gaussian-splatting/)) reconstruct a site's appearance photorealistically from images. Isaac Sim can now render Gaussian reconstructions next to USD assets. Splats have no collision geometry, so a mesh or depth-derived proxy is still needed for physics.
 - **Articulated objects.** For manipulation, doors, drawers and valves need joints and limits, estimated from a few interactions or videos, not just a static mesh.
 - **Physical properties.** Friction, mass and stiffness of objects and terrain are hard to see in images; they are estimated from interaction or set by randomization around a plausible value.
 

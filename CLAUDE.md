@@ -60,6 +60,7 @@ automatic layout still renders at a readable size.
 | Concept that becomes clear by changing a parameter | Interactive SVG figure (slider, buttons) |
 | Small linear flow or loop, a few nodes | ```` ```mermaid ```` block |
 | Screenshot, photo, plot exported from Python | `{% include image.html %}` |
+| Robot demo, animation, screen recording, talk | `{% include video.html %}` |
 
 ### Mermaid
 
@@ -99,6 +100,25 @@ and renders "Unsupported markdown: list".
 - `{% include image.html src="/assets/images/posts/<slug>/x.svg" alt="..." caption="..." %}`
   adds lazy loading and a caption. Optional `width="480px"` and `wide=true`.
 - Always write meaningful `alt` text.
+
+### Videos
+
+- Short clips (demos, animations, up to about 10 s, no sound) go in
+  `assets/videos/posts/<slug>/` as MP4 (H.264, `-movflags +faststart`) or WebM, under
+  about 5 MB, plus a JPEG/WebP poster frame next to the post's images. Never commit GIFs;
+  convert them to MP4. Git keeps every version forever, so re-export sparingly.
+- `{% include video.html src="/assets/videos/posts/<slug>/clip.mp4" poster="/assets/images/posts/<slug>/clip.jpg" alt="..." caption="..." %}`
+  plays like a GIF: muted, looped, only while on screen. Users with reduced motion get
+  controls instead. Add `loop=false` for a normal video with controls.
+- Anything long or with sound goes on YouTube:
+  `{% include video.html youtube="VIDEO_ID" alt="..." caption="..." %}`, optional
+  `start=<seconds>`. It shows the thumbnail and loads the youtube-nocookie player only on
+  click.
+- Both take `width="480px"` and `wide=true`, and `src`/`poster` may be absolute URLs
+  (for files hosted outside the repo).
+- Encode a clip:
+  `ffmpeg -i in.mov -t 10 -vf "scale=1280:-2,fps=30" -an -c:v libx264 -crf 28 -preset slow -pix_fmt yuv420p -movflags +faststart clip.mp4`,
+  and the poster: `ffmpeg -i clip.mp4 -frames:v 1 -q:v 3 clip.jpg`.
 
 ## Known issues
 

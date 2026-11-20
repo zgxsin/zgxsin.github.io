@@ -1,6 +1,7 @@
 /*
   Shared styles for post figures: interactive SVG figures in _includes/figures/,
-  images from _includes/image.html, and Mermaid diagrams. See CLAUDE.md for usage.
+  images and videos from _includes/image.html and video.html, and Mermaid diagrams.
+  See CLAUDE.md for usage.
 
   A figure include keeps only its figure-specific rules in its own <style>, prefixed
   with its short class (for example .mll-). Everything below is shared.
@@ -148,4 +149,78 @@ pre.mermaid {
 pre.mermaid svg {
   max-width: 100%;
   height: auto;
+}
+
+/* Videos from _includes/video.html. Local clips are driven by post.html. */
+.fig video {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 6px;
+  background: var(--fig-surface);
+}
+
+.fig-yt {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  margin: 0 auto;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #000;
+}
+
+.fig-yt-play,
+.fig-yt iframe,
+.fig-yt-link {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+}
+
+.fig-yt-play {
+  background: #000;
+  cursor: pointer;
+}
+
+.fig .fig-yt-play img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+.fig-yt-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 68px;
+  height: 48px;
+  transform: translate(-50%, -50%);
+  border-radius: 12px;
+  background: rgba(36, 41, 46, 0.8);
+}
+
+.fig-yt-icon::after {
+  content: "";
+  position: absolute;
+  left: 27px;
+  top: 14px;
+  border-style: solid;
+  border-width: 10px 0 10px 17px;
+  border-color: transparent transparent transparent #fff;
+}
+
+.fig-yt-play:hover .fig-yt-icon,
+.fig-yt-play:focus-visible .fig-yt-icon {
+  background: var(--fig-red);
+}
+
+.fig-yt-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
 }

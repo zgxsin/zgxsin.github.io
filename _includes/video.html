@@ -1,0 +1,42 @@
+{%- comment -%}
+  Video with an optional caption: a local clip or a YouTube embed.
+
+  Local clip, plays like a GIF (muted, looped, only while on screen; post.html runs it):
+    {% include video.html src="/assets/videos/posts/<post-slug>/clip.mp4" poster="/assets/images/posts/<post-slug>/clip.jpg" alt="What it shows" caption="Markdown *allowed*." %}
+  Add loop=false for a normal video with sound and controls.
+
+  YouTube, loads the player from youtube-nocookie.com only when clicked:
+    {% include video.html youtube="VIDEO_ID" alt="What it shows" caption="..." %}
+  Optional: start=<seconds>.
+
+  Optional for both: width="480px" (max display width), wide=true (break out to page width).
+  `src` and `poster` may be absolute URLs; site paths go through relative_url.
+{%- endcomment -%}
+{%- assign label = include.alt | default: include.caption | strip_html | escape -%}
+{%- assign size_style = '' -%}
+{%- if include.width -%}{%- capture size_style %} style="max-width: {{ include.width }}; width: 100%"{% endcapture -%}{%- endif -%}
+<figure class="fig{% if include.wide %} fig-wide{% endif %}">
+  {%- if include.youtube %}
+  {%- assign yt = include.youtube | url_encode %}
+  <div class="fig-yt" data-yt-id="{{ yt }}"{% if include.start %} data-yt-start="{{ include.start }}"{% endif %}{{ size_style }}>
+    <button type="button" class="fig-yt-play" aria-label="Play video: {{ label }}">
+      <img src="https://i.ytimg.com/vi/{{ yt }}/hqdefault.jpg" alt="" loading="lazy" decoding="async">
+      <span class="fig-yt-icon" aria-hidden="true"></span>
+    </button>
+    <noscript><a class="fig-yt-link" href="https://www.youtube.com/watch?v={{ yt }}">Watch on YouTube</a></noscript>
+  </div>
+  {%- else %}
+  {%- assign src = include.src -%}
+  {%- unless src contains '://' -%}{%- assign src = src | relative_url -%}{%- endunless -%}
+  {%- assign poster = include.poster -%}
+  {%- if poster -%}{%- unless poster contains '://' -%}{%- assign poster = poster | relative_url -%}{%- endunless -%}{%- endif -%}
+  {%- if src contains '.webm' -%}{%- assign type = 'video/webm' -%}{%- else -%}{%- assign type = 'video/mp4' -%}{%- endif %}
+  <video {% if include.loop == false %}controls{% else %}data-autoplay muted loop{% endif %} playsinline preload="{% if poster %}none{% else %}metadata{% endif %}"{% if poster %} poster="{{ poster }}"{% endif %} aria-label="{{ label }}"{{ size_style }}>
+    <source src="{{ src }}" type="{{ type }}">
+    <a href="{{ src }}">Download the video</a>
+  </video>
+  {%- endif %}
+  {%- if include.caption %}
+  <figcaption>{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" | strip }}</figcaption>
+  {%- endif %}
+</figure>

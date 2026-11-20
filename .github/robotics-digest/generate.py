@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import sys
+from time import sleep
 from urllib.error import HTTPError
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
@@ -140,11 +141,16 @@ def select_updates(entries, key):
         }).encode(),
         headers={"x-goog-api-key": key, "Content-Type": "application/json"},
     )
-    try:
-        with urlopen(request, timeout=120) as response:
-            result = json.load(response)
-    except HTTPError as error:
-        raise SystemExit(f"Gemini returned HTTP {error.code}. Check the API key, model access and quota.") from None
+    for delay in (5, 15, 30, None):
+        try:
+            with urlopen(request, timeout=120) as response:
+                result = json.load(response)
+            break
+        except HTTPError as error:
+            if error.code not in (500, 502, 503, 504) or delay is None:
+                raise SystemExit(f"Gemini returned HTTP {error.code}.") from None
+            print(f"Gemini returned HTTP {error.code}. Retrying in {delay} seconds.", file=sys.stderr)
+            sleep(delay)
     candidate = next(iter(result.get("candidates", [])), {})
     if candidate.get("finishReason") != "STOP":
         raise SystemExit(f"Gemini did not complete the draft ({candidate.get('finishReason', 'no candidate')}).")

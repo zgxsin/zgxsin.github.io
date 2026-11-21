@@ -1,0 +1,23 @@
+{
+  "slug": "robotics-datasets-and-benchmarks-digest",
+  "title": "Robotics Datasets and Benchmarks Digest",
+  "category": "robotics-datasets-and-benchmarks",
+  "subject": "robotics dataset or benchmark",
+  "video_alt": "Robotics dataset collection or benchmark demonstration",
+  "patterns": [
+    "^(?=.*\\b(?:robots?|robotics|robotic|robot learning|embodied AI|physical AI|manipulation|locomotion|robot navigation|visual odometry|SLAM|autonomous driving|sim[- ]to[- ]real)\\b).*\\b(?:data[ -]?sets?|benchmarks?|leaderboards?|task suites?|evaluation (?:suites?|protocols?)|demonstration corpora)\\b",
+    "\\b(?:LeRobotDataset|Open X[- ]Embodiment|RoboCasa|RoboArena|RoboLab|ManiSkill|Meta[- ]World|LIBERO|RLBench|Habitat Challenge|DROID dataset|BEHAVIOR[- ]1K)\\b"
+  ],
+  "sources": {
+    "arXiv Robotics": "https://rss.arxiv.org/rss/cs.RO",
+    "arXiv Computer Vision": "https://rss.arxiv.org/rss/cs.CV",
+    "Berkeley AI Research": "https://bair.berkeley.edu/blog/feed.xml",
+    "Hugging Face Blog": "https://huggingface.co/blog/feed.xml",
+    "LeRobot Releases": "https://github.com/huggingface/lerobot/releases.atom",
+    "ManiSkill Releases": "https://github.com/haosulab/ManiSkill/releases.atom",
+    "Habitat Lab Releases": "https://github.com/facebookresearch/habitat-lab/releases.atom",
+    "Isaac Lab Releases": "https://github.com/isaac-sim/IsaacLab/releases.atom",
+    "ROS Discourse": "https://discourse.openrobotics.org/latest.rss",
+    "NVIDIA Developer": "https://developer.nvidia.com/blog/feed/"
+  }
+}

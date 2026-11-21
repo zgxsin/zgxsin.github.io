@@ -1,4 +1,4 @@
-name: Publish daily robotics digest
+name: Publish daily robotics hardware digest
 
 on:
   schedule:
@@ -11,7 +11,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: robotics-digest
+  group: robotics-hardware-digest
   cancel-in-progress: false
 
 jobs:
@@ -42,8 +42,10 @@ jobs:
         if: steps.edition.outputs.generate == 'true'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DIGEST_MODEL: ${{ vars.DIGEST_MODEL }}
+          DIGEST_AUTHOR: ${{ vars.DIGEST_AUTHOR }}
           DIGEST_DAY: ${{ steps.edition.outputs.day }}
-        run: python3 .github/robotics-digest/generate.py --date "$DIGEST_DAY"
+        run: python3 .github/robotics-hardware-digest/generate.py --date "$DIGEST_DAY"
       - name: Push the digest to master
         if: steps.edition.outputs.generate == 'true'
         env:

@@ -7,5 +7,7 @@
   name: Life
 - slug: finance
   name: Finance
+- slug: robotics-hardware
+  name: Robotics Hardware
 - slug: ai-generated
-  name: AI-generated
+  name: AI-Generated

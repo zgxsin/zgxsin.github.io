@@ -1,5 +1,6 @@
 *.gem
 .bundle
+.github/robotics-hardware-digest/__pycache__/
 .sass-cache
 _site/
 Gemfile.lock

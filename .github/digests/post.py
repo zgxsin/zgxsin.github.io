@@ -19,7 +19,7 @@ def markdown_text(value):
     return re.sub(r"([\\`*_\[\]])", r"\\\1", text).replace("{", "&#123;").replace("}", "&#125;")
 
 
-def render_video(video_id, alt):
+def render_video(video_id, alt, caption):
     query = urlencode({"url": f"https://www.youtube.com/watch?v={video_id}", "format": "json"})
     try:
         with urlopen(f"https://www.youtube.com/oembed?{query}", timeout=8) as response:
@@ -27,9 +27,10 @@ def render_video(video_id, alt):
                 return None
     except (OSError, ValueError):
         return None
+    caption = markdown_text(caption).replace('"', "&quot;")
     return (
         '{% include video.html youtube="' + video_id + '" '
-        f'alt="{alt}" caption="Demonstration linked by the source." %}}'
+        f'alt="{alt}" caption="{caption}" %}}'
     )
 
 
@@ -74,11 +75,16 @@ def render(day, entries, updates, *, author, slug, title, category, subject, vid
                 f"{markdown_text(update['summary'])} {markdown_text(update['why_it_matters'])}{citation}"
             )
             videos = source.get("videos", {})
-            for video_id in update.get("video_ids", []):
+            for video in update.get("videos", []):
+                if not isinstance(video, dict):
+                    continue
+                video_id, caption = video.get("id"), video.get("caption")
                 if not isinstance(video_id, str) or video_id not in videos or video_id in seen_videos:
                     continue
+                if not isinstance(caption, str) or not caption.strip():
+                    continue
                 seen_videos.add(video_id)
-                markup = render_video(video_id, video_alt)
+                markup = render_video(video_id, video_alt, caption)
                 if markup:
                     lines.extend(["", markup, ""])
             readiness.extend([

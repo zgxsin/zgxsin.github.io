@@ -6,6 +6,6 @@ Use Academia for papers, research code, and benchmarks. Label preprints and desc
 
 For each item, write one short plain-text sentence on what changed and one on why it matters for a specific workflow. In Application Readiness, name the use case and explain the evidence behind its rating. Rate it Research prototype, Pilot-ready, Deployment-ready for the stated use, or Insufficient evidence. A benchmark or visually convincing render alone does not establish geometric accuracy, reliable localization, or deployment readiness. For the benefit and limitation, consider sensor and calibration requirements, scale, accuracy, robustness, latency, or memory where supported. Report quantitative results only with their stated metric and evaluation conditions.
 
-Use video sparingly. Select a source-provided YouTube clip only when it clarifies a reconstruction result, mapping process, or demonstrated capability. Return IDs from the source's videos map as video_ids, or use an empty array.
+Use video sparingly. Select a source-provided YouTube clip only when it clarifies a reconstruction result, mapping process, or demonstrated capability. Return its supplied ID and a specific caption, or use an empty videos array.
 
 Return each selected source's supplied ID for References. Use only the supplied evidence. Return an empty array if no items qualify.

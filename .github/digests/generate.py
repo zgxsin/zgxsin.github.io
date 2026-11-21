@@ -28,7 +28,25 @@ def select_updates(entries, key, model, *, prompt, revision=None):
         "readiness_evidence": {"type": "string"},
         "pros": {"type": "string"},
         "cons": {"type": "string"},
-        "video_ids": {"type": "array", "items": {"type": "string"}},
+        "videos": {
+            "type": "array",
+            "description": "Select only useful demos from the update's supplied videos map.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "string", "description": "The supplied YouTube video ID."},
+                    "caption": {
+                        "type": "string",
+                        "description": (
+                            "One short plain-text sentence telling readers what to look for in this video. "
+                            "Name the specific mechanism, workflow step, or result the video demonstrates "
+                            "using the supplied context. Skip the video if a specific caption is unsupported."
+                        ),
+                    },
+                },
+                "required": ["id", "caption"],
+            },
+        },
     }
     sources = [
         {

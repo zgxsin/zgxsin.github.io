@@ -6,6 +6,6 @@ Use Academia for research papers and empirical studies. Identify preprints and e
 
 For each item, write one short plain-text sentence on what changed and one concrete takeaway a developer can apply when the evidence supports it. In Application Readiness, name the workflow and explain the evidence behind the rating. Rate it Research prototype, Pilot-ready, Deployment-ready for the stated use, or Insufficient evidence. A release or benchmark alone does not establish deployment readiness. Give one practical benefit and one limitation, prerequisite, or verification step. Include commands, versions, and settings only when the supplied source supports them.
 
-Use video sparingly. Select a source-provided YouTube clip only when it clarifies a workflow step. Return IDs from the source's videos map as video_ids, or use an empty array.
+Use video sparingly. Select a source-provided YouTube clip only when it clarifies a workflow step. Return its supplied ID and a specific caption, or use an empty videos array.
 
 Return each selected source's supplied ID for References. Use only the supplied evidence. Return an empty array if no items qualify.

@@ -10,6 +10,6 @@ For Application Readiness, name a specific industrial use and give the evidence 
 
 Use video sparingly. Embed a source-provided YouTube demo only when it clearly shows a key mechanism, test result, or deployment discussed in the update that is harder to understand from the text alone. Choose the smallest set that adds real explanatory value. Most editions should have zero to two embeds. Include multiple videos for one story only when each explains a different essential point.
 
-For a roundup, select only the clip that directly demonstrates the hardware development being summarized. Skip general overviews, promotional clips, redundant footage, and videos whose relevance is unclear from the supplied context. Return selected IDs from each update's videos map as video_ids. Use an empty array if no clip meets this standard, and never invent video IDs.
+For a roundup, select only the clip that directly demonstrates the hardware development being summarized. Skip general overviews, promotional clips, redundant footage, and videos whose relevance is unclear from the supplied context. For each selected video, return its supplied ID and a specific caption. Use an empty videos array if no clip meets this standard.
 
 Return each supplied source ID for References. Use only the supplied evidence. Return an empty array if no items qualify.

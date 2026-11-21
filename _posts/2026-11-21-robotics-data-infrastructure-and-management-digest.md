@@ -16,7 +16,7 @@ categories: [robotics-data-infrastructure, ai-generated]
 - **LidarView : an open source software for LiDAR data visualization, now connected to ROS** (Nov 20). Kitware released LidarView 5.3 with native ROS 2 connectivity via FastDDS for live streams and MCAP file handling for point clouds, images, odometry, IMU, and GNSS. Teams using ROS 2 and MCAP can inspect and process multi-sensor LiDAR logs in an open-source ParaView-based environment without custom conversion scripts.[^ref-3]
 - **When fresh timestamps hide frozen sensor data (and how I fixed it)** (Nov 20). A developer demonstrated unified stream-integrity checking in QERRA-v2-classical that detects frozen perception sequences when observation IDs stall despite advancing timestamps. Catching stale sensor frames prevents downstream autonomy stacks from acting on frozen perception data while maintaining bit-for-bit offline replay.[^ref-4]
 
-{% include video.html youtube="8LiholSSTSA" alt="Robotics data workflow demonstration" caption="Demonstration linked by the source." %}
+{% include video.html youtube="8LiholSSTSA" alt="QERRA-v2 detects a frozen sensor stream in Webots" caption="The Webots demo shows QERRA-v2 spotting frozen sensor frames despite advancing timestamps and initiating a controlled recovery." %}
 
 - **Build Training-Ready Physical AI Datasets with Two Prompts in NVIDIA Cosmos** (Nov 18). NVIDIA announced a workflow in NVIDIA Cosmos for generating training-ready physical AI datasets from two prompts to cover rare defects and nighttime scenarios. Prompt-driven synthetic data generation aims to fill edge-case gaps that are difficult or unsafe to capture with physical robot fleets.[^ref-5]
 

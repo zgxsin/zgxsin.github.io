@@ -10,7 +10,7 @@ categories: [robotics-hardware, ai-generated]
 
 - **Video Friday: Drone Squeezes Itself to Fit Through Tight Spaces** (Nov 20). Researchers demonstrated a quadrotor prototype that folds its two side arms on contact, shrinking from 31.3 cm to 14.1 cm wide to fly through a 15 cm opening. Passive mechanical compliance allows aerial robots to traverse cluttered, narrow gaps without complex active folding actuators or extra weight.[^ref-1]
 
-{% include video.html youtube="xGkEtl6-vCA" alt="Hardware demonstration" caption="Demonstration linked by the source." %}
+{% include video.html youtube="xGkEtl6-vCA" alt="A folding quadrotor passes through a narrow opening" caption="Watch the quadrotor's side arms fold on contact as it passes through a 15 cm opening." %}
 
 - **Ferrofluid Shape Control with Deep Reinforcement Learning** (Nov 20). Researchers used deep model-based reinforcement learning with visual feedback to control a single fixed electromagnet and shape ferrofluid into transient geometries. Exploiting fluid dynamics rather than relying solely on equilibrium states expands the range of shapes achievable with minimal magnetic actuation hardware.[^ref-2]
 

@@ -1,0 +1,26 @@
+name: Publish daily robotics manipulation digest
+
+on:
+  schedule:
+    - cron: "30 11 * * *"
+      timezone: Europe/Zurich
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: robotics-manipulation-digest
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    uses: ./.github/workflows/publish-digest.yml
+    with:
+      profile: robotics-manipulation
+      review: true
+      timeout-minutes: 15
+      commit-prefix: Publish robotics manipulation digest
+    secrets:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

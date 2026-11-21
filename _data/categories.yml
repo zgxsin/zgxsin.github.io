@@ -19,6 +19,8 @@
   name: Robotics Learning
 - slug: robotics-simulation
   name: Robotics Simulation and Transfer
+- slug: robotics-manipulation
+  name: Robotics Manipulation
 - slug: agentic-development
   name: Agentic Development
 - slug: ai-generated

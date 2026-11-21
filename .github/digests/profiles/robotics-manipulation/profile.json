@@ -1,0 +1,25 @@
+{
+  "slug": "robotics-manipulation-digest",
+  "title": "Robotics Manipulation Digest",
+  "category": "robotics-manipulation",
+  "subject": "robotic manipulation or grasping",
+  "video_alt": "Robotic manipulation demonstration",
+  "patterns": [
+    "\\b(?:robot(?:ic)? manipulation|dexterous (?:hands?|manipulation)|in[- ]hand manipulation|(?:mobile|bimanual|whole[- ]body|contact[- ]rich|deformable object) manipulat(?:ion|ors?)|robotic grasping|grasp(?:ing| (?:planning|synthesis|detection|generation|stability))|regrasp(?:ing)?|pick[- ]and[- ]place|bin[- ]picking|robotic assembly)\\b",
+    "\\b(?:task[- ]and[- ]motion planning|tactile (?:sensing|feedback|servoing)|force (?:control|feedback)|impedance control|visual servoing|peg[- ]in[- ]hole|end[- ]effectors?|grippers?|robot(?:ic)? arms?|MoveIt(?: ?2)?|ManiSkill|RoboCasa|LIBERO)\\b",
+    "^(?=.*\\b(?:robots?|robotic|robotics|embodied AI|bimanual)\\b).*\\b(?:manipulation|object handling|tool use)\\b"
+  ],
+  "sources": {
+    "arXiv Robotics": "https://rss.arxiv.org/rss/cs.RO",
+    "arXiv Computer Vision": "https://rss.arxiv.org/rss/cs.CV",
+    "Berkeley AI Research": "https://bair.berkeley.edu/blog/feed.xml",
+    "CMU Robotics Institute": "https://www.ri.cmu.edu/news/feed/",
+    "ROS Discourse": "https://discourse.openrobotics.org/latest.rss",
+    "MoveIt 2 Releases": "https://github.com/moveit/moveit2/releases.atom",
+    "LeRobot Releases": "https://github.com/huggingface/lerobot/releases.atom",
+    "ManiSkill Releases": "https://github.com/haosulab/ManiSkill/releases.atom",
+    "NVIDIA Robotics": "https://blogs.nvidia.com/blog/category/robotics/feed/",
+    "IEEE Spectrum Robotics": "https://spectrum.ieee.org/feeds/topic/robotics.rss",
+    "The Robot Report": "https://www.therobotreport.com/feed/"
+  }
+}

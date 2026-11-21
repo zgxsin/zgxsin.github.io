@@ -1,0 +1,100 @@
+name: Publish a digest
+
+on:
+  workflow_call:
+    inputs:
+      profile:
+        required: true
+        type: string
+      review:
+        type: boolean
+        default: false
+      timeout-minutes:
+        type: number
+        default: 10
+      commit-prefix:
+        type: string
+        default: Publish digest
+    secrets:
+      GEMINI_API_KEY:
+        required: true
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    env:
+      DIGEST_PROFILE: ${{ inputs.profile }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          persist-credentials: false
+      - name: Check for today's edition
+        id: edition
+        run: |
+          day=$(TZ=Europe/Zurich date +%F)
+          post=$(python3 .github/digests/generate.py "$DIGEST_PROFILE" --date "$day" --post-path)
+          {
+            echo "day=$day"
+            echo "post=$post"
+          } >> "$GITHUB_OUTPUT"
+          if [[ -f "$post" ]]; then
+            echo "The edition is already on master."
+          else
+            echo "generate=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Generate the digest
+        id: generate
+        if: steps.edition.outputs.generate == 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DIGEST_MODEL: ${{ vars.DIGEST_MODEL }}
+          DIGEST_AUTHOR: ${{ vars.DIGEST_AUTHOR }}
+          DIGEST_DAY: ${{ steps.edition.outputs.day }}
+          DIGEST_REVIEW: ${{ inputs.review }}
+        run: |
+          args=("$DIGEST_PROFILE" --date "$DIGEST_DAY")
+          if [[ "$DIGEST_REVIEW" == true ]]; then
+            args+=(--review)
+          fi
+          python3 .github/digests/generate.py "${args[@]}"
+      - name: Save review lessons and publish an approved digest
+        if: ${{ !cancelled() && steps.edition.outputs.generate == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DIGEST_DAY: ${{ steps.edition.outputs.day }}
+          DIGEST_POST: ${{ steps.edition.outputs.post }}
+          DIGEST_COMMIT_PREFIX: ${{ inputs.commit-prefix }}
+          DIGEST_RESULT: ${{ steps.generate.outcome }}
+        run: |
+          lessons=".github/digests/profiles/$DIGEST_PROFILE/learned-rules.json"
+          if [[ -f "$lessons" ]]; then
+            git add -- "$lessons"
+          fi
+          if [[ "$DIGEST_RESULT" == success ]]; then
+            test -s "$DIGEST_POST"
+            git add -- "$DIGEST_POST"
+            message="$DIGEST_COMMIT_PREFIX for $DIGEST_DAY"
+          else
+            message="Save review lessons for $DIGEST_PROFILE"
+          fi
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "$message"
+          gh auth setup-git --hostname github.com
+          git pull --rebase origin master
+          git push origin HEAD:refs/heads/master
+      - name: Trigger the Pages deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # Pushes made with GITHUB_TOKEN do not trigger other workflows.
+        run: gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref master

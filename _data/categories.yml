@@ -9,5 +9,7 @@
   name: Finance
 - slug: robotics-hardware
   name: Robotics Hardware
+- slug: robotics-data-infrastructure
+  name: Robotics Data Infrastructure
 - slug: ai-generated
   name: AI-Generated

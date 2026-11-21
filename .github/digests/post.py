@@ -19,7 +19,7 @@ def markdown_text(value):
     return re.sub(r"([\\`*_\[\]])", r"\\\1", text).replace("{", "&#123;").replace("}", "&#125;")
 
 
-def render_video(video_id):
+def render_video(video_id, alt):
     query = urlencode({"url": f"https://www.youtube.com/watch?v={video_id}", "format": "json"})
     try:
         with urlopen(f"https://www.youtube.com/oembed?{query}", timeout=8) as response:
@@ -29,17 +29,17 @@ def render_video(video_id):
         return None
     return (
         '{% include video.html youtube="' + video_id + '" '
-        'alt="Hardware demonstration" caption="Demonstration linked by the source." %}'
+        f'alt="{alt}" caption="Demonstration linked by the source." %}}'
     )
 
 
-def render(day, entries, updates, *, author):
-    title = datetime.fromisoformat(day)
-    display_date = f"{title:%B} {title.day}, {title.year}"
+def render(day, entries, updates, *, author, title, category, subject, video_alt):
+    edition_date = datetime.fromisoformat(day)
+    display_date = f"{edition_date:%B} {edition_date.day}, {edition_date.year}"
     lines = [
-        "---", f'title: "Robotics Hardware and Sensors Digest | {display_date}"',
+        "---", f'title: "{title} | {display_date}"',
         "published: true", f"date: {day}", f"author: {json.dumps(author, ensure_ascii=False)}",
-        "categories: [robotics-hardware, ai-generated]", "---", "",
+        f"categories: [{category}, ai-generated]", "---", "",
     ]
     grouped = {section: [] for section in SECTIONS}
     used = set()
@@ -54,7 +54,7 @@ def render(day, entries, updates, *, author):
             raise ValueError("Invalid application readiness level")
         grouped[update["section"]].append((entries[index], update))
     if not used:
-        lines.extend(["No new robotics hardware or sensor updates met the criteria in today's source scan.", ""])
+        lines.extend([f"No new {subject} updates met the criteria in today's source scan.", ""])
         return "\n".join(lines)
 
     readiness = ["## Application Readiness", ""]
@@ -78,7 +78,7 @@ def render(day, entries, updates, *, author):
                 if not isinstance(video_id, str) or video_id not in videos or video_id in seen_videos:
                     continue
                 seen_videos.add(video_id)
-                markup = render_video(video_id)
+                markup = render_video(video_id, video_alt)
                 if markup:
                     lines.extend(["", markup, ""])
             readiness.extend([

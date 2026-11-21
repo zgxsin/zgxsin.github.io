@@ -1,0 +1,33 @@
+{
+  "slug": "robotics-hardware-and-sensors-digest",
+  "title": "Robotics Hardware and Sensors Digest",
+  "category": "robotics-hardware",
+  "subject": "robotics hardware or sensor",
+  "video_alt": "Hardware demonstration",
+  "patterns": [
+    "\\b(?:sensors?|sensing|li[ -]?dars?|radars?|depth cameras?|stereo vision|rgb(?:[ -]?d)?|time[ -]of[ -]flight|tof|tactile|vision modules?|cameras?)\\b",
+    "\\b(?:grippers?|actuat\\w+|servos?|motors?|motor drives?|gearboxes|encoders?|inertial|imus?|robotic hands?|end[ -]effectors?)\\b",
+    "\\b(?:[gcn]pus?|fpgas?|socs?|embedded processors?|edge accelerators?|jetson|system[ -]on[ -]modules?)\\b"
+  ],
+  "sources": {
+    "arXiv Robotics": "https://rss.arxiv.org/rss/cs.RO",
+    "arXiv Computer Vision": "https://rss.arxiv.org/rss/cs.CV",
+    "arXiv Signal Processing": "https://rss.arxiv.org/rss/eess.SP",
+    "CMU Robotics Institute": "https://www.ri.cmu.edu/news/feed/",
+    "Berkeley AI Research": "https://bair.berkeley.edu/blog/feed.xml",
+    "RealSense": "https://www.realsenseai.com/feed/",
+    "e-con Systems": "https://www.e-consystems.com/blog/camera/feed/",
+    "Hesai": "https://www.hesaitech.com/feed/",
+    "Sharpa": "https://www.sharpa.com/blogs/news.atom",
+    "Motion Control Tips": "https://www.motioncontroltips.com/feed/",
+    "NVIDIA Robotics": "https://blogs.nvidia.com/blog/category/robotics/feed/",
+    "NVIDIA Developer": "https://developer.nvidia.com/blog/feed/",
+    "AMD News Releases": "https://ir.amd.com/news-events/press-releases/rss",
+    "Intel News Releases": "https://www.intc.com/news-events/press-releases/rss",
+    "Raspberry Pi": "https://www.raspberrypi.com/news/feed/",
+    "STMicroelectronics": "https://blog.st.com/feed/",
+    "CNX Software": "https://www.cnx-software.com/feed/",
+    "IEEE Spectrum Robotics": "https://spectrum.ieee.org/feeds/topic/robotics.rss",
+    "The Robot Report": "https://www.therobotreport.com/feed/"
+  }
+}

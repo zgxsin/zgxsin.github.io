@@ -1,0 +1,24 @@
+{
+  "slug": "robotics-data-infrastructure-and-management-digest",
+  "title": "Robotics Data Infrastructure and Management Digest",
+  "category": "robotics-data-infrastructure",
+  "subject": "robotics data infrastructure or data management",
+  "video_alt": "Robotics data workflow demonstration",
+  "patterns": [
+    "\\b(?:data[ -]?sets?|data[ -](?:infrastructure|management|collection|capture|curation|annotation|labeling|quality|validation|governance|lineage|versioning|pipelines?|formats?|storage|ingestion))\\b",
+    "\\b(?:telemetry|logging|log replay|rosbags?2?|mcap|lerobot|rlds|fleet (?:observability|monitoring)|synthetic data)\\b"
+  ],
+  "sources": {
+    "arXiv Robotics": "https://rss.arxiv.org/rss/cs.RO",
+    "arXiv Computer Vision": "https://rss.arxiv.org/rss/cs.CV",
+    "Berkeley AI Research": "https://bair.berkeley.edu/blog/feed.xml",
+    "ROS Discourse": "https://discourse.ros.org/latest.rss",
+    "ROS 2 rosbag2 Releases": "https://github.com/ros2/rosbag2/releases.atom",
+    "MCAP Releases": "https://github.com/foxglove/mcap/releases.atom",
+    "Hugging Face Blog": "https://huggingface.co/blog/feed.xml",
+    "LeRobot Releases": "https://github.com/huggingface/lerobot/releases.atom",
+    "NVIDIA Robotics": "https://blogs.nvidia.com/blog/category/robotics/feed/",
+    "NVIDIA Developer": "https://developer.nvidia.com/blog/feed/",
+    "The Robot Report": "https://www.therobotreport.com/feed/"
+  }
+}

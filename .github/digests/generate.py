@@ -1,0 +1,124 @@
+"""Create a dated Jekyll digest from a topic profile and recent news feeds."""
+
+import argparse
+from datetime import date, datetime, timezone
+import json
+import os
+from pathlib import Path
+import re
+from zoneinfo import ZoneInfo
+
+from feeds import clean_url, collect
+from gemini import API_KEY_ENV, DEFAULT_MODEL, generate_json
+from post import READINESS_LEVELS, SECTIONS, render
+from review import drafting_prompt, load_lessons, review_issues, save_lessons
+
+
+DIGEST_DIR = Path(__file__).resolve().parent
+PROFILES = DIGEST_DIR / "profiles"
+
+
+def select_updates(entries, key, model, *, prompt, revision=None):
+    properties = {
+        "id": {"type": "integer"},
+        "section": {"type": "string", "enum": list(SECTIONS)},
+        "summary": {"type": "string"},
+        "why_it_matters": {"type": "string"},
+        "readiness": {"type": "string", "enum": list(READINESS_LEVELS)},
+        "readiness_evidence": {"type": "string"},
+        "pros": {"type": "string"},
+        "cons": {"type": "string"},
+        "video_ids": {"type": "array", "items": {"type": "string"}},
+    }
+    sources = [
+        {
+            "id": index,
+            **{field: entry[field] for field in ("title", "summary", "source", "published")},
+            "videos": entry.get("videos", {}),
+        }
+        for index, entry in enumerate(entries)
+    ]
+    schema = {
+        "type": "array", "maxItems": 6,
+        "items": {"type": "object", "properties": properties, "required": list(properties)},
+    }
+    input_data = sources if revision is None else {"sources": sources, **revision}
+    return generate_json(model=model, prompt=prompt, input_data=input_data, schema=schema, key=key)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        epilog="Set DIGEST_MODEL to switch models and DIGEST_AUTHOR to override the byline.",
+    )
+    parser.add_argument("profile", choices=sorted(path.parent.name for path in PROFILES.glob("*/profile.json")))
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--sources-only", action="store_true", help="check feeds without using Gemini or writing a post")
+    mode.add_argument("--post-path", action="store_true", help="print the edition path without generating the post")
+    parser.add_argument("--date", type=date.fromisoformat, help="edition date supplied by the workflow")
+    parser.add_argument("--review", action="store_true", help="review and revise the digest before writing the post")
+    args = parser.parse_args()
+    profile_dir = PROFILES / args.profile
+    profile = json.loads((profile_dir / "profile.json").read_text(encoding="utf-8"))
+    slug = profile["slug"]
+    now = datetime.now(timezone.utc)
+    day = (args.date or now.astimezone(ZoneInfo("Europe/Zurich")).date()).isoformat()
+    posts = Path("_posts")
+    path = posts / f"{day}-{slug}.md"
+    if args.post_path:
+        print(path)
+        return
+    if path.exists() and not args.sources_only:
+        return
+    seen = {
+        clean_url(url) for post in posts.glob(f"*-{slug}.md")
+        for url in re.findall(r"https?://[^\s<>)]+", post.read_text())
+    }
+    topic = re.compile("|".join(profile["patterns"]), re.I)
+    entries = collect(now, seen, sources=profile["sources"], topic=topic)
+    print(f"Found {len(entries)} recent candidate updates.")
+    if args.sources_only:
+        for entry in entries:
+            print(f"{entry['source']}: {entry['url']}")
+        return
+    key = os.environ.get(API_KEY_ENV)
+    if not key:
+        raise SystemExit(f"Set {API_KEY_ENV} before running the digest.")
+    model = os.environ.get("DIGEST_MODEL") or DEFAULT_MODEL
+    author = os.environ.get("DIGEST_AUTHOR") or model.replace("-", " ").title()
+    prompt = (profile_dir / "prompt.md").read_text(encoding="utf-8").strip()
+    lessons_path = profile_dir / "learned-rules.json"
+    learned = load_lessons(lessons_path)
+    post_options = {field: profile[field] for field in ("title", "category", "subject", "video_alt")}
+    updates = select_updates(entries, key, model, prompt=drafting_prompt(prompt, learned)) if entries else []
+    content = render(day, entries, updates, author=author, **post_options)
+    if args.review:
+        review_prompt = (DIGEST_DIR / "review-prompt.md").read_text(encoding="utf-8").strip()
+        issues = review_issues(
+            content, [entries[update["id"]] for update in updates], prompt=review_prompt, model=model, key=key,
+        )
+        if issues:
+            details = [issue["detail"] for issue in issues]
+            print("AI review requested revisions.", *details, sep="\n- ")
+            learned = save_lessons(lessons_path, learned, issues)
+            revision_prompt = (DIGEST_DIR / "revision-prompt.md").read_text(encoding="utf-8").strip()
+            updates = select_updates(
+                entries, key, model, prompt=f"{drafting_prompt(prompt, learned)}\n\n{revision_prompt}",
+                revision={"draft": content, "previous_selection": updates, "review_issues": details},
+            )
+            content = render(day, entries, updates, author=author, **post_options)
+            remaining = review_issues(
+                content, [entries[update["id"]] for update in updates],
+                prompt=review_prompt, model=model, key=key,
+            )
+            if remaining:
+                save_lessons(lessons_path, learned, remaining)
+                details = "\n- ".join(issue["detail"] for issue in remaining)
+                raise SystemExit(f"AI review rejected the revised digest.\n- {details}")
+        print("AI review approved the digest.")
+    with path.open("x", encoding="utf-8") as post:
+        post.write(content)
+
+
+if __name__ == "__main__":
+    main()

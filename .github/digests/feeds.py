@@ -1,4 +1,4 @@
-"""Read and filter robotics news feeds."""
+"""Read and filter digest news feeds."""
 
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
@@ -11,34 +11,6 @@ from urllib.request import Request, urlopen
 from xml.etree import ElementTree
 
 
-SOURCES = {
-    "arXiv Robotics": "https://rss.arxiv.org/rss/cs.RO",
-    "arXiv Computer Vision": "https://rss.arxiv.org/rss/cs.CV",
-    "arXiv Signal Processing": "https://rss.arxiv.org/rss/eess.SP",
-    "CMU Robotics Institute": "https://www.ri.cmu.edu/news/feed/",
-    "Berkeley AI Research": "https://bair.berkeley.edu/blog/feed.xml",
-    "RealSense": "https://www.realsenseai.com/feed/",
-    "e-con Systems": "https://www.e-consystems.com/blog/camera/feed/",
-    "Hesai": "https://www.hesaitech.com/feed/",
-    "Sharpa": "https://www.sharpa.com/blogs/news.atom",
-    "Motion Control Tips": "https://www.motioncontroltips.com/feed/",
-    "NVIDIA Robotics": "https://blogs.nvidia.com/blog/category/robotics/feed/",
-    "NVIDIA Developer": "https://developer.nvidia.com/blog/feed/",
-    "AMD News Releases": "https://ir.amd.com/news-events/press-releases/rss",
-    "Intel News Releases": "https://www.intc.com/news-events/press-releases/rss",
-    "Raspberry Pi": "https://www.raspberrypi.com/news/feed/",
-    "STMicroelectronics": "https://blog.st.com/feed/",
-    "CNX Software": "https://www.cnx-software.com/feed/",
-    "IEEE Spectrum Robotics": "https://spectrum.ieee.org/feeds/topic/robotics.rss",
-    "The Robot Report": "https://www.therobotreport.com/feed/",
-}
-HARDWARE = re.compile(
-    r"\b(?:sensors?|sensing|li[ -]?dars?|radars?|depth cameras?|stereo vision|"
-    r"rgb(?:[ -]?d)?|time[ -]of[ -]flight|tof|tactile|vision modules?|cameras?|"
-    r"grippers?|actuat\w+|servos?|motors?|motor drives?|gearboxes|encoders?|"
-    r"inertial|imus?|robotic hands?|end[ -]effectors?|[gcn]pus?|fpgas?|socs?|"
-    r"embedded processors?|edge accelerators?|jetson|system[ -]on[ -]modules?)\b", re.I
-)
 ATOM = "{http://www.w3.org/2005/Atom}"
 RSS_CONTENT = "{http://purl.org/rss/1.0/modules/content/}"
 YOUTUBE_LINK = re.compile(
@@ -69,9 +41,9 @@ def source_videos(markup):
     return videos
 
 
-def read_feed(source):
+def read_feed(source, topic):
     name, url = source
-    request = Request(url, headers={"User-Agent": "RoboticsHardwareDigest/1.0"})
+    request = Request(url, headers={"User-Agent": "NewsDigest/1.0"})
     with urlopen(request, timeout=20) as response:
         root = ElementTree.fromstring(response.read(4_000_000))
     if root.tag not in ("rss", ATOM + "feed"):
@@ -97,7 +69,7 @@ def read_feed(source):
             link = clean_url(link)
         except ValueError:
             continue
-        if title and link and published.tzinfo and HARDWARE.search(title + " " + summary):
+        if title and link and published.tzinfo and topic.search(title + " " + summary):
             entries.append({
                 "title": title, "summary": summary[:1800], "url": link,
                 "source": name, "published": published,
@@ -106,11 +78,11 @@ def read_feed(source):
     return entries
 
 
-def collect(now, seen):
+def collect(now, seen, *, sources, topic):
     entries = {}
     failures = []
-    with ThreadPoolExecutor(max_workers=len(SOURCES)) as pool:
-        feeds = {name: pool.submit(read_feed, (name, url)) for name, url in SOURCES.items()}
+    with ThreadPoolExecutor(max_workers=len(sources)) as pool:
+        feeds = {name: pool.submit(read_feed, (name, url), topic) for name, url in sources.items()}
         for name, future in feeds.items():
             try:
                 recent = [
@@ -122,6 +94,6 @@ def collect(now, seen):
             except (OSError, ValueError, ElementTree.ParseError) as error:
                 failures.append(name)
                 print(f"Could not read {name}: {error}", file=sys.stderr)
-    if len(failures) == len(SOURCES):
+    if len(failures) == len(sources):
         raise SystemExit("All digest feeds failed.")
     return sorted(entries.values(), key=lambda entry: entry["published"], reverse=True)[:35]

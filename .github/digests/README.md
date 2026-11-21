@@ -1,0 +1,13 @@
+# Scheduled digests
+
+Each folder under `profiles/` defines a digest. Its `profile.json` sets the post slug, title, category, quiet-day wording, video alt text, feed URLs, and case-insensitive regular expressions for matching feed entries. Its `prompt.md` defines how to select and summarize updates.
+
+To add a topic, copy a profile folder and update those files. Use a unique post slug and register the category in [`_data/categories.yml`](../../_data/categories.yml). Copy a [scheduled workflow](../workflows/robotics-data-infrastructure-digest.yml), set its schedule and concurrency group, and pass the new folder name as `profile`. The [shared workflow](../workflows/publish-digest.yml) handles generation and publishing. Pass `review: true` to use the shared [review prompt](review-prompt.md) and [revision prompt](revision-prompt.md).
+
+For profiles with AI review enabled, each review gets only the draft it is judging and its source excerpts. The reviewer classifies material issues using a fixed set of lesson IDs. GitHub Actions saves newly learned IDs in that profile's `learned-rules.json`, and future runs add the matching rules to the drafting prompt. If a revised draft fails review, the workflow can still save the lessons while withholding the draft.
+
+Run a feed check from the repository root without calling Gemini or writing a post.
+
+```sh
+python3 .github/digests/generate.py robotics-data-infrastructure --sources-only
+```

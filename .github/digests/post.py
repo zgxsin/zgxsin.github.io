@@ -35,7 +35,7 @@ def render_video(video_id, alt, caption):
 
 def render(
     day, entries, updates, *, author, slug, title, category, subject, video_alt,
-    run_time, include_readiness=True, link_titles=False, search_links=None,
+    run_time, include_readiness=True, link_titles=False,
 ):
     edition_date = datetime.fromisoformat(day)
     display_date = f"{edition_date:%B} {edition_date.day}, {edition_date.year}"
@@ -44,11 +44,6 @@ def render(
         "published: true", f"date: {day}", f"author: {json.dumps(author, ensure_ascii=False)}",
         f"slug: {slug}", f"categories: [{category}, ai-generated]", "---", "",
     ]
-    searches = []
-    if search_links:
-        searches = ["## Job Searches", ""]
-        searches.extend(f"- [{markdown_text(label)}](<{url}>)" for label, url in search_links.items())
-        searches.append("")
     grouped = {}
     used = set()
     if not isinstance(updates, list) or len(updates) > 6:
@@ -66,7 +61,6 @@ def render(
         grouped.setdefault(section, []).append((entries[index], update))
     if not used:
         lines.extend([f"No new {subject} updates met the criteria in today's source scan.", ""])
-        lines.extend(searches)
         return "\n".join(lines)
 
     readiness = []
@@ -116,5 +110,5 @@ def render(
         lines.append("")
     if readiness:
         lines.extend(["## Application Readiness", "", *readiness, ""])
-    lines.extend([*searches, *references, ""])
+    lines.extend([*references, ""])
     return "\n".join(lines)

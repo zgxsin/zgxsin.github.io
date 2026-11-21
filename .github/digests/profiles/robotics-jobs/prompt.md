@@ -6,4 +6,6 @@ Use the exact section headings Switzerland, China, United States, and Remote, in
 
 For each role, write a concise summary with the employer and advertised location when they are missing from the source title. Use the second sentence to state the main responsibility, a published requirement, or the job type when supported. You may translate descriptions of Chinese listings into English. Include compensation, application deadlines, visa sponsorship, or language requirements only when the source explicitly states them. Treat feed dates as listing or update dates, never application deadlines. Leave the second sentence empty if the source gives no further detail.
 
+Each entry must link to a specific vacancy. Omit job-board homepages, saved searches, search-result pages, and general careers pages. Use only the vacancy sections above, followed by the renderer's References section.
+
 The renderer links each title to its source listing. Return each selected source's supplied ID for References, use an empty videos array, and return an empty array if no roles qualify.

@@ -7,12 +7,6 @@
   "lookback_days": 7,
   "include_readiness": false,
   "link_titles": true,
-  "search_links": {
-    "LinkedIn Jobs — Switzerland": "https://www.linkedin.com/jobs/search/?keywords=Robotics&location=Switzerland",
-    "LinkedIn Jobs — China": "https://www.linkedin.com/jobs/search/?keywords=Robotics&location=China",
-    "LinkedIn Jobs — United States": "https://www.linkedin.com/jobs/search/?keywords=Robotics&location=United%20States",
-    "LinkedIn Jobs — Remote": "https://www.linkedin.com/jobs/search/?keywords=Robotics&f_WT=2"
-  },
   "patterns": [
     "\\b(?:robots?|robotic(?:s)?|humanoids?|embodied AI|physical AI|ROS ?2|SLAM|autonomous (?:systems|vehicles)|motion planning|mechatronics|industrial automation|reinforcement learning)\\b|机器人|具身智能",
     "\\b(?:(?:robot|vehicle|mission) autonomy|autonomy (?:engineers?|software|systems?|core|stack|platform)|(?:robotic|dexterous|bimanual|mobile) manipulation|(?:3D|sensor) perception|perception (?:engineers?|software|systems?))\\b"

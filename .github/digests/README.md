@@ -4,8 +4,6 @@ Each folder under `profiles/` defines a digest. Its `profile.json` sets the post
 
 Sources can use a plain RSS or Atom URL, or an object with a `url`, optional `format` (`xml`, `json-feed`, or `smartrecruiters`), and optional `lookback_days` to override the profile's window. The profile's `lookback_days` defaults to three. Set `include_readiness` to `false` to use the profile's own layout without readiness ratings. Set `link_titles` to `true` to link story titles to their source pages.
 
-The jobs profile's `search_links` are links readers can open for additional results. They appear in each edition and are separate from the feeds fetched by the workflow.
-
 To add a topic, copy a profile folder and update those files. Use a unique post slug and register the category in [`_data/categories.yml`](../../_data/categories.yml). Copy a [scheduled workflow](../workflows/robotics-data-infrastructure-digest.yml), set its schedule and concurrency group, and pass the new folder name as `profile`. The [shared workflow](../workflows/publish-digest.yml) handles generation and publishing. Pass `review: true` to use the shared [review prompt](review-prompt.md) and [revision prompt](revision-prompt.md).
 
 For profiles with AI review enabled, each review gets only the draft it is judging and its source excerpts. The reviewer classifies material issues using a fixed set of lesson IDs. GitHub Actions saves newly learned IDs in that profile's `learned-rules.json`, and future runs add the matching rules to the drafting prompt. If a revised draft fails review, the workflow can still save the lessons while withholding the draft.

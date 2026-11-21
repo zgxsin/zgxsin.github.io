@@ -7,12 +7,13 @@ from html import unescape
 import json
 import re
 import sys
-from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, quote, urlencode, urljoin, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 from xml.etree import ElementTree
 
 
 ATOM = "{http://www.w3.org/2005/Atom}"
+DC = "{http://purl.org/dc/elements/1.1/}"
 RSS_CONTENT = "{http://purl.org/rss/1.0/modules/content/}"
 YOUTUBE_LINK = re.compile(
     r"https://(?:(?:www\.)?youtu\.be/|(?:www\.)?youtube\.com/(?:watch\?v=|embed/)|"
@@ -68,10 +69,10 @@ def read_feed(name, config, topic):
         try:
             published = (
                 parsedate_to_datetime(date) if date else datetime.fromisoformat(
-                    item.findtext(f"{ATOM}published") or item.findtext(f"{ATOM}updated") or ""
+                    item.findtext(f"{ATOM}published") or item.findtext(f"{ATOM}updated") or item.findtext(f"{DC}date") or ""
                 )
             )
-            link = clean_url(link)
+            link = clean_url(urljoin(url, link)) if link else ""
         except ValueError:
             continue
         if title and link and published.tzinfo and topic.search(title + " " + summary):

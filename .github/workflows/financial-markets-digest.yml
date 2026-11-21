@@ -1,0 +1,26 @@
+name: Publish daily financial markets digest
+
+on:
+  schedule:
+    - cron: "30 7 * * *"
+      timezone: Europe/Zurich
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: financial-markets-digest
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    uses: ./.github/workflows/publish-digest.yml
+    with:
+      profile: financial-markets
+      review: true
+      timeout-minutes: 15
+      commit-prefix: Publish financial markets digest
+    secrets:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

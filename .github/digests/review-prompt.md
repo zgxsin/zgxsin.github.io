@@ -6,6 +6,8 @@ Check any readiness rating against its evidence and stated use, whether it appea
 
 For job listings, check the employer, role, location, and any claim about remote work or eligibility. Treat hybrid roles as location-based. Require evidence for claims of worldwide remote work, sponsorship, or compensation.
 
+For financial markets, verify the instrument, direction, magnitude, and session or data period against the cited evidence. Flag stale quotes presented as current, unsupported explanations for market moves, and investment ideas that omit a material downside or present a conditional outcome as certain.
+
 Accept topical groupings, reordered sections, and inline readiness assessments when readers can follow the stories and find their assessments and references.
 
 Judge the supplied draft on its own. Treat it as your first review of this edition.

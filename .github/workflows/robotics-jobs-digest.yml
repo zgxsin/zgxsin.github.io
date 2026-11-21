@@ -1,0 +1,26 @@
+name: Publish daily robotics jobs digest
+
+on:
+  schedule:
+    - cron: "0 12 * * *"
+      timezone: Europe/Zurich
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: robotics-jobs-digest
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    uses: ./.github/workflows/publish-digest.yml
+    with:
+      profile: robotics-jobs
+      review: true
+      timeout-minutes: 15
+      commit-prefix: Publish robotics jobs digest
+    secrets:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

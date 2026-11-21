@@ -1,0 +1,48 @@
+{
+  "slug": "robotics-jobs-digest",
+  "title": "Robotics Jobs Digest",
+  "category": "robotics-jobs",
+  "subject": "robotics job",
+  "video_alt": "Robotics job listing demonstration",
+  "include_readiness": false,
+  "link_titles": true,
+  "search_links": {
+    "LinkedIn Jobs — Switzerland": "https://www.linkedin.com/jobs/search/?keywords=Robotics&location=Switzerland",
+    "LinkedIn Jobs — China": "https://www.linkedin.com/jobs/search/?keywords=Robotics&location=China",
+    "LinkedIn Jobs — United States": "https://www.linkedin.com/jobs/search/?keywords=Robotics&location=United%20States",
+    "LinkedIn Jobs — Remote": "https://www.linkedin.com/jobs/search/?keywords=Robotics&f_WT=2"
+  },
+  "patterns": [
+    "\\b(?:robots?|robotic(?:s)?|humanoids?|embodied AI|physical AI|ROS ?2|SLAM|autonomous (?:systems|vehicles)|motion planning|mechatronics|industrial automation|reinforcement learning)\\b|机器人|具身智能",
+    "\\b(?:(?:robot|vehicle|mission) autonomy|autonomy (?:engineers?|software|systems?|core|stack|platform)|(?:robotic|dexterous|bimanual|mobile) manipulation|(?:3D|sensor) perception|perception (?:engineers?|software|systems?))\\b"
+  ],
+  "sources": {
+    "Robotic Jobs Switzerland": {
+      "url": "https://roboticjobs.ai/feeds/jobs.json?location=Switzerland",
+      "format": "json-feed",
+      "lookback_days": 30
+    },
+    "Bosch Group China": {
+      "url": "https://api.smartrecruiters.com/v1/companies/BoschGroup/postings?country=cn&q=robotics&limit=100",
+      "format": "smartrecruiters",
+      "lookback_days": 60
+    },
+    "Work Insiders Robotics": "https://workinsiders.com/jobs/robotics/feed/",
+    "SwissDevJobs": "https://swissdevjobs.ch/rss",
+    "We Work Remotely": "https://weworkremotely.com/remote-jobs.rss",
+    "Himalayas": "https://himalayas.app/jobs/rss",
+    "Remotive": "https://remotive.com/remote-jobs/feed",
+    "Jobicy": {
+      "url": "https://jobicy.com/jobs/feed?tag=robotics",
+      "lookback_days": 14
+    },
+    "Robotic Jobs Remote": {
+      "url": "https://roboticjobs.ai/feeds/jobs.xml?remote=1",
+      "lookback_days": 30
+    },
+    "ROS Discourse Jobs": {
+      "url": "https://discourse.openrobotics.org/c/jobs/15.rss",
+      "lookback_days": 14
+    }
+  }
+}

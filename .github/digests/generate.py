@@ -18,20 +18,12 @@ DIGEST_DIR = Path(__file__).resolve().parent
 PROFILES = DIGEST_DIR / "profiles"
 
 
-def select_updates(entries, key, model, *, prompt, revision=None):
+def select_updates(entries, key, model, *, prompt, include_readiness=True, revision=None):
     properties = {
         "id": {"type": "integer"},
         "section": {"type": "string", "description": "The plain-text heading for this story's group."},
         "summary": {"type": "string"},
         "why_it_matters": {"type": "string"},
-        "readiness": {"type": "string", "enum": list(READINESS_LEVELS)},
-        "readiness_evidence": {"type": "string"},
-        "pros": {"type": "string"},
-        "cons": {"type": "string"},
-        "inline_readiness": {
-            "type": "boolean",
-            "description": "Place the readiness assessment under this story instead of in Application Readiness.",
-        },
         "videos": {
             "type": "array",
             "description": "Select only useful demos from the update's supplied videos map.",
@@ -52,6 +44,17 @@ def select_updates(entries, key, model, *, prompt, revision=None):
             },
         },
     }
+    if include_readiness:
+        properties.update({
+            "readiness": {"type": "string", "enum": list(READINESS_LEVELS)},
+            "readiness_evidence": {"type": "string"},
+            "pros": {"type": "string"},
+            "cons": {"type": "string"},
+            "inline_readiness": {
+                "type": "boolean",
+                "description": "Place the readiness assessment under this story instead of in Application Readiness.",
+            },
+        })
     sources = [
         {
             "id": index,
@@ -116,13 +119,18 @@ def main():
     model = os.environ.get("DIGEST_MODEL") or DEFAULT_MODEL
     author = os.environ.get("DIGEST_AUTHOR") or model.replace("-", " ").title()
     prompt = (profile_dir / "prompt.md").read_text(encoding="utf-8").strip()
-    layout = (DIGEST_DIR / "layout-prompt.md").read_text(encoding="utf-8").strip()
-    prompt = f"{prompt}\n\n{layout}"
+    include_readiness = profile.get("include_readiness", True)
+    if include_readiness:
+        layout = (DIGEST_DIR / "layout-prompt.md").read_text(encoding="utf-8").strip()
+        prompt = f"{prompt}\n\n{layout}"
     lessons_path = profile_dir / "learned-rules.json"
     learned = load_lessons(lessons_path)
     post_options = {field: profile[field] for field in ("slug", "title", "category", "subject", "video_alt")}
-    post_options["run_time"] = run_time
-    updates = select_updates(entries, key, model, prompt=drafting_prompt(prompt, learned)) if entries else []
+    post_options.update(run_time=run_time, include_readiness=include_readiness, link_titles=profile.get("link_titles", False))
+    post_options["search_links"] = profile.get("search_links")
+    updates = select_updates(
+        entries, key, model, prompt=drafting_prompt(prompt, learned), include_readiness=include_readiness,
+    ) if entries else []
     content = render(day, entries, updates, author=author, **post_options)
     if args.review:
         review_prompt = (DIGEST_DIR / "review-prompt.md").read_text(encoding="utf-8").strip()
@@ -136,6 +144,7 @@ def main():
             revision_prompt = (DIGEST_DIR / "revision-prompt.md").read_text(encoding="utf-8").strip()
             updates = select_updates(
                 entries, key, model, prompt=f"{drafting_prompt(prompt, learned)}\n\n{revision_prompt}",
+                include_readiness=include_readiness,
                 revision={"draft": content, "previous_selection": updates, "review_issues": details},
             )
             content = render(day, entries, updates, author=author, **post_options)

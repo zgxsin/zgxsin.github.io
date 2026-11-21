@@ -33,7 +33,10 @@ def render_video(video_id, alt, caption):
     )
 
 
-def render(day, entries, updates, *, author, slug, title, category, subject, video_alt, run_time):
+def render(
+    day, entries, updates, *, author, slug, title, category, subject, video_alt,
+    run_time, include_readiness=True, link_titles=False, search_links=None,
+):
     edition_date = datetime.fromisoformat(day)
     display_date = f"{edition_date:%B} {edition_date.day}, {edition_date.year}"
     lines = [
@@ -41,6 +44,11 @@ def render(day, entries, updates, *, author, slug, title, category, subject, vid
         "published: true", f"date: {day}", f"author: {json.dumps(author, ensure_ascii=False)}",
         f"slug: {slug}", f"categories: [{category}, ai-generated]", "---", "",
     ]
+    searches = []
+    if search_links:
+        searches = ["## Job Searches", ""]
+        searches.extend(f"- [{markdown_text(label)}](<{url}>)" for label, url in search_links.items())
+        searches.append("")
     grouped = {}
     used = set()
     if not isinstance(updates, list) or len(updates) > 6:
@@ -50,7 +58,7 @@ def render(day, entries, updates, *, author, slug, title, category, subject, vid
         if type(index) is not int or not 0 <= index < len(entries) or index in used:
             raise ValueError("Invalid or duplicate digest source index")
         used.add(index)
-        if update["readiness"] not in READINESS_LEVELS:
+        if include_readiness and update["readiness"] not in READINESS_LEVELS:
             raise ValueError("Invalid application readiness level")
         section = " ".join(update["section"].split())
         if not section or section.casefold() in {"application readiness", "references"}:
@@ -58,6 +66,7 @@ def render(day, entries, updates, *, author, slug, title, category, subject, vid
         grouped.setdefault(section, []).append((entries[index], update))
     if not used:
         lines.extend([f"No new {subject} updates met the criteria in today's source scan.", ""])
+        lines.extend(searches)
         return "\n".join(lines)
 
     readiness = []
@@ -70,20 +79,23 @@ def render(day, entries, updates, *, author, slug, title, category, subject, vid
         for source, update in items:
             number += 1
             title = markdown_text(source["title"])
+            url = quote(source["url"], safe=":/?&=%+-._~")
+            display_title = f"[{title}](<{url}>)" if link_titles else title
             citation = f"[^ref-{number}]"
+            summary = f"{markdown_text(update['summary'])} {markdown_text(update['why_it_matters'])}".strip()
             lines.append(
-                f"- **{title}** ({source['published']:%b %d}). "
-                f"{markdown_text(update['summary'])} {markdown_text(update['why_it_matters'])}{citation}"
+                f"- **{display_title}** ({source['published']:%b %d}). {summary}{citation}"
             )
-            assessment = [
-                f"  - **Readiness** ({update['readiness']}). {markdown_text(update['readiness_evidence'])}",
-                f"  - **Pros.** {markdown_text(update['pros'])}",
-                f"  - **Cons.** {markdown_text(update['cons'])}",
-            ]
-            if update.get("inline_readiness", False):
-                lines.extend(assessment)
-            else:
-                readiness.extend([f"- **{title}**{citation}", *assessment])
+            if include_readiness:
+                assessment = [
+                    f"  - **Readiness** ({update['readiness']}). {markdown_text(update['readiness_evidence'])}",
+                    f"  - **Pros.** {markdown_text(update['pros'])}",
+                    f"  - **Cons.** {markdown_text(update['cons'])}",
+                ]
+                if update.get("inline_readiness", False):
+                    lines.extend(assessment)
+                else:
+                    readiness.extend([f"- **{title}**{citation}", *assessment])
             videos = source.get("videos", {})
             for video in update.get("videos", []):
                 if not isinstance(video, dict):
@@ -97,7 +109,6 @@ def render(day, entries, updates, *, author, slug, title, category, subject, vid
                 markup = render_video(video_id, video_alt, caption)
                 if markup:
                     lines.extend(["", markup, ""])
-            url = quote(source["url"], safe=":/?&=%+-._~")
             references.append(
                 f"{citation}: [{title}](<{url}>)"
                 f" — {markdown_text(source['source'])}, {source['published']:%Y-%m-%d}."
@@ -105,5 +116,5 @@ def render(day, entries, updates, *, author, slug, title, category, subject, vid
         lines.append("")
     if readiness:
         lines.extend(["## Application Readiness", "", *readiness, ""])
-    lines.extend([*references, ""])
+    lines.extend([*searches, *references, ""])
     return "\n".join(lines)

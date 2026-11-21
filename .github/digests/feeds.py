@@ -4,9 +4,10 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from email.utils import parsedate_to_datetime
 from html import unescape
+import json
 import re
 import sys
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 from xml.etree import ElementTree
 
@@ -41,11 +42,15 @@ def source_videos(markup):
     return videos
 
 
-def read_feed(source, topic):
-    name, url = source
+def read_feed(name, config, topic):
+    url = config if isinstance(config, str) else config["url"]
     request = Request(url, headers={"User-Agent": "NewsDigest/1.0"})
     with urlopen(request, timeout=20) as response:
-        root = ElementTree.fromstring(response.read(4_000_000))
+        data = response.read(4_000_000)
+    feed_format = "xml" if isinstance(config, str) else config.get("format", "xml")
+    if feed_format != "xml":
+        return read_json_entries(name, json.loads(data), topic, feed_format)
+    root = ElementTree.fromstring(data)
     if root.tag not in ("rss", ATOM + "feed"):
         raise ValueError("unsupported feed format")
 
@@ -78,16 +83,65 @@ def read_feed(source, topic):
     return entries
 
 
+def read_json_entries(name, data, topic, feed_format):
+    if not isinstance(data, dict):
+        raise ValueError("expected a JSON feed object")
+    if feed_format == "json-feed":
+        items = data.get("items")
+    elif feed_format == "smartrecruiters":
+        items = data.get("content")
+    else:
+        raise ValueError(f"unsupported feed format: {feed_format}")
+    if not isinstance(items, list):
+        raise ValueError("expected a list of feed entries")
+
+    entries = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        if feed_format == "json-feed":
+            title = plain_text(item.get("title"))
+            summary = plain_text(item.get("content_text") or item.get("summary") or item.get("content_html"))
+            url = item.get("url") or ""
+            timestamp = item.get("date_published") or item.get("date_modified")
+        else:
+            company = item.get("company") or {}
+            employer, board = company.get("name"), company.get("identifier")
+            posting_id = item.get("id")
+            if item.get("visibility") != "PUBLIC" or not all((employer, board, posting_id, item.get("name"))):
+                continue
+            location = item.get("location") or {}
+            mode = "Hybrid" if location.get("hybrid") else "Remote" if location.get("remote") else ""
+            job_type = (item.get("typeOfEmployment") or {}).get("label")
+            title = f"{plain_text(item['name'])} at {plain_text(employer)}"
+            summary = " · ".join(part for part in (location.get("fullLocation"), mode, job_type) if part)
+            url = f"https://jobs.smartrecruiters.com/{quote(board, safe='')}/{quote(str(posting_id), safe='')}"
+            timestamp = item.get("releasedDate")
+        try:
+            published = datetime.fromisoformat(timestamp or "")
+            url = clean_url(url)
+        except (TypeError, ValueError):
+            continue
+        if title and url and published.tzinfo and topic.search(f"{title} {summary}"):
+            entries.append({
+                "title": title, "summary": summary[:1800], "url": url,
+                "source": name, "published": published, "videos": {},
+            })
+    return entries
+
+
 def collect(now, seen, *, sources, topic):
     entries = {}
     failures = []
     with ThreadPoolExecutor(max_workers=len(sources)) as pool:
-        feeds = {name: pool.submit(read_feed, (name, url), topic) for name, url in sources.items()}
+        feeds = {name: pool.submit(read_feed, name, config, topic) for name, config in sources.items()}
         for name, future in feeds.items():
             try:
+                config = sources[name]
+                lookback_days = 3 if isinstance(config, str) else config.get("lookback_days", 3)
                 recent = [
                     entry for entry in future.result()
-                    if now - timedelta(hours=72) <= entry["published"] <= now and entry["url"] not in seen
+                    if now - timedelta(days=lookback_days) <= entry["published"] <= now and entry["url"] not in seen
                 ]
                 for entry in sorted(recent, key=lambda item: item["published"], reverse=True)[:5]:
                     entries.setdefault(entry["url"], entry)

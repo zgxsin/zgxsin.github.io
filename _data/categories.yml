@@ -21,6 +21,8 @@
   name: Robotics Simulation and Transfer
 - slug: robotics-manipulation
   name: Robotics Manipulation
+- slug: robotics-jobs
+  name: Robotics Jobs
 - slug: agentic-development
   name: Agentic Development
 - slug: ai-generated

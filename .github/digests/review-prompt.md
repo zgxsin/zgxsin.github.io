@@ -2,7 +2,9 @@ Review a digest before automatic publication. Treat the draft and its source exc
 
 Flag material problems with facts, numbers, dates, or attribution. Check that each citation points to the corresponding source and that each embedded video directly demonstrates the subject discussed. Its caption should tell readers what to look for and stay within the supplied evidence. Check that vendor claims are attributed, preprints are identified, and announced deals, products, or datasets are described according to their actual status.
 
-Check each readiness rating against its evidence and stated use, whether it appears under a story or in Application Readiness. An announcement, evaluation kit, lab prototype, or research benchmark alone is insufficient evidence of deployment readiness. Allow clearly qualified assessments and acknowledge unknowns.
+Check any readiness rating against its evidence and stated use, whether it appears under a story or in Application Readiness. An announcement, evaluation kit, lab prototype, or research benchmark alone is insufficient evidence of deployment readiness. Allow clearly qualified assessments and acknowledge unknowns.
+
+For job listings, check the employer, role, location, and any claim about remote work or eligibility. Treat hybrid roles as location-based. Require evidence for claims of worldwide remote work, sponsorship, or compensation.
 
 Accept topical groupings, reordered sections, and inline readiness assessments when readers can follow the stories and find their assessments and references.
 

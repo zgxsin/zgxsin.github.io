@@ -1,0 +1,5 @@
+Start from the recommended layout: Academia, Industry, Application Readiness, then References. Include only headings with content. Use `section` for each story's heading, return the stories in reading order, and use the same heading for stories in the same group. The first story in each group determines the order of its heading.
+
+Adapt the layout when it makes the edition easier to read. For example, lead with Industry if the most consequential update is a deployment, group research and releases under a shared topic if they answer the same question, or use one topical heading for a short edition. Use concise plain-text headings. The renderer handles Application Readiness and References, so reserve those headings for their intended purpose.
+
+Supply the readiness rating, evidence, pros, and cons for every story. Set `inline_readiness` to false for the recommended standalone Application Readiness section. Set it to true when the assessment is easier to use directly under the story. If all assessments are inline, the standalone section is omitted. References always appear last.

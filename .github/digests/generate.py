@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 from feeds import clean_url, collect
 from gemini import API_KEY_ENV, DEFAULT_MODEL, generate_json
-from post import READINESS_LEVELS, SECTIONS, render
+from post import READINESS_LEVELS, render
 from review import drafting_prompt, load_lessons, review_issues, save_lessons
 
 
@@ -21,13 +21,17 @@ PROFILES = DIGEST_DIR / "profiles"
 def select_updates(entries, key, model, *, prompt, revision=None):
     properties = {
         "id": {"type": "integer"},
-        "section": {"type": "string", "enum": list(SECTIONS)},
+        "section": {"type": "string", "description": "The plain-text heading for this story's group."},
         "summary": {"type": "string"},
         "why_it_matters": {"type": "string"},
         "readiness": {"type": "string", "enum": list(READINESS_LEVELS)},
         "readiness_evidence": {"type": "string"},
         "pros": {"type": "string"},
         "cons": {"type": "string"},
+        "inline_readiness": {
+            "type": "boolean",
+            "description": "Place the readiness assessment under this story instead of in Application Readiness.",
+        },
         "videos": {
             "type": "array",
             "description": "Select only useful demos from the update's supplied videos map.",
@@ -112,6 +116,8 @@ def main():
     model = os.environ.get("DIGEST_MODEL") or DEFAULT_MODEL
     author = os.environ.get("DIGEST_AUTHOR") or model.replace("-", " ").title()
     prompt = (profile_dir / "prompt.md").read_text(encoding="utf-8").strip()
+    layout = (DIGEST_DIR / "layout-prompt.md").read_text(encoding="utf-8").strip()
+    prompt = f"{prompt}\n\n{layout}"
     lessons_path = profile_dir / "learned-rules.json"
     learned = load_lessons(lessons_path)
     post_options = {field: profile[field] for field in ("slug", "title", "category", "subject", "video_alt")}

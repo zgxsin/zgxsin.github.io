@@ -8,7 +8,6 @@ from urllib.parse import quote, urlencode
 from urllib.request import urlopen
 
 
-SECTIONS = ("Academia", "Industry")
 READINESS_LEVELS = (
     "Research prototype", "Pilot-ready", "Deployment-ready for the stated use", "Insufficient evidence",
 )
@@ -42,7 +41,7 @@ def render(day, entries, updates, *, author, slug, title, category, subject, vid
         "published: true", f"date: {day}", f"author: {json.dumps(author, ensure_ascii=False)}",
         f"slug: {slug}", f"categories: [{category}, ai-generated]", "---", "",
     ]
-    grouped = {section: [] for section in SECTIONS}
+    grouped = {}
     used = set()
     if not isinstance(updates, list) or len(updates) > 6:
         raise ValueError("Invalid digest selection")
@@ -53,19 +52,21 @@ def render(day, entries, updates, *, author, slug, title, category, subject, vid
         used.add(index)
         if update["readiness"] not in READINESS_LEVELS:
             raise ValueError("Invalid application readiness level")
-        grouped[update["section"]].append((entries[index], update))
+        section = " ".join(update["section"].split())
+        if not section or section.casefold() in {"application readiness", "references"}:
+            raise ValueError("Invalid digest section heading")
+        grouped.setdefault(section, []).append((entries[index], update))
     if not used:
         lines.extend([f"No new {subject} updates met the criteria in today's source scan.", ""])
         return "\n".join(lines)
 
-    readiness = ["## Application Readiness", ""]
+    readiness = []
     references = ["## References", "", '{::options footnote_backlink="" /}', ""]
     number = 0
     seen_videos = set()
     for section, items in grouped.items():
-        lines.extend([f"## {section}", ""])
-        if not items:
-            lines.append("No qualifying updates.")
+        heading = re.sub(r"(?<!&)#", "&#35;", markdown_text(section))
+        lines.extend([f"## {heading}", ""])
         for source, update in items:
             number += 1
             title = markdown_text(source["title"])
@@ -74,6 +75,15 @@ def render(day, entries, updates, *, author, slug, title, category, subject, vid
                 f"- **{title}** ({source['published']:%b %d}). "
                 f"{markdown_text(update['summary'])} {markdown_text(update['why_it_matters'])}{citation}"
             )
+            assessment = [
+                f"  - **Readiness** ({update['readiness']}). {markdown_text(update['readiness_evidence'])}",
+                f"  - **Pros.** {markdown_text(update['pros'])}",
+                f"  - **Cons.** {markdown_text(update['cons'])}",
+            ]
+            if update.get("inline_readiness", False):
+                lines.extend(assessment)
+            else:
+                readiness.extend([f"- **{title}**{citation}", *assessment])
             videos = source.get("videos", {})
             for video in update.get("videos", []):
                 if not isinstance(video, dict):
@@ -87,17 +97,13 @@ def render(day, entries, updates, *, author, slug, title, category, subject, vid
                 markup = render_video(video_id, video_alt, caption)
                 if markup:
                     lines.extend(["", markup, ""])
-            readiness.extend([
-                f"- **{title}**{citation}",
-                f"  - **Readiness** ({update['readiness']}). {markdown_text(update['readiness_evidence'])}",
-                f"  - **Pros.** {markdown_text(update['pros'])}",
-                f"  - **Cons.** {markdown_text(update['cons'])}",
-            ])
             url = quote(source["url"], safe=":/?&=%+-._~")
             references.append(
                 f"{citation}: [{title}](<{url}>)"
                 f" — {markdown_text(source['source'])}, {source['published']:%Y-%m-%d}."
             )
         lines.append("")
-    lines.extend([*readiness, "", *references, ""])
+    if readiness:
+        lines.extend(["## Application Readiness", "", *readiness, ""])
+    lines.extend([*references, ""])
     return "\n".join(lines)

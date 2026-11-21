@@ -1,4 +1,4 @@
-name: Draft daily robotics digest
+name: Publish daily robotics digest
 
 on:
   schedule:
@@ -8,79 +8,58 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
+  actions: write
 
 concurrency:
   group: robotics-digest
   cancel-in-progress: false
 
 jobs:
-  draft:
+  publish:
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: master
           persist-credentials: false
       - name: Check for today's edition
         id: edition
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           day=$(TZ=Europe/Zurich date +%F)
-          branch="codex/robotics-digest-$day"
           post="_posts/$day-robotics-hardware-and-sensors-digest.md"
+          {
+            echo "day=$day"
+            echo "post=$post"
+          } >> "$GITHUB_OUTPUT"
           if [[ -f "$post" ]]; then
             echo "The edition is already on master."
-            exit 0
-          fi
-          existing=$(gh pr list --repo "$GITHUB_REPOSITORY" --state all --head "$branch" --base master --json url --jq '.[0].url // empty')
-          if [[ -n "$existing" ]]; then
-            echo "An edition pull request already exists at $existing"
-            exit 0
-          fi
-          remote_branch=$(git ls-remote --heads origin "refs/heads/$branch")
-          if [[ -n "$remote_branch" ]]; then
-            git fetch --no-tags origin "refs/heads/$branch"
-            if [[ "$(git diff --name-only HEAD...FETCH_HEAD)" != "$post" ]] ||
-               [[ -z "$(git show "FETCH_HEAD:$post")" ]]; then
-              echo "The existing branch does not contain only today's digest."
-              exit 1
-            fi
           else
             echo "generate=true" >> "$GITHUB_OUTPUT"
           fi
-          {
-            echo "day=$day"
-            echo "branch=$branch"
-            echo "post=$post"
-          } >> "$GITHUB_OUTPUT"
-      - name: Generate a sourced draft
+      - name: Generate the digest
         if: steps.edition.outputs.generate == 'true'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           DIGEST_DAY: ${{ steps.edition.outputs.day }}
         run: python3 .github/robotics-digest/generate.py --date "$DIGEST_DAY"
-      - name: Open the edition pull request
-        if: steps.edition.outputs.branch != ''
+      - name: Push the digest to master
+        if: steps.edition.outputs.generate == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           DIGEST_DAY: ${{ steps.edition.outputs.day }}
-          DIGEST_BRANCH: ${{ steps.edition.outputs.branch }}
           DIGEST_POST: ${{ steps.edition.outputs.post }}
-          GENERATED: ${{ steps.edition.outputs.generate }}
         run: |
-          if [[ "$GENERATED" == true ]]; then
-            test -s "$DIGEST_POST"
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -- "$DIGEST_POST"
-            git commit -m "Draft robotics digest for $DIGEST_DAY"
-            gh auth setup-git --hostname github.com
-            git push origin "HEAD:refs/heads/$DIGEST_BRANCH"
-          fi
-          gh pr create --repo "$GITHUB_REPOSITORY" --base master --head "$DIGEST_BRANCH" \
-            --title "Robotics hardware and sensors digest for $DIGEST_DAY" \
-            --body "Drafted from public robotics feeds using Gemini 4 Hydrogen. Review the sources before merging."
+          test -s "$DIGEST_POST"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$DIGEST_POST"
+          git commit -m "Publish robotics digest for $DIGEST_DAY"
+          gh auth setup-git --hostname github.com
+          git push origin HEAD:refs/heads/master
+      - name: Trigger the Pages deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # Pushes made with GITHUB_TOKEN do not trigger other workflows.
+        run: gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref master

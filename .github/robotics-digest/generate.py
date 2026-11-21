@@ -231,7 +231,7 @@ def render(day, entries, updates):
         return "\n".join(lines)
 
     readiness = ["## Application Readiness", ""]
-    references = ["## References", ""]
+    references = ["## References", "", '{::options footnote_backlink="" /}', ""]
     number = 0
     for section, items in grouped.items():
         lines.extend([f"## {section}", ""])
@@ -240,20 +240,20 @@ def render(day, entries, updates):
         for source, update in items:
             number += 1
             title = markdown_text(source["title"])
-            citation = f"[{number}](#reference-{number})"
+            citation = f"[^ref-{number}]"
             lines.append(
                 f"- **{title}** ({source['published']:%b %d}). "
-                f"{markdown_text(update['summary'])} {markdown_text(update['why_it_matters'])} {citation}"
+                f"{markdown_text(update['summary'])} {markdown_text(update['why_it_matters'])}{citation}"
             )
             readiness.extend([
-                f"- **{title}** {citation}",
+                f"- **{title}**{citation}",
                 f"  - **Readiness** ({update['readiness']}). {markdown_text(update['readiness_evidence'])}",
                 f"  - **Pros.** {markdown_text(update['pros'])}",
                 f"  - **Cons.** {markdown_text(update['cons'])}",
             ])
             url = quote(source["url"], safe=":/?&=%+-._~")
             references.append(
-                f'{number}. <a id="reference-{number}"></a>[{title}](<{url}>)'
+                f"{citation}: [{title}](<{url}>)"
                 f" — {markdown_text(source['source'])}, {source['published']:%Y-%m-%d}."
             )
         lines.append("")

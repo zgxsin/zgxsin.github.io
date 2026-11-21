@@ -219,6 +219,51 @@ img {
   margin-top: 8px;
 }
 
+.post-share {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid $border;
+}
+
+.post-share-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #c8d8e8;
+  border-radius: 999px;
+  background: #fff;
+  color: #17558b;
+  font-size: 0.875rem;
+  font-weight: 600;
+
+  &:hover,
+  &:focus-visible {
+    background: #eef5fc;
+    border-color: currentColor;
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+.post-share-icon svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.post-share-icon [fill="#959da5"] {
+  fill: currentColor;
+}
+
 .article {
   font-size: 1rem;
   line-height: 1.7;
@@ -236,6 +281,10 @@ img {
   p,
   pre {
     margin-bottom: 16px;
+  }
+
+  .footnotes > ol > li > p:only-child {
+    margin-bottom: 0;
   }
 
   code {

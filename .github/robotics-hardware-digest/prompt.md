@@ -8,6 +8,8 @@ For each item write one short plain-text sentence on what changed and one on why
 
 For Application Readiness, name a specific industrial use and give the evidence behind its readiness rating. Rate it Research prototype, Pilot-ready, Deployment-ready for the stated use, or Insufficient evidence. Reserve deployment-ready for demonstrated industrial use with evidence supporting the stated conditions. An evaluation kit alone does not establish pilot readiness. Assess the main practical advantage in pros and the main limitation or open question in cons. Consider integration, repeatability, reliability, safety, cost, and availability where supported. Distinguish reported facts from your assessment and state material unknowns.
 
-Include source-provided YouTube demos whenever they help readers understand the hardware, how it works, or its testing and deployment. For each selected update, return useful IDs from its videos map as video_ids. Use an empty array if none help. Omit redundant, unrelated, or unclear videos, and never invent video IDs.
+Use video sparingly. Embed a source-provided YouTube demo only when it clearly shows a key mechanism, test result, or deployment discussed in the update that is harder to understand from the text alone. Choose the smallest set that adds real explanatory value. Most editions should have zero to two embeds. Include multiple videos for one story only when each explains a different essential point.
+
+For a roundup, select only the clip that directly demonstrates the hardware development being summarized. Skip general overviews, promotional clips, redundant footage, and videos whose relevance is unclear from the supplied context. Return selected IDs from each update's videos map as video_ids. Use an empty array if no clip meets this standard, and never invent video IDs.
 
 Return each supplied source ID for References. Use only the supplied evidence. Return an empty array if no items qualify.

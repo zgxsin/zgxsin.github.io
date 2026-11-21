@@ -1,0 +1,25 @@
+{
+  "slug": "3d-perception-and-mapping-digest",
+  "title": "3D Perception and Mapping Digest",
+  "category": "3d-perception-and-mapping",
+  "subject": "3D perception, localization, or mapping",
+  "video_alt": "3D perception or mapping demonstration",
+  "patterns": [
+    "\\b(?:SLAM|simultaneous locali[sz]ation and mapping|(?:visual|inertial|lidar|radar|rgb[- ]?d) odometry|pose[- ]graph(?: optimi[sz]ation)?|loop closure|place recognition|re[- ]?locali[sz]ation|(?:visual|lidar|robot|metric) locali[sz]ation)\\b",
+    "\\b(?:(?:3[- ]?D|dense|metric[- ]semantic|semantic|volumetric|occupancy|open[- ]vocabulary) (?:mapping|maps|reconstruction)|(?:3[- ]?D|point cloud) (?:perception|scene understanding|object detection|(?:semantic|instance) segmentation)|(?:3[- ]?D )?scene reconstruction|scene graphs?|semantic fusion|point cloud registration|structure[- ]from[- ]motion|multi[- ]view stereo|novel[- ]view synthesis)\\b",
+    "\\b(?:gaussian splats?|gaussian splatting|3DGS|neural radiance fields?|NeRFs?|TSDF|ESDF|COLMAP|RTAB[- ]?Map|nvblox|Open3D|gsplat)\\b"
+  ],
+  "sources": {
+    "arXiv Computer Vision": "https://rss.arxiv.org/rss/cs.CV",
+    "arXiv Robotics": "https://rss.arxiv.org/rss/cs.RO",
+    "ROS Discourse": "https://discourse.openrobotics.org/latest.rss",
+    "NVIDIA Robotics": "https://blogs.nvidia.com/blog/category/robotics/feed/",
+    "NVIDIA Developer": "https://developer.nvidia.com/blog/feed/",
+    "COLMAP Releases": "https://github.com/colmap/colmap/releases.atom",
+    "RTAB-Map Releases": "https://github.com/introlab/rtabmap/releases.atom",
+    "Open3D Releases": "https://github.com/isl-org/Open3D/releases.atom",
+    "gsplat Releases": "https://github.com/nerfstudio-project/gsplat/releases.atom",
+    "Hydra Releases": "https://github.com/MIT-SPARK/Hydra/releases.atom",
+    "Isaac ROS nvblox Releases": "https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_nvblox/releases.atom"
+  }
+}

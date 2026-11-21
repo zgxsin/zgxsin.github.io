@@ -56,15 +56,22 @@ def main():
     mode.add_argument("--sources-only", action="store_true", help="check feeds without using Gemini or writing a post")
     mode.add_argument("--post-path", action="store_true", help="print the edition path without generating the post")
     parser.add_argument("--date", type=date.fromisoformat, help="edition date supplied by the workflow")
+    parser.add_argument("--run-at", type=datetime.fromisoformat, help="shared ISO 8601 timestamp with a timezone offset")
     parser.add_argument("--review", action="store_true", help="review and revise the digest before writing the post")
     args = parser.parse_args()
+    if args.run_at is not None and args.run_at.utcoffset() is None:
+        parser.error("--run-at requires a timezone offset")
     profile_dir = PROFILES / args.profile
     profile = json.loads((profile_dir / "profile.json").read_text(encoding="utf-8"))
     slug = profile["slug"]
     now = datetime.now(timezone.utc)
-    day = (args.date or now.astimezone(ZoneInfo("Europe/Zurich")).date()).isoformat()
+    run_time = (args.run_at or now).astimezone(ZoneInfo("Europe/Zurich"))
+    day = (args.date or run_time.date()).isoformat()
     posts = Path("_posts")
     path = posts / f"{day}-{slug}.md"
+    if not path.exists():
+        timestamped_posts = sorted(posts.glob(f"{day}-[0-9][0-9][0-9][0-9]-{slug}.md"))
+        path = timestamped_posts[0] if timestamped_posts else posts / f"{day}-{run_time:%H%M}-{slug}.md"
     if args.post_path:
         print(path)
         return
@@ -89,7 +96,8 @@ def main():
     prompt = (profile_dir / "prompt.md").read_text(encoding="utf-8").strip()
     lessons_path = profile_dir / "learned-rules.json"
     learned = load_lessons(lessons_path)
-    post_options = {field: profile[field] for field in ("title", "category", "subject", "video_alt")}
+    post_options = {field: profile[field] for field in ("slug", "title", "category", "subject", "video_alt")}
+    post_options["run_time"] = run_time
     updates = select_updates(entries, key, model, prompt=drafting_prompt(prompt, learned)) if entries else []
     content = render(day, entries, updates, author=author, **post_options)
     if args.review:

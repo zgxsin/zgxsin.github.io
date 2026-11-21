@@ -11,6 +11,8 @@
   name: Robotics Hardware
 - slug: robotics-data-infrastructure
   name: Robotics Data Infrastructure
+- slug: 3d-perception-and-mapping
+  name: 3D Perception and Mapping
 - slug: agentic-development
   name: Agentic Development
 - slug: ai-generated

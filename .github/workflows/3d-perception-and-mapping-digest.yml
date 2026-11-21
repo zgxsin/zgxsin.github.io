@@ -1,0 +1,26 @@
+name: Publish daily 3D perception and mapping digest
+
+on:
+  schedule:
+    - cron: "30 9 * * *"
+      timezone: Europe/Zurich
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: 3d-perception-and-mapping-digest
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    uses: ./.github/workflows/publish-digest.yml
+    with:
+      profile: 3d-perception-and-mapping
+      review: true
+      timeout-minutes: 15
+      commit-prefix: Publish 3D perception and mapping digest
+    secrets:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

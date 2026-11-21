@@ -33,13 +33,13 @@ def render_video(video_id, alt):
     )
 
 
-def render(day, entries, updates, *, author, title, category, subject, video_alt):
+def render(day, entries, updates, *, author, slug, title, category, subject, video_alt, run_time):
     edition_date = datetime.fromisoformat(day)
     display_date = f"{edition_date:%B} {edition_date.day}, {edition_date.year}"
     lines = [
-        "---", f'title: "{title} | {display_date}"',
+        "---", f'title: "{title} | {display_date} at {run_time:%H:%M %Z}"',
         "published: true", f"date: {day}", f"author: {json.dumps(author, ensure_ascii=False)}",
-        f"categories: [{category}, ai-generated]", "---", "",
+        f"slug: {slug}", f"categories: [{category}, ai-generated]", "---", "",
     ]
     grouped = {section: [] for section in SECTIONS}
     used = set()

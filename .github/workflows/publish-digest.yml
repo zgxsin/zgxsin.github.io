@@ -38,11 +38,13 @@ jobs:
       - name: Check for today's edition
         id: edition
         run: |
-          day=$(TZ=Europe/Zurich date +%F)
-          post=$(python3 .github/digests/generate.py "$DIGEST_PROFILE" --date "$day" --post-path)
+          run_at=$(TZ=Europe/Zurich date +'%Y-%m-%dT%H:%M:%S%:z')
+          day="${run_at%%T*}"
+          post=$(python3 .github/digests/generate.py "$DIGEST_PROFILE" --run-at "$run_at" --post-path)
           {
             echo "day=$day"
             echo "post=$post"
+            echo "run_at=$run_at"
           } >> "$GITHUB_OUTPUT"
           if [[ -f "$post" ]]; then
             echo "The edition is already on master."
@@ -56,10 +58,10 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           DIGEST_MODEL: ${{ vars.DIGEST_MODEL }}
           DIGEST_AUTHOR: ${{ vars.DIGEST_AUTHOR }}
-          DIGEST_DAY: ${{ steps.edition.outputs.day }}
+          DIGEST_RUN_AT: ${{ steps.edition.outputs.run_at }}
           DIGEST_REVIEW: ${{ inputs.review }}
         run: |
-          args=("$DIGEST_PROFILE" --date "$DIGEST_DAY")
+          args=("$DIGEST_PROFILE" --run-at "$DIGEST_RUN_AT")
           if [[ "$DIGEST_REVIEW" == true ]]; then
             args+=(--review)
           fi

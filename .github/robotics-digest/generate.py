@@ -211,7 +211,8 @@ def render(day, entries, updates):
     display_date = f"{title:%B} {title.day}, {title.year}"
     lines = [
         "---", f'title: "Robotics Hardware and Sensors Digest | {display_date}"',
-        "published: true", f"date: {day}", "categories: [technology, ai-generated]", "---", "",
+        "published: true", f"date: {day}", 'author: "Gemini 4 Hydrogen"',
+        "categories: [technology, ai-generated]", "---", "",
     ]
     grouped = {section: [] for section in SECTIONS}
     used = set()

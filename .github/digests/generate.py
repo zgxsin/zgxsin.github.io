@@ -9,7 +9,7 @@ import re
 from zoneinfo import ZoneInfo
 
 from feeds import clean_url, collect
-from gemini import API_KEY_ENV, DEFAULT_MODEL, generate_json
+from gemini import API_KEY_ENV, DEFAULT_MODEL, GeminiClient
 from post import READINESS_LEVELS, render
 from review import drafting_prompt, load_lessons, review_issues, save_lessons
 
@@ -18,7 +18,7 @@ DIGEST_DIR = Path(__file__).resolve().parent
 PROFILES = DIGEST_DIR / "profiles"
 
 
-def select_updates(entries, key, model, *, prompt, include_readiness=True, revision=None):
+def select_updates(entries, gemini, *, prompt, include_readiness=True, revision=None):
     properties = {
         "id": {"type": "integer"},
         "section": {"type": "string", "description": "The plain-text heading for this story's group."},
@@ -68,7 +68,7 @@ def select_updates(entries, key, model, *, prompt, include_readiness=True, revis
         "items": {"type": "object", "properties": properties, "required": list(properties)},
     }
     input_data = sources if revision is None else {"sources": sources, **revision}
-    return generate_json(model=model, prompt=prompt, input_data=input_data, schema=schema, key=key)
+    return gemini.generate_json(prompt=prompt, input_data=input_data, schema=schema)
 
 
 def main():
@@ -118,8 +118,8 @@ def main():
     key = os.environ.get(API_KEY_ENV)
     if not key:
         raise SystemExit(f"Set {API_KEY_ENV} before running the digest.")
-    model = os.environ.get("DIGEST_MODEL") or DEFAULT_MODEL
-    author = os.environ.get("DIGEST_AUTHOR") or model.replace("-", " ").title()
+    gemini = GeminiClient(os.environ.get("DIGEST_MODEL") or DEFAULT_MODEL, key)
+    author = os.environ.get("DIGEST_AUTHOR")
     prompt = (profile_dir / "prompt.md").read_text(encoding="utf-8").strip()
     include_readiness = profile.get("include_readiness", True)
     if include_readiness:
@@ -130,13 +130,13 @@ def main():
     post_options = {field: profile[field] for field in ("slug", "title", "category", "subject", "video_alt")}
     post_options.update(include_readiness=include_readiness, link_titles=profile.get("link_titles", False))
     updates = select_updates(
-        entries, key, model, prompt=drafting_prompt(prompt, learned), include_readiness=include_readiness,
+        entries, gemini, prompt=drafting_prompt(prompt, learned), include_readiness=include_readiness,
     ) if entries else []
-    content = render(day, entries, updates, author=author, **post_options)
+    content = render(day, entries, updates, author=author or gemini.model.replace("-", " ").title(), **post_options)
     if args.review:
         review_prompt = (DIGEST_DIR / "review-prompt.md").read_text(encoding="utf-8").strip()
         issues = review_issues(
-            content, [entries[update["id"]] for update in updates], prompt=review_prompt, model=model, key=key,
+            content, [entries[update["id"]] for update in updates], prompt=review_prompt, gemini=gemini,
         )
         if issues:
             details = [issue["detail"] for issue in issues]
@@ -144,14 +144,16 @@ def main():
             learned = save_lessons(lessons_path, learned, issues)
             revision_prompt = (DIGEST_DIR / "revision-prompt.md").read_text(encoding="utf-8").strip()
             updates = select_updates(
-                entries, key, model, prompt=f"{drafting_prompt(prompt, learned)}\n\n{revision_prompt}",
+                entries, gemini, prompt=f"{drafting_prompt(prompt, learned)}\n\n{revision_prompt}",
                 include_readiness=include_readiness,
                 revision={"draft": content, "previous_selection": updates, "review_issues": details},
             )
-            content = render(day, entries, updates, author=author, **post_options)
+            content = render(
+                day, entries, updates, author=author or gemini.model.replace("-", " ").title(), **post_options,
+            )
             remaining = review_issues(
                 content, [entries[update["id"]] for update in updates],
-                prompt=review_prompt, model=model, key=key,
+                prompt=review_prompt, gemini=gemini,
             )
             if remaining:
                 save_lessons(lessons_path, learned, remaining)

@@ -2,8 +2,6 @@
 
 import json
 
-from gemini import generate_json
-
 
 LESSONS = {
     "facts": "Check every material number, unit, and date against the cited excerpt. Omit unsupported precision.",
@@ -41,7 +39,7 @@ def drafting_prompt(prompt, learned):
     return f"{prompt}\n\nDrafting rules learned from past reviews\n\n{rules}"
 
 
-def review_issues(post, sources, *, prompt, model, key):
+def review_issues(post, sources, *, prompt, gemini):
     schema = {
         "type": "object",
         "properties": {
@@ -60,8 +58,8 @@ def review_issues(post, sources, *, prompt, model, key):
         },
         "required": ["approved", "issues"],
     }
-    result = generate_json(
-        model=model, prompt=prompt, schema=schema, key=key,
+    result = gemini.generate_json(
+        prompt=prompt, schema=schema,
         input_data={"post": post, "sources": sources},
     )
     if not isinstance(result, dict) or type(result.get("approved")) is not bool:

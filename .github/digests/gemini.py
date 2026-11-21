@@ -9,7 +9,35 @@ from urllib.request import Request, urlopen
 
 
 DEFAULT_MODEL = "gemini-4-hydrogen"
+FALLBACK_MODELS = ("gemini-3.8-flash", "gemini-3.1-flash-lite")
 API_KEY_ENV = "GEMINI_API_KEY"
+RETRYABLE_HTTP_CODES = (500, 502, 503, 504)
+
+
+class GeminiHTTPError(Exception):
+    def __init__(self, status, message):
+        super().__init__(message)
+        self.status = status
+
+
+class GeminiClient:
+    def __init__(self, model, key):
+        self.model = model
+        self.models = tuple(dict.fromkeys((model, *FALLBACK_MODELS)))
+        self.key = key
+
+    def generate_json(self, *, prompt, input_data, schema):
+        models = self.models[self.models.index(self.model):]
+        for index, model in enumerate(models):
+            try:
+                result = _generate_json(model=model, prompt=prompt, input_data=input_data, schema=schema, key=self.key)
+            except GeminiHTTPError as error:
+                if error.status not in (*RETRYABLE_HTTP_CODES, 429) or index == len(models) - 1:
+                    raise SystemExit(str(error)) from None
+                print(f"{error} (trying backup model {models[index + 1]})", file=sys.stderr)
+                continue
+            self.model = model
+            return result
 
 
 def http_error_message(error, model, key):
@@ -33,7 +61,7 @@ def http_error_message(error, model, key):
     return f"{message}: {explanation}" if explanation else message
 
 
-def generate_json(*, model, prompt, input_data, schema, key):
+def _generate_json(*, model, prompt, input_data, schema, key):
     request = Request(
         "https://generativelanguage.googleapis.com/v1beta/interactions",
         data=json.dumps({
@@ -60,8 +88,8 @@ def generate_json(*, model, prompt, input_data, schema, key):
             break
         except HTTPError as error:
             message = http_error_message(error, model, key)
-            if error.code not in (500, 502, 503, 504) or delay is None:
-                raise SystemExit(message) from None
+            if error.code not in RETRYABLE_HTTP_CODES or delay is None:
+                raise GeminiHTTPError(error.code, message) from None
             print(f"{message} (retrying in {delay} seconds)", file=sys.stderr)
             sleep(delay)
     if result.get("status") != "completed":

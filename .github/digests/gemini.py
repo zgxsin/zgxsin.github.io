@@ -1,5 +1,6 @@
 """Send a structured generation request to the Gemini Interactions API."""
 
+from http.client import HTTPException
 import json
 import sys
 from time import sleep
@@ -9,6 +10,27 @@ from urllib.request import Request, urlopen
 
 DEFAULT_MODEL = "gemini-4-hydrogen"
 API_KEY_ENV = "GEMINI_API_KEY"
+
+
+def http_error_message(error, model, key):
+    message = f"Gemini returned HTTP {error.code} for model {model}"
+    try:
+        with error:
+            payload = json.load(error)
+    except (OSError, HTTPException, ValueError):
+        return message
+
+    details = payload.get("error") if isinstance(payload, dict) else None
+    if not isinstance(details, dict):
+        return message
+
+    parts = []
+    for field in ("code", "message"):
+        value = details.get(field)
+        if isinstance(value, str):
+            parts.append(" ".join(value.replace(key, "[redacted]").split()))
+    explanation = ": ".join(filter(None, parts))
+    return f"{message}: {explanation}" if explanation else message
 
 
 def generate_json(*, model, prompt, input_data, schema, key):
@@ -37,9 +59,10 @@ def generate_json(*, model, prompt, input_data, schema, key):
                 result = json.load(response)
             break
         except HTTPError as error:
+            message = http_error_message(error, model, key)
             if error.code not in (500, 502, 503, 504) or delay is None:
-                raise SystemExit(f"Gemini returned HTTP {error.code}.") from None
-            print(f"Gemini returned HTTP {error.code}. Retrying in {delay} seconds.", file=sys.stderr)
+                raise SystemExit(message) from None
+            print(f"{message} (retrying in {delay} seconds)", file=sys.stderr)
             sleep(delay)
     if result.get("status") != "completed":
         raise SystemExit(f"Gemini did not complete the draft ({result.get('status', 'no status')}).")

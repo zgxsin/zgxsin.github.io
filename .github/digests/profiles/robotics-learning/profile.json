@@ -1,0 +1,24 @@
+{
+  "slug": "robotics-learning-and-foundation-models-digest",
+  "title": "Robotics Learning and Foundation Models Digest",
+  "category": "robotics-learning",
+  "subject": "robot learning, robotics foundation models, or robotics MLOps",
+  "video_alt": "Robot learning or policy deployment demonstration",
+  "patterns": [
+    "\\b(?:robot(?:ic|ics)? learning|embodied (?:AI|intelligence|learning|reasoning)|physical AI|(?:robot(?:ic|ics)?|generalist|manipulation|locomotion|diffusion) polic(?:y|ies)|(?:imitation|reinforcement|offline reinforcement) learning|behavior(?:al)? cloning)\\b",
+    "\\b(?:foundation models?|world models?|(?:vision[- ]language[- ]action|VLA) (?:models?|polic(?:y|ies)|training)|vision[- ]language[- ]action|action[- ]conditioned|video[- ]conditioned|sim[- ]to[- ]real)\\b",
+    "\\b(?:MLOps|model (?:registries|registry|versioning|monitoring|deployment)|(?:policy|checkpoint) (?:evaluation|deployment|serving|monitoring|rollback)|distributed training|experiment tracking|LeRobot|Isaac Lab|Isaac GR00T|NVIDIA Cosmos|MuJoCo)\\b"
+  ],
+  "sources": {
+    "arXiv Robotics": "https://rss.arxiv.org/rss/cs.RO",
+    "arXiv Machine Learning": "https://rss.arxiv.org/rss/cs.LG",
+    "Berkeley AI Research": "https://bair.berkeley.edu/blog/feed.xml",
+    "Hugging Face Blog": "https://huggingface.co/blog/feed.xml",
+    "LeRobot Releases": "https://github.com/huggingface/lerobot/releases.atom",
+    "NVIDIA Robotics": "https://blogs.nvidia.com/blog/category/robotics/feed/",
+    "NVIDIA Developer": "https://developer.nvidia.com/blog/feed/",
+    "Isaac Lab Releases": "https://github.com/isaac-sim/IsaacLab/releases.atom",
+    "Isaac GR00T Releases": "https://github.com/NVIDIA/Isaac-GR00T/releases.atom",
+    "MuJoCo Releases": "https://github.com/google-deepmind/mujoco/releases.atom"
+  }
+}

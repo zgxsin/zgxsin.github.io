@@ -1,0 +1,26 @@
+name: Publish daily robotics learning and foundation models digest
+
+on:
+  schedule:
+    - cron: "0 10 * * *"
+      timezone: Europe/Zurich
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: robotics-learning-digest
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    uses: ./.github/workflows/publish-digest.yml
+    with:
+      profile: robotics-learning
+      review: true
+      timeout-minutes: 15
+      commit-prefix: Publish robotics learning digest
+    secrets:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

@@ -1,0 +1,23 @@
+{
+  "slug": "agentic-development-digest",
+  "title": "Agentic Development Digest",
+  "category": "agentic-development",
+  "subject": "agentic development",
+  "video_alt": "Agentic development workflow demonstration",
+  "patterns": [
+    "\\b(?:agentic (?:coding|development|engineering|software engineering|workflows?)|(?:AI|coding|software(?: engineering)?|developer) agents?|agent[- ]assisted (?:coding|development)|agent (?:mode|harness(?:es)?|skills?|workflows?|evals?|orchestration))\\b",
+    "\\b(?:codex|claude code|github copilot|copilot cli|gemini cli|cursor agent|opencode|aider)\\b",
+    "\\b(?:AGENTS\\.md|CLAUDE\\.md|SKILL\\.md|model context protocol|MCP (?:servers?|tools?)|subagents?|harness engineering|context engineering)\\b"
+  ],
+  "sources": {
+    "OpenAI Engineering": "https://openai.com/news/engineering/rss.xml",
+    "OpenAI Codex Releases": "https://github.com/openai/codex/releases.atom",
+    "Claude Code Releases": "https://github.com/anthropics/claude-code/releases.atom",
+    "GitHub Changelog": "https://github.blog/changelog/feed/",
+    "GitHub AI & ML": "https://github.blog/ai-and-ml/feed/",
+    "Gemini CLI Releases": "https://github.com/google-gemini/gemini-cli/releases.atom",
+    "Visual Studio Code": "https://code.visualstudio.com/feed.xml",
+    "Simon Willison's Weblog": "https://simonwillison.net/atom/everything/",
+    "arXiv Software Engineering": "https://rss.arxiv.org/rss/cs.SE"
+  }
+}

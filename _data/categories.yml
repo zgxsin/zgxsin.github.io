@@ -11,5 +11,7 @@
   name: Robotics Hardware
 - slug: robotics-data-infrastructure
   name: Robotics Data Infrastructure
+- slug: agentic-development
+  name: Agentic Development
 - slug: ai-generated
   name: AI-Generated

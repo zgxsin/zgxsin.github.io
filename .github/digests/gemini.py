@@ -4,7 +4,7 @@ from http.client import HTTPException
 import json
 import sys
 from time import sleep
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 
@@ -12,12 +12,13 @@ DEFAULT_MODEL = "gemini-4-hydrogen"
 FALLBACK_MODELS = ("gemini-3.8-flash", "gemini-3.1-flash-lite")
 API_KEY_ENV = "GEMINI_API_KEY"
 RETRYABLE_HTTP_CODES = (500, 502, 503, 504)
+REQUEST_TIMEOUT = 120
 
 
-class GeminiHTTPError(Exception):
-    def __init__(self, status, message):
+class GeminiRequestError(Exception):
+    def __init__(self, message, *, can_fallback):
         super().__init__(message)
-        self.status = status
+        self.can_fallback = can_fallback
 
 
 class GeminiClient:
@@ -31,8 +32,8 @@ class GeminiClient:
         for index, model in enumerate(models):
             try:
                 result = _generate_json(model=model, prompt=prompt, input_data=input_data, schema=schema, key=self.key)
-            except GeminiHTTPError as error:
-                if error.status not in (*RETRYABLE_HTTP_CODES, 429) or index == len(models) - 1:
+            except GeminiRequestError as error:
+                if not error.can_fallback or index == len(models) - 1:
                     raise SystemExit(str(error)) from None
                 print(f"{error} (trying backup model {models[index + 1]})", file=sys.stderr)
                 continue
@@ -83,15 +84,24 @@ def _generate_json(*, model, prompt, input_data, schema, key):
     )
     for delay in (5, 15, 30, None):
         try:
-            with urlopen(request, timeout=120) as response:
+            with urlopen(request, timeout=REQUEST_TIMEOUT) as response:
                 result = json.load(response)
             break
         except HTTPError as error:
             message = http_error_message(error, model, key)
             if error.code not in RETRYABLE_HTTP_CODES or delay is None:
-                raise GeminiHTTPError(error.code, message) from None
+                raise GeminiRequestError(
+                    message, can_fallback=error.code in (*RETRYABLE_HTTP_CODES, 429),
+                ) from None
             print(f"{message} (retrying in {delay} seconds)", file=sys.stderr)
             sleep(delay)
+        except (TimeoutError, URLError) as error:
+            if isinstance(error, URLError) and not isinstance(error.reason, TimeoutError):
+                raise
+            raise GeminiRequestError(
+                f"Gemini request timed out for model {model} (socket timeout: {REQUEST_TIMEOUT} seconds)",
+                can_fallback=True,
+            ) from None
     if result.get("status") != "completed":
         raise SystemExit(f"Gemini did not complete the draft ({result.get('status', 'no status')}).")
     return json.loads("".join(

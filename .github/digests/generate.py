@@ -128,7 +128,7 @@ def main():
     lessons_path = profile_dir / "learned-rules.json"
     learned = load_lessons(lessons_path)
     post_options = {field: profile[field] for field in ("slug", "title", "category", "subject", "video_alt")}
-    post_options.update(run_time=run_time, include_readiness=include_readiness, link_titles=profile.get("link_titles", False))
+    post_options.update(include_readiness=include_readiness, link_titles=profile.get("link_titles", False))
     updates = select_updates(
         entries, key, model, prompt=drafting_prompt(prompt, learned), include_readiness=include_readiness,
     ) if entries else []

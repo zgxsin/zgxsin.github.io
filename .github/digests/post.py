@@ -35,12 +35,12 @@ def render_video(video_id, alt, caption):
 
 def render(
     day, entries, updates, *, author, slug, title, category, subject, video_alt,
-    run_time, include_readiness=True, link_titles=False,
+    include_readiness=True, link_titles=False,
 ):
     edition_date = datetime.fromisoformat(day)
     display_date = f"{edition_date:%B} {edition_date.day}, {edition_date.year}"
     lines = [
-        "---", f'title: "{title} | {display_date} at {run_time:%H:%M %Z}"',
+        "---", f'title: "{title} | {display_date}"',
         "published: true", f"date: {day}", f"author: {json.dumps(author, ensure_ascii=False)}",
         f"slug: {slug}", f"categories: [{category}, ai-generated]", "---", "",
     ]

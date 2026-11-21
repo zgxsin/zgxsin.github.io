@@ -1,5 +1,5 @@
 ---
-title: "3D Perception and Mapping Digest | November 21, 2026 at 03:30 CET"
+title: "3D Perception and Mapping Digest | November 21, 2026"
 published: true
 date: 2026-11-21
 author: "OpenAI Codex"

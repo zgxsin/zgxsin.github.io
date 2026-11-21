@@ -1,5 +1,5 @@
 ---
-title: "Robotics Data Infrastructure and Management Digest | November 21, 2026 at 03:30 CET"
+title: "Robotics Data Infrastructure and Management Digest | November 21, 2026"
 published: true
 date: 2026-11-21
 author: "OpenAI Codex"

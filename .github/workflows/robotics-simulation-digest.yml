@@ -1,0 +1,26 @@
+name: Publish daily robotics simulation and transfer digest
+
+on:
+  schedule:
+    - cron: "0 11 * * *"
+      timezone: Europe/Zurich
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: robotics-simulation-digest
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    uses: ./.github/workflows/publish-digest.yml
+    with:
+      profile: robotics-simulation
+      review: true
+      timeout-minutes: 15
+      commit-prefix: Publish robotics simulation and transfer digest
+    secrets:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

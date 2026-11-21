@@ -1,0 +1,25 @@
+{
+  "slug": "robotics-simulation-and-transfer-digest",
+  "title": "Robotics Simulation and Transfer Digest",
+  "category": "robotics-simulation",
+  "subject": "robotics simulation, sim-to-real, or real-to-sim",
+  "video_alt": "Robotics simulation or transfer demonstration",
+  "patterns": [
+    "\\b(?:sim(?:ulation)?[- ]to[- ]real|real[- ]to[- ]sim(?:ulation)?|sim2real|real2sim(?:2real)?|reality gap|domain randomi[sz]ation|system identification|digital twins?)\\b",
+    "\\b(?:(?:robot(?:ics)?|physics|sensor|contact|differentiable|parallel) simulat(?:ors?|ion)|hardware[- ]in[- ]the[- ]loop|software[- ]in[- ]the[- ]loop|physics engines?|simulation fidelity|simulation calibration)\\b",
+    "\\b(?:Isaac Sim|Isaac Lab|MuJoCo|MJX|MuJoCo Warp|Gazebo|Webots|PyBullet|CoppeliaSim|SAPIEN|ManiSkill|Newton physics)\\b|\\bgz-sim"
+  ],
+  "sources": {
+    "arXiv Robotics": "https://rss.arxiv.org/rss/cs.RO",
+    "arXiv Computer Vision": "https://rss.arxiv.org/rss/cs.CV",
+    "Berkeley AI Research": "https://bair.berkeley.edu/blog/feed.xml",
+    "ROS Discourse": "https://discourse.openrobotics.org/latest.rss",
+    "NVIDIA Developer": "https://developer.nvidia.com/blog/feed/",
+    "Isaac Sim Releases": "https://github.com/isaac-sim/IsaacSim/releases.atom",
+    "Isaac Lab Releases": "https://github.com/isaac-sim/IsaacLab/releases.atom",
+    "MuJoCo Releases": "https://github.com/google-deepmind/mujoco/releases.atom",
+    "Gazebo Sim Releases": "https://github.com/gazebosim/gz-sim/releases.atom",
+    "Webots Releases": "https://github.com/cyberbotics/webots/releases.atom",
+    "ManiSkill Releases": "https://github.com/haosulab/ManiSkill/releases.atom"
+  }
+}

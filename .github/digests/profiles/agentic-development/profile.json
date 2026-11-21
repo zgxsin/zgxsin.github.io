@@ -4,6 +4,7 @@
   "category": "agentic-development",
   "subject": "agentic development",
   "video_alt": "Agentic development workflow demonstration",
+  "lookback_days": 7,
   "patterns": [
     "\\b(?:agentic (?:coding|development|engineering|software engineering|workflows?)|(?:AI|coding|software(?: engineering)?|developer) agents?|agent[- ]assisted (?:coding|development)|agent (?:mode|harness(?:es)?|skills?|workflows?|evals?|orchestration))\\b",
     "\\b(?:codex|claude code|github copilot|copilot cli|gemini cli|cursor agent|opencode|aider)\\b",

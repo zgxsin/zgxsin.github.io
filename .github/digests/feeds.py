@@ -131,7 +131,7 @@ def read_json_entries(name, data, topic, feed_format):
     return entries
 
 
-def collect(now, seen, *, sources, topic):
+def collect(now, seen, *, sources, topic, lookback_days=3):
     entries = {}
     failures = []
     with ThreadPoolExecutor(max_workers=len(sources)) as pool:
@@ -139,10 +139,11 @@ def collect(now, seen, *, sources, topic):
         for name, future in feeds.items():
             try:
                 config = sources[name]
-                lookback_days = 3 if isinstance(config, str) else config.get("lookback_days", 3)
+                window_days = lookback_days if isinstance(config, str) else config.get("lookback_days", lookback_days)
+                cutoff = now - timedelta(days=window_days)
                 recent = [
                     entry for entry in future.result()
-                    if now - timedelta(days=lookback_days) <= entry["published"] <= now and entry["url"] not in seen
+                    if cutoff <= entry["published"] <= now and entry["url"] not in seen
                 ]
                 for entry in sorted(recent, key=lambda item: item["published"], reverse=True)[:5]:
                     entries.setdefault(entry["url"], entry)

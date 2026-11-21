@@ -2,7 +2,7 @@
 
 Each folder under `profiles/` defines a digest. Its `profile.json` sets the post slug, title, category, quiet-day wording, video alt text, feed URLs, and case-insensitive regular expressions for matching feed entries. Its `prompt.md` defines how to select and summarize updates.
 
-Sources can use a plain RSS or Atom URL, or an object with a `url`, optional `format` (`xml`, `json-feed`, or `smartrecruiters`), and optional `lookback_days` (defaults to three). Set `include_readiness` to `false` to use the profile's own layout without readiness ratings. Set `link_titles` to `true` to link story titles to their source pages.
+Sources can use a plain RSS or Atom URL, or an object with a `url`, optional `format` (`xml`, `json-feed`, or `smartrecruiters`), and optional `lookback_days` to override the profile's window. The profile's `lookback_days` defaults to three. Set `include_readiness` to `false` to use the profile's own layout without readiness ratings. Set `link_titles` to `true` to link story titles to their source pages.
 
 The jobs profile's `search_links` are links readers can open for additional results. They appear in each edition and are separate from the feeds fetched by the workflow.
 

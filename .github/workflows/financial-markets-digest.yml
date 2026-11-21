@@ -2,8 +2,9 @@ name: Publish daily financial markets digest
 
 on:
   schedule:
-    - cron: "30 7 * * *"
-      timezone: Europe/Zurich
+    # 15:00 CET (UTC+1) year-round.
+    - cron: "0 14 * * *"
+      timezone: UTC
   workflow_dispatch:
 
 permissions:

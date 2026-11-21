@@ -4,6 +4,7 @@
   "category": "robotics-simulation",
   "subject": "robotics simulation, sim-to-real, or real-to-sim",
   "video_alt": "Robotics simulation or transfer demonstration",
+  "lookback_days": 7,
   "patterns": [
     "\\b(?:sim(?:ulation)?[- ]to[- ]real|real[- ]to[- ]sim(?:ulation)?|sim2real|real2sim(?:2real)?|reality gap|domain randomi[sz]ation|system identification|digital twins?)\\b",
     "\\b(?:(?:robot(?:ics)?|physics|sensor|contact|differentiable|parallel) simulat(?:ors?|ion)|hardware[- ]in[- ]the[- ]loop|software[- ]in[- ]the[- ]loop|physics engines?|simulation fidelity|simulation calibration)\\b",

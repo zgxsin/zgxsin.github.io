@@ -1,8 +1,8 @@
-name: Publish daily 3D perception and mapping digest
+name: Publish weekly 3D perception and mapping digest
 
 on:
   schedule:
-    - cron: "30 9 * * *"
+    - cron: "0 9 * * FRI"
       timezone: Europe/Zurich
   workflow_dispatch:
 

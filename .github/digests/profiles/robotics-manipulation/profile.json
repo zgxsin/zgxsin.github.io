@@ -4,6 +4,7 @@
   "category": "robotics-manipulation",
   "subject": "robotic manipulation or grasping",
   "video_alt": "Robotic manipulation demonstration",
+  "lookback_days": 7,
   "patterns": [
     "\\b(?:robot(?:ic)? manipulation|dexterous (?:hands?|manipulation)|in[- ]hand manipulation|(?:mobile|bimanual|whole[- ]body|contact[- ]rich|deformable object) manipulat(?:ion|ors?)|robotic grasping|grasp(?:ing| (?:planning|synthesis|detection|generation|stability))|regrasp(?:ing)?|pick[- ]and[- ]place|bin[- ]picking|robotic assembly)\\b",
     "\\b(?:task[- ]and[- ]motion planning|tactile (?:sensing|feedback|servoing)|force (?:control|feedback)|impedance control|visual servoing|peg[- ]in[- ]hole|end[- ]effectors?|grippers?|robot(?:ic)? arms?|MoveIt(?: ?2)?|ManiSkill|RoboCasa|LIBERO)\\b",

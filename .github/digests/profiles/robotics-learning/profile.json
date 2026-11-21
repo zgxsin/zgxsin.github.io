@@ -4,6 +4,7 @@
   "category": "robotics-learning",
   "subject": "robot learning, robotics foundation models, or robotics MLOps",
   "video_alt": "Robot learning or policy deployment demonstration",
+  "lookback_days": 7,
   "patterns": [
     "\\b(?:robot(?:ic|ics)? learning|embodied (?:AI|intelligence|learning|reasoning)|physical AI|(?:robot(?:ic|ics)?|generalist|manipulation|locomotion|diffusion) polic(?:y|ies)|(?:imitation|reinforcement|offline reinforcement) learning|behavior(?:al)? cloning)\\b",
     "\\b(?:foundation models?|world models?|(?:vision[- ]language[- ]action|VLA) (?:models?|polic(?:y|ies)|training)|vision[- ]language[- ]action|action[- ]conditioned|video[- ]conditioned|sim[- ]to[- ]real)\\b",

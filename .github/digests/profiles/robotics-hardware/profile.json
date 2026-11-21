@@ -4,6 +4,7 @@
   "category": "robotics-hardware",
   "subject": "robotics hardware or sensor",
   "video_alt": "Hardware demonstration",
+  "lookback_days": 7,
   "patterns": [
     "\\b(?:sensors?|sensing|li[ -]?dars?|radars?|depth cameras?|stereo vision|rgb(?:[ -]?d)?|time[ -]of[ -]flight|tof|tactile|vision modules?|cameras?)\\b",
     "\\b(?:grippers?|actuat\\w+|servos?|motors?|motor drives?|gearboxes|encoders?|inertial|imus?|robotic hands?|end[ -]effectors?)\\b",

@@ -4,6 +4,7 @@
   "category": "robotics-datasets-and-benchmarks",
   "subject": "robotics dataset or benchmark",
   "video_alt": "Robotics dataset collection or benchmark demonstration",
+  "lookback_days": 7,
   "patterns": [
     "^(?=.*\\b(?:robots?|robotics|robotic|robot learning|embodied AI|physical AI|manipulation|locomotion|robot navigation|visual odometry|SLAM|autonomous driving|sim[- ]to[- ]real)\\b).*\\b(?:data[ -]?sets?|benchmarks?|leaderboards?|task suites?|evaluation (?:suites?|protocols?)|demonstration corpora)\\b",
     "\\b(?:LeRobotDataset|Open X[- ]Embodiment|RoboCasa|RoboArena|RoboLab|ManiSkill|Meta[- ]World|LIBERO|RLBench|Habitat Challenge|DROID dataset|BEHAVIOR[- ]1K)\\b"

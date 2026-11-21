@@ -93,8 +93,15 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "$message"
           gh auth setup-git --hostname github.com
-          git pull --rebase origin master
-          git push origin HEAD:refs/heads/master
+          # Digests scheduled together can advance master between the pull and push.
+          for attempt in 1 2 3; do
+            git pull --rebase origin master
+            if git push origin HEAD:refs/heads/master; then
+              exit 0
+            fi
+            echo "Digest push attempt $attempt failed." >&2
+          done
+          exit 1
       - name: Trigger the Pages deploy
         env:
           GH_TOKEN: ${{ github.token }}

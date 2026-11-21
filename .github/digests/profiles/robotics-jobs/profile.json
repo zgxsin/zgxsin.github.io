@@ -4,6 +4,7 @@
   "category": "robotics-jobs",
   "subject": "robotics job",
   "video_alt": "Robotics job listing demonstration",
+  "lookback_days": 7,
   "include_readiness": false,
   "link_titles": true,
   "search_links": {

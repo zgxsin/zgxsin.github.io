@@ -1,8 +1,8 @@
-name: Publish daily robotics simulation and transfer digest
+name: Publish weekly robotics simulation and transfer digest
 
 on:
   schedule:
-    - cron: "0 11 * * *"
+    - cron: "0 9 * * SAT"
       timezone: Europe/Zurich
   workflow_dispatch:
 

@@ -107,7 +107,9 @@ def main():
         for url in re.findall(r"https?://[^\s<>)]+", post.read_text())
     }
     topic = re.compile("|".join(profile["patterns"]), re.I)
-    entries = collect(now, seen, sources=profile["sources"], topic=topic)
+    entries = collect(
+        now, seen, sources=profile["sources"], topic=topic, lookback_days=profile.get("lookback_days", 3),
+    )
     print(f"Found {len(entries)} recent candidate updates.")
     if args.sources_only:
         for entry in entries:

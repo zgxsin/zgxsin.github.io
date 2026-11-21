@@ -4,6 +4,7 @@
   "category": "3d-perception-and-mapping",
   "subject": "3D perception, localization, or mapping",
   "video_alt": "3D perception or mapping demonstration",
+  "lookback_days": 7,
   "patterns": [
     "\\b(?:SLAM|simultaneous locali[sz]ation and mapping|(?:visual|inertial|lidar|radar|rgb[- ]?d) odometry|pose[- ]graph(?: optimi[sz]ation)?|loop closure|place recognition|re[- ]?locali[sz]ation|(?:visual|lidar|robot|metric) locali[sz]ation)\\b",
     "\\b(?:(?:3[- ]?D|dense|metric[- ]semantic|semantic|volumetric|occupancy|open[- ]vocabulary) (?:mapping|maps|reconstruction)|(?:3[- ]?D|point cloud) (?:perception|scene understanding|object detection|(?:semantic|instance) segmentation)|(?:3[- ]?D )?scene reconstruction|scene graphs?|semantic fusion|point cloud registration|structure[- ]from[- ]motion|multi[- ]view stereo|novel[- ]view synthesis)\\b",

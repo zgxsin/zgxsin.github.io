@@ -1,8 +1,8 @@
-name: Publish daily robotics data infrastructure and management digest
+name: Publish weekly robotics data infrastructure and management digest
 
 on:
   schedule:
-    - cron: "30 8 * * *"
+    - cron: "0 9 * * TUE"
       timezone: Europe/Zurich
   workflow_dispatch:
 

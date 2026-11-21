@@ -4,6 +4,7 @@
   "category": "robotics-data-infrastructure",
   "subject": "robotics data infrastructure or data management",
   "video_alt": "Robotics data workflow demonstration",
+  "lookback_days": 7,
   "patterns": [
     "\\b(?:data[ -]?sets?|data[ -](?:infrastructure|management|collection|capture|curation|annotation|labeling|quality|validation|governance|lineage|versioning|pipelines?|formats?|storage|ingestion))\\b",
     "\\b(?:telemetry|logging|log replay|rosbags?2?|mcap|lerobot|rlds|fleet (?:observability|monitoring)|synthetic data)\\b"

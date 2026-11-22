@@ -33,10 +33,24 @@ def render_video(video_id, alt, caption):
     )
 
 
+def validate_selection(updates, source_count):
+    if not isinstance(updates, list) or len(updates) > 6:
+        raise ValueError("Return an array of at most six updates.")
+    used = set()
+    for position, update in enumerate(updates, start=1):
+        index = update.get("id") if isinstance(update, dict) else None
+        if type(index) is not int or not 0 <= index < source_count:
+            raise ValueError(f"Update {position} must use a supplied integer source ID.")
+        if index in used:
+            raise ValueError(f"Update {position} repeats source ID {index}.")
+        used.add(index)
+
+
 def render(
     day, entries, updates, *, author, slug, title, category, subject, video_alt,
     include_readiness=True, link_titles=False,
 ):
+    validate_selection(updates, len(entries))
     edition_date = datetime.fromisoformat(day)
     display_date = f"{edition_date:%B} {edition_date.day}, {edition_date.year}"
     lines = [
@@ -45,21 +59,15 @@ def render(
         f"slug: {slug}", f"categories: [{category}, ai-generated]", "---", "",
     ]
     grouped = {}
-    used = set()
-    if not isinstance(updates, list) or len(updates) > 6:
-        raise ValueError("Invalid digest selection")
     for update in updates:
         index = update["id"]
-        if type(index) is not int or not 0 <= index < len(entries) or index in used:
-            raise ValueError("Invalid or duplicate digest source index")
-        used.add(index)
         if include_readiness and update["readiness"] not in READINESS_LEVELS:
             raise ValueError("Invalid application readiness level")
         section = " ".join(update["section"].split())
         if not section or section.casefold() in {"application readiness", "references"}:
             raise ValueError("Invalid digest section heading")
         grouped.setdefault(section, []).append((entries[index], update))
-    if not used:
+    if not updates:
         lines.extend([f"No new {subject} updates met the criteria in today's source scan.", ""])
         return "\n".join(lines)
 

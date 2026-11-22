@@ -6,11 +6,12 @@ import json
 import os
 from pathlib import Path
 import re
+import sys
 from zoneinfo import ZoneInfo
 
 from feeds import clean_url, collect
 from gemini import API_KEY_ENV, DEFAULT_MODEL, GeminiClient
-from post import READINESS_LEVELS, render
+from post import READINESS_LEVELS, render, validate_selection
 from review import drafting_prompt, load_lessons, review_issues, save_lessons
 
 
@@ -20,7 +21,10 @@ PROFILES = DIGEST_DIR / "profiles"
 
 def select_updates(entries, gemini, *, prompt, include_readiness=True, revision=None):
     properties = {
-        "id": {"type": "integer"},
+        "id": {
+            "type": "integer",
+            "description": f"Copy the source's supplied ID (0 through {len(entries) - 1}). Use each ID at most once.",
+        },
         "section": {"type": "string", "description": "The plain-text heading for this story's group."},
         "summary": {"type": "string"},
         "why_it_matters": {"type": "string"},
@@ -68,7 +72,21 @@ def select_updates(entries, gemini, *, prompt, include_readiness=True, revision=
         "items": {"type": "object", "properties": properties, "required": list(properties)},
     }
     input_data = sources if revision is None else {"sources": sources, **revision}
-    return gemini.generate_json(prompt=prompt, input_data=input_data, schema=schema)
+    updates = gemini.generate_json(prompt=prompt, input_data=input_data, schema=schema)
+    try:
+        validate_selection(updates, len(entries))
+    except ValueError as error:
+        print(f"Invalid digest selection from {gemini.model}. {error} Retrying once.", file=sys.stderr)
+        retry_prompt = (
+            f"{prompt}\n\nThe previous selection was invalid. {error} "
+            "Return the complete selection, copying each story's ID from the supplied sources and using it only once."
+        )
+        updates = gemini.generate_json(prompt=retry_prompt, input_data=input_data, schema=schema)
+        try:
+            validate_selection(updates, len(entries))
+        except ValueError as retry_error:
+            raise SystemExit(f"Invalid digest selection from {gemini.model} after retry. {retry_error}") from None
+    return updates
 
 
 def main():

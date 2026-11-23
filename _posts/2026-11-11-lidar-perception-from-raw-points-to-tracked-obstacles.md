@@ -19,7 +19,9 @@ This post follows the data through that chain in the order it is processed, then
 
 Calibration is not a runtime step, but every later stage consumes its result, so it comes first.
 
-Two ideas that later sections build on are introduced here first: the bird's-eye view, the frame most of the processing ends up in, and hand-eye calibration, the standard way to find the transform between two sensors that do not see the same thing.
+## Background concepts
+
+Two ideas that later sections build on are introduced first: the bird's-eye view, the frame most of the processing ends up in, and hand-eye calibration, the standard way to find the transform between two sensors that do not see the same thing.
 
 ### Bird's-eye view (BEV)
 

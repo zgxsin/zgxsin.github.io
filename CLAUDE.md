@@ -23,6 +23,11 @@ and served at https://www.guoxiang-zhou.xyz.
   and the label on each post, and are not part of the URL. Optional
   `image: /assets/images/posts/<slug>/cover.png` sets the social preview image.
 - Start with `* TOC` + `{:toc}` on the next line; the layout turns it into the side panel.
+- Heading levels follow the content logic: `##` for top-level sections (never `#`, which is
+  the post title), `###` for topics within a section, `####` for a topic that belongs to the
+  one above it (a variant, a failure mode and its fix, a stage of a process). Avoid long runs
+  of sibling headings; group related ones under a parent. Heading text sets the anchor, so
+  changing levels is safe but renaming a heading breaks `#links` to it.
 - Math: `$...$` inline and `$$...$$` display (MathJax 4, client-side). Escape `_` and `*`
   inside inline math with a backslash when kramdown would read them as emphasis
   (`\mathbf{p}\_1`). Do not escape inside `$$` display blocks: kramdown passes them through

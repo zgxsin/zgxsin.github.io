@@ -20,7 +20,8 @@ This post covers:
 1. The interaction loop and the formal model behind it (the Markov decision process).
 2. The components every RL method is built from: policy, reward, return, value function, model.
 3. The main algorithm families, with PPO in some detail, since it trains most robot controllers today.
-4. How RL produces a locomotion controller for a legged robot: simulation, rewards, observations, domain randomization, teacher-student training, and deployment.
+4. Learning from demonstrations instead of reward: imitation learning, behavior cloning, DAgger, inverse RL and adversarial imitation, offline RL.
+5. How RL produces a locomotion controller for a legged robot: simulation, rewards, observations, domain randomization, teacher-student training, and deployment.
 
 ## The interaction loop
 
@@ -186,7 +187,7 @@ Two main sub-families:
 
 With thousands of parallel simulated robots, samples are cheap and stability matters more than sample efficiency. That is why PPO is the default for legged locomotion.
 
-### PPO
+#### PPO
 
 The naive policy gradient has a failure mode: one large update step can wreck a good policy, and since the next batch of data comes from that wrecked policy, it may never recover. **Proximal Policy Optimization (PPO)** keeps each update close to the policy that collected the data.
 
@@ -254,6 +255,92 @@ for iteration in range(num_iterations):
 
 With a GPU simulator, $N$ is 4096 robots and $T$ is 24 steps, so each iteration collects about 100,000 transitions in well under a second of wall time.
 
+## Learning from demonstrations
+
+Everything so far learns from reward alone. Often there is a cheaper signal: someone who can already do the task. A human can teleoperate a robot arm to fold a towel, a model-based controller can already walk, a policy trained in simulation with perfect information already knows what to do. **Imitation learning (IL)** learns a policy from such demonstrations instead of, or in addition to, a reward.
+
+It sits between supervised learning and RL. Like supervised learning it gets the correct action as a label, so it needs no reward design and no exploration. Like RL its output is a policy that acts in a loop, and its own actions decide which states it sees next. That second property is where the difficulty comes from.
+
+```mermaid
+flowchart TB
+  ilRoot["Learning from demonstrations"] --> ilBC["Behavior cloning<br/>supervised on (s, a*)"]
+  ilRoot --> ilIRL["Inverse RL<br/>recover the reward, then RL"]
+  ilRoot --> ilAdv["Adversarial imitation<br/>GAIL, AMP"]
+  ilBC --> ilDAg["DAgger<br/>expert labels the learner's states"]
+```
+
+### Behavior cloning
+
+**Behavior cloning (BC)** is the direct approach. Record expert state-action pairs $\mathcal{D} = \lbrace (s\_i, a\_i^\*) \rbrace$ and fit the policy to them by maximum likelihood:
+
+$$
+\theta^* = \arg\min_\theta \ \mathbb{E}_{(s, a^*) \sim \mathcal{D}} \left[ -\log \pi_\theta(a^* \mid s) \right] \tag{8}
+$$
+
+For a Gaussian policy with fixed variance, Eq. (8) is plain mean squared error between predicted and expert actions. No simulator, no reward, no rollouts: it is regression, and it trains in minutes. The first well-known example, the Autonomous Land Vehicle In a Neural Network (ALVINN) in 1989, drove a van by mapping camera images to steering angles recorded from a human driver. Today BC is the standard way to train manipulation policies from teleoperated demonstrations.
+
+Two practical issues shape modern BC:
+
+- **Multimodal demonstrations.** If half the demonstrations pass an obstacle on the left and half on the right, the mean squared error minimizer is the average: straight into the obstacle. Policies that represent a full action distribution avoid this, for example mixture models, discretized actions, or **diffusion policies**, which generate the action by iterative denoising like an image diffusion model.
+- **Action chunking.** Predicting a short sequence of future actions at once, instead of one action per step, makes the motion smoother and reduces the number of decisions at which errors can enter.
+
+#### Distribution shift and compounding errors
+
+BC trains on states from the expert's distribution and is tested on states from its own. These are not the same. The learned policy makes a small error, which puts it in a slightly unfamiliar state, where its error is larger, which puts it in an even less familiar state. The expert never made these mistakes, so the demonstrations contain no example of how to recover from them.
+
+The result is that errors compound. If the policy errs with probability $\epsilon$ per step on states the expert visits, the expected number of mistakes over a horizon of $T$ steps can grow as $\epsilon T^2$, not $\epsilon T$ as it would for independent predictions. A classifier with 99% accuracy is excellent; a driving policy that is 99% accurate per step at 10 Hz may leave the road within seconds.
+
+{% include figures/rl-compounding-error.html caption="Compounding error in imitation learning, an illustrative one-dimensional example. Each step adds a small imitation error. Inside the green band, the states the expert visited, the behavior cloning policy has learned how to correct; outside it, it has never seen a correction and drifts. DAgger trains on labels for the states the learner actually reaches, so it corrects there too. Below a threshold error both look fine, which is why behavior cloning can look good in validation and still fail in deployment." %}
+
+Common remedies, roughly in order of effort:
+
+- **Noise injection during demonstration.** Perturb the expert while recording, as in Disturbances for Augmenting Robot Trajectories (DART), so the data includes recoveries from small deviations.
+- **More and more varied data.** Cover more of the states the learner will reach. This is the main lever in large-scale robot manipulation datasets.
+- **Interactive data collection**, which fixes the problem at its root: Dataset Aggregation (DAgger).
+
+#### DAgger
+
+DAgger collects labels on the learner's own state distribution:
+
+1. Train $\pi\_1$ with BC on the expert demonstrations.
+2. Run the current policy $\pi\_i$ and record the states it visits.
+3. Ask the expert what it would have done in each of those states, and add these pairs to the dataset.
+4. Retrain on the aggregated dataset and repeat from step 2.
+
+After a few iterations the dataset contains exactly the states the learner ends up in, including the ones it reaches by its own mistakes, labeled with the correct recovery. The mistake bound becomes linear in $T$ again.
+
+The catch is step 3: the expert must be available on demand and able to label arbitrary states. That is awkward for a human, who has to say what they would do in a state they are not controlling. It is trivial when the expert is itself a program, which is why DAgger is the standard choice for distilling one policy into another, as in the [teacher-student training](#teacher-student-training) of locomotion policies.
+
+### Inverse RL and adversarial imitation
+
+BC copies actions. **Inverse reinforcement learning (IRL)** instead asks why the expert acts the way it does: it infers a reward function under which the demonstrations are optimal, then trains a policy on that reward with ordinary RL. A recovered reward transfers to situations the demonstrations never covered, and the RL step lets the policy recover from its own mistakes, since it explores. The problem is ill-posed (a zero reward makes every behavior optimal), so methods add assumptions such as maximum entropy, and the inner RL loop makes it expensive.
+
+**Generative adversarial imitation learning (GAIL)** skips the explicit reward. A discriminator $D(s, a)$ is trained to tell expert state-action pairs from the policy's, and the policy is trained with RL to fool it, using a reward such as
+
+$$
+r_t = -\log \left( 1 - D(s_t, a_t) \right) \tag{9}
+$$
+
+which is large when the discriminator mistakes the policy for the expert. At convergence the policy's state-action distribution matches the expert's. Because it is trained with RL on its own rollouts, it does not suffer from compounding errors the way BC does.
+
+For legged robots this idea is most useful as a **style reward**. Writing down what a natural gait looks like is hard, as the [reward design](#reward-design-for-locomotion) section shows. Motion capture of a human or a dog shows it directly. **Adversarial motion priors (AMP)** train a discriminator on state transitions $(s\_t, s\_{t+1})$ from motion clips, without needing the actions, which motion capture does not provide. The discriminator reward is added to the task reward: the task term says where to go, the style term says how to move. A single prior can cover many clips, and the policy picks whichever motion suits the task. **DeepMimic**, the earlier approach, rewards tracking one reference clip frame by frame, which is more precise but needs a clip for every skill.
+
+### Offline RL
+
+**Offline RL** is the other way to learn from a fixed dataset. Unlike BC, the data includes rewards, may come from mediocre or mixed behavior, and the goal is to do better than the data rather than copy it. The algorithms are the value-based and actor-critic methods from above, run on a dataset with no further interaction. Their main failure is the $\max\_a$ in the TD target, Eq. (4): the Q-function is wrong for actions the dataset never contains, the max picks exactly those errors, and with no new data nothing corrects them. Offline methods therefore keep the policy close to the actions in the dataset, which makes them a blend of RL and BC.
+
+### Choosing an approach
+
+| | Needs | Interaction during training | Main weakness |
+| --- | --- | --- | --- |
+| Behavior cloning | Expert demonstrations | None | Compounding errors, multimodal data |
+| DAgger | An expert that can label any state | Learner rollouts, expert queries | Expert must be on call |
+| Inverse RL, GAIL, AMP | Demonstrations (AMP: states only) | Full RL in a simulator or on the robot | Cost and instability of RL plus a discriminator |
+| Offline RL | Logged data with rewards | None | Overestimated values for unseen actions |
+| RL | A reward and a simulator or robot | Full | Reward design, sample cost |
+
+In practice they are combined. A policy pre-trained with BC gives RL a starting point that already does something sensible, which matters most for sparse rewards that a random policy would never reach. Demonstrations can also be kept in the replay buffer of an off-policy method, or added as an auxiliary BC loss. In locomotion the usual order is the reverse: RL first, to produce a strong teacher in simulation, then imitation, to transfer it into a policy that runs on the real sensors.
+
 ## RL for robot controllers
 
 ### Why learn a controller
@@ -295,7 +382,7 @@ flowchart TB
   rlExp --> rlRob["Robot<br/>zero-shot deployment"]
 ```
 
-### Reward design for locomotion
+#### Reward design for locomotion
 
 A locomotion reward is a weighted sum of many terms: a few that define the task and many that regularize the motion. Without the regularizers, the policy usually finds an odd gait that works in simulation and breaks hardware.
 
@@ -313,7 +400,7 @@ A locomotion reward is a weighted sum of many terms: a few that define the task 
 
 The tracking terms use $\exp(-\text{error}^2)$ rather than $-\text{error}^2$ so that they are bounded and positive, which keeps the reward from being dominated by large errors early in training. Tuning the weights is iterative: train, watch the gait, find what looks wrong, add or reweight a term.
 
-### Closing the sim-to-real gap
+#### Closing the sim-to-real gap
 
 A policy that walks in simulation can fail on the robot, because simulation differs from reality in ways the policy learned to rely on. The main tools:
 
@@ -322,7 +409,7 @@ A policy that walks in simulation can fail on the robot, because simulation diff
 - **Terrain curriculum.** Start on flat ground. A robot that walks far enough in its episode gets promoted to rougher terrain, steeper slopes and higher stairs; one that fails gets demoted. Each robot keeps training at the edge of its ability.
 - **Realistic observations.** Add the noise, delays and failure modes of the real sensors. For perceptive policies, corrupt the height map with offsets, missing patches and drift, so the policy learns when not to trust it.
 
-### Teacher-student training
+#### Teacher-student training
 
 In simulation we know everything: exact friction, contact states, the terrain without noise. On the robot we know much less. **Teacher-student** training (also called privileged learning, or asymmetric actor-critic when only the critic gets the extra data) uses this:
 
@@ -341,7 +428,7 @@ flowchart TB
 ```
 
 1. Train a **teacher** with RL using privileged information. With perfect knowledge, learning is fast and the resulting gait is good.
-2. Train a **student** that sees only what the real robot sees, including a history of observations, to reproduce the teacher's actions (and often its internal latent representation of the environment). This is supervised learning, which is much easier than RL from noisy observations.
+2. Train a **student** that sees only what the real robot sees, including a history of observations, to reproduce the teacher's actions (and often its internal latent representation of the environment). This is imitation learning, which is much easier than RL from noisy observations. The student drives the simulated robot and the teacher labels every state it visits, which is [DAgger](#dagger) with an expert that is always on call, so the student learns to recover from its own mistakes.
 3. Deploy the student. Its memory has learned to infer friction, slippage and terrain properties from the recent motion, because that was necessary to imitate the teacher.
 
 This recipe produced some of the best-known results on ANYmal: blind locomotion over rough natural terrain, and perceptive locomotion that combines the elevation map with proprioception and falls back on proprioception when the map is wrong, for example in tall grass or snow.
@@ -353,7 +440,7 @@ The same pipeline, with different rewards and observations, is used for:
 - **Navigation and local planning**: a policy that outputs velocity commands from a local map, trained to reach a goal without collisions, sitting on top of a locomotion policy.
 - **Parkour and agile skills**: jumps, climbing onto boxes, recovering from falls.
 - **Manipulation**: in-hand object reorientation, legged mobile manipulation with an arm.
-- **Whole-body control for humanoids**, often initialized from human motion capture through an imitation reward.
+- **Whole-body control for humanoids**, often initialized from human motion capture through a tracking or [adversarial motion prior](#inverse-rl-and-adversarial-imitation) reward.
 
 ### Practical pitfalls
 
@@ -368,6 +455,7 @@ The same pipeline, with different rewards and observations, is used for:
 - RL learns behavior from a scalar reward instead of labeled examples, by trial and error in a loop of state, action, reward.
 - The pieces: an MDP describing the problem, a policy to learn, a reward you design, a return discounted by $\gamma$, value functions that predict that return, and optionally a model.
 - Value-based methods (DQN) suit discrete actions. Policy gradient and actor-critic methods suit continuous control, and PPO, with its clipped update, is the robust default when simulation is cheap.
+- Imitation learning replaces the reward with demonstrations. Behavior cloning is plain supervised learning but suffers from compounding errors once the policy leaves the demonstrated states; DAgger fixes this by having the expert label the learner's own states, and adversarial methods such as GAIL and AMP match the expert's state distribution with RL.
 - A learned robot controller is a small network running at around 50 Hz that outputs joint position targets for a fast PD loop, trained in massively parallel simulation with a multi-term reward, domain randomization, a terrain curriculum and teacher-student distillation.
 - The hard parts are not the RL algorithm: they are the reward, the simulation fidelity, and making sure the robot sees what the policy saw during training.
 
@@ -378,6 +466,15 @@ The same pipeline, with different rewards and observations, is used for:
 - J. Schulman et al., ["High-Dimensional Continuous Control Using Generalized Advantage Estimation"](https://arxiv.org/abs/1506.02438), ICLR, 2016.
 - J. Schulman et al., ["Proximal Policy Optimization Algorithms"](https://arxiv.org/abs/1707.06347), arXiv:1707.06347, 2017.
 - T. Haarnoja et al., ["Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor"](https://arxiv.org/abs/1801.01290), ICML, 2018.
+- S. Ross, G. Gordon, J. Bagnell, ["A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning"](https://arxiv.org/abs/1011.0686), AISTATS, 2011. DAgger and the compounding error bound.
+- M. Laskey et al., ["DART: Noise Injection for Robust Imitation Learning"](https://arxiv.org/abs/1703.09327), CoRL, 2017.
+- J. Ho, S. Ermon, ["Generative Adversarial Imitation Learning"](https://arxiv.org/abs/1606.03476), NeurIPS, 2016.
+- X. B. Peng et al., ["DeepMimic: Example-Guided Deep Reinforcement Learning of Physics-Based Character Skills"](https://arxiv.org/abs/1804.02717), SIGGRAPH, 2018.
+- X. B. Peng et al., ["AMP: Adversarial Motion Priors for Stylized Physics-Based Character Control"](https://arxiv.org/abs/2104.02180), SIGGRAPH, 2021.
+- A. Escontrela et al., ["Adversarial Motion Priors Make Good Substitutes for Complex Reward Functions"](https://arxiv.org/abs/2203.15103), IROS, 2022. AMP on a quadruped.
+- S. Levine et al., ["Offline Reinforcement Learning: Tutorial, Review, and Perspectives on Open Problems"](https://arxiv.org/abs/2005.01643), arXiv:2005.01643, 2020.
+- C. Chi et al., ["Diffusion Policy: Visuomotor Policy Learning via Action Diffusion"](https://arxiv.org/abs/2303.04137), RSS, 2023.
+- T. Zhao et al., ["Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware"](https://arxiv.org/abs/2304.13705), RSS, 2023. Action chunking (ACT).
 - J. Hwangbo et al., ["Learning agile and dynamic motor skills for legged robots"](https://doi.org/10.1126/scirobotics.aau5872), *Science Robotics*, 2019. Actuator network, sim-to-real on ANYmal.
 - J. Lee et al., ["Learning quadrupedal locomotion over challenging terrain"](https://doi.org/10.1126/scirobotics.abc5986), *Science Robotics*, 2020. Teacher-student training.
 - N. Rudin et al., ["Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning"](https://arxiv.org/abs/2109.11978), CoRL, 2021. GPU simulation, terrain curriculum.
